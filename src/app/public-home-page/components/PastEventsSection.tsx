@@ -185,18 +185,16 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white to-transparent" />
 
             <div
-              ref={scrollRef}
-              className="flex gap-6 pb-4 overflow-x-auto no-scrollbar scroll-smooth pt-1"
-              style={{ scrollBehavior: isAutoScrolling && !isHovered ? 'auto' : 'smooth' }}
+              className="flex gap-6 animate-continuous-marquee pb-4 pt-1"
             >
-              {completedEventsOnly.map(event => {
+              {[...completedEventsOnly, ...completedEventsOnly].map((event, idx) => {
                 const registered = REGISTERED_COUNTS[event.id] || Math.floor(event.capacity * 0.85);
                 const attended = ATTENDED_COUNTS[event.id] || Math.floor(registered * 0.9);
                 const attendanceRate = registered > 0 ? Math.round((attended / registered) * 100) : 92;
 
                 return (
                   <div
-                    key={`completed-${event.id}`}
+                    key={`completed-${event.id}-${idx}`}
                     className="w-[380px] sm:w-[420px] flex-shrink-0 bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-emerald-300"
                   >
                     <div className="relative h-48 overflow-hidden bg-slate-900">
