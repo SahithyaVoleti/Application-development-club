@@ -408,31 +408,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
               'Sign In to Admin Dashboard'
             )}
           </button>
-
-          {/* Preset Demo Buttons */}
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-            <button
-              type="button"
-              onClick={() => {
-                setLoginValue('email', 'admin@cse.vignan.ac.in');
-                setLoginValue('password', 'ADHub@2026');
-              }}
-              className="text-blue-600 hover:underline font-bold"
-            >
-              Use Trusted Admin Demo
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setLoginValue('email', 'rahul@example.com');
-                setLoginValue('password', 'RahulPass@2026');
-              }}
-              className="text-amber-700 hover:underline font-bold"
-            >
-              Use Pending Admin Demo
-            </button>
-          </div>
         </form>
       )}
 
@@ -601,12 +576,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             <div className="text-sm font-extrabold text-sky-950 font-mono">
               {pendingEmail}
             </div>
-
-            {devOtpCode && (
-              <div className="bg-white border border-sky-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-sky-700 inline-block shadow-2xs">
-                🔑 Dev OTP: <span className="text-base text-slate-900 font-extrabold tracking-widest ml-1">{devOtpCode}</span>
-              </div>
-            )}
           </div>
 
           <div>

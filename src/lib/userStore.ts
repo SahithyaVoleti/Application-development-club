@@ -73,20 +73,6 @@ let globalUsers: UserRecord[] = [
     approvedAt: '2026-01-05T00:00:00.000Z',
     approvedBy: 'Super Admin',
   },
-  // 3. Demo Pending Admin Request for UI Testing
-  {
-    id: 'user-admin-pending-001',
-    name: 'Rahul Kumar',
-    email: 'rahul@example.com',
-    phone: '+91 9876543210',
-    staffId: 'FAC123',
-    department: 'CSE',
-    passwordHash: hashPassword('RahulPass@2026'),
-    role: 'ADMIN',
-    status: 'PENDING_APPROVAL',
-    otpVerified: true,
-    createdAt: new Date().toISOString(),
-  },
 ];
 
 export async function findUserByEmail(email: string): Promise<UserRecord | null> {
