@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { ShieldCheck, Lock, Mail, ArrowRight, RotateCcw, X, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, RotateCcw, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AdminOtpModalProps {
@@ -13,7 +13,7 @@ interface AdminOtpModalProps {
 
 export default function AdminOtpModal({
   actionName,
-  adminEmail = 'admin@vignan.ac.in',
+  adminEmail,
   isOpen,
   onClose,
   onVerified,
@@ -23,15 +23,31 @@ export default function AdminOtpModal({
   const [isVerifying, setIsVerifying] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(60);
-  const [devCode, setDevCode] = useState<string | null>(null);
+  const [activeEmail, setActiveEmail] = useState<string>('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Send OTP email when modal opens
+  // Calculate target email dynamically
+  const getTargetEmail = () => {
+    if (adminEmail && adminEmail.trim()) return adminEmail.trim();
+    if (typeof window !== 'undefined') {
+      const uStr = localStorage.getItem('adhub_admin_user') || localStorage.getItem('adhub_user');
+      if (uStr) {
+        try {
+          const u = JSON.parse(uStr);
+          if (u?.email) return u.email;
+        } catch {}
+      }
+    }
+    return 'sahithyalakshmivoleti@gmail.com';
+  };
+
   useEffect(() => {
     if (isOpen) {
-      handleSendOtp();
+      const resolved = getTargetEmail();
+      setActiveEmail(resolved);
+      handleSendOtp(resolved);
     }
-  }, [isOpen]);
+  }, [isOpen, adminEmail]);
 
   // Countdown timer for resend
   useEffect(() => {
@@ -42,22 +58,23 @@ export default function AdminOtpModal({
     return () => clearInterval(timer);
   }, [isOpen, countdown]);
 
-  const handleSendOtp = async () => {
+  const handleSendOtp = async (overrideEmail?: string) => {
+    const targetEmail = overrideEmail || activeEmail || getTargetEmail();
+    setActiveEmail(targetEmail);
     setIsSending(true);
     setErrorMessage(null);
     try {
       const res = await fetch('/api/admin/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: adminEmail }),
+        body: JSON.stringify({ email: targetEmail }),
       });
       const data = await res.json();
 
       if (data.success) {
         setCountdown(60);
-        if (data.devCode) setDevCode(data.devCode);
-        toast.success(`Security OTP sent to ${adminEmail}`, {
-          description: data.emailSent ? 'Check your email inbox' : `OTP Code: ${data.devCode}`,
+        toast.success(`Security OTP sent to ${targetEmail}`, {
+          description: 'Check your email inbox for the 6-digit verification OTP code',
         });
       } else {
         setErrorMessage(data.error || 'Failed to send OTP email');
@@ -108,6 +125,8 @@ export default function AdminOtpModal({
       return;
     }
 
+    const targetEmail = activeEmail || getTargetEmail();
+
     setIsVerifying(true);
     setErrorMessage(null);
 
@@ -115,7 +134,7 @@ export default function AdminOtpModal({
       const res = await fetch('/api/admin/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: adminEmail, otp: fullOtp }),
+        body: JSON.stringify({ email: targetEmail, otp: fullOtp }),
       });
       const data = await res.json();
 
@@ -130,19 +149,12 @@ export default function AdminOtpModal({
         onVerified();
         onClose();
       } else {
-        setErrorMessage(data.error || 'Invalid OTP code. Please try again.');
+        setErrorMessage(data.error || 'Invalid OTP code. Please check your email inbox and try again.');
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Verification request failed');
     } finally {
       setIsVerifying(false);
-    }
-  };
-
-  const autofillDevCode = () => {
-    if (devCode) {
-      setOtpDigits(devCode.split(''));
-      toast.info('Autofilled Dev OTP Code');
     }
   };
 
@@ -185,27 +197,10 @@ export default function AdminOtpModal({
           <div className="bg-sky-50/80 border border-sky-200/80 rounded-2xl p-3.5 flex items-center gap-3 text-xs text-sky-900">
             <Mail size={18} className="text-sky-600 flex-shrink-0" />
             <div>
-              <div className="font-semibold text-slate-500 text-[10px] uppercase">Sent to Admin Email:</div>
-              <div className="font-extrabold text-slate-900 font-mono text-xs">{adminEmail}</div>
+              <div className="font-semibold text-slate-500 text-[10px] uppercase">Sent to Registered Email:</div>
+              <div className="font-extrabold text-slate-900 font-mono text-xs">{activeEmail || getTargetEmail()}</div>
             </div>
           </div>
-
-          {/* Dev Debug Code Banner */}
-          {devCode && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between text-xs text-amber-900">
-              <div className="flex items-center gap-1.5 font-bold">
-                <Sparkles size={14} className="text-amber-600" />
-                <span>Dev OTP Code: <code className="bg-amber-100 font-mono px-2 py-0.5 rounded text-amber-950 font-extrabold text-sm">{devCode}</code></span>
-              </div>
-              <button
-                type="button"
-                onClick={autofillDevCode}
-                className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-[11px] transition-colors cursor-pointer"
-              >
-                Autofill
-              </button>
-            </div>
-          )}
 
           {errorMessage && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
@@ -261,7 +256,7 @@ export default function AdminOtpModal({
           <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
             <span>Didn't receive code?</span>
             <button
-              onClick={handleSendOtp}
+              onClick={() => handleSendOtp()}
               disabled={isSending || countdown > 0}
               className="font-bold text-sky-600 hover:text-sky-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition-colors"
             >

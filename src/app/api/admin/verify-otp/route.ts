@@ -4,7 +4,7 @@ import { adminOtpStore } from '@/lib/adminOtpStore';
 export async function POST(request: Request) {
   try {
     const { email, otp } = await request.json();
-    const targetEmail = (email || process.env.ADMIN_EMAIL || 'admin@vignan.ac.in').toLowerCase();
+    const targetEmail = (email || process.env.ADMIN_EMAIL || 'sahithyalakshmivoleti@gmail.com').toLowerCase();
     const submittedOtp = (otp || '').trim();
 
     if (!submittedOtp || submittedOtp.length !== 6) {

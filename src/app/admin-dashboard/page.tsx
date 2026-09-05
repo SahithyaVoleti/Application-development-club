@@ -27,11 +27,20 @@ export default function AdminDashboardPage() {
   const [pendingView, setPendingView] = useState<AdminView | null>(null);
   const [actionName, setActionName] = useState<string>('Administrative Action');
 
+  const [adminUserEmail, setAdminUserEmail] = useState<string>('');
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const verified = sessionStorage.getItem('adhub_admin_otp_verified');
       if (verified === 'true') {
         setIsOtpVerified(true);
+      }
+      const userStr = localStorage.getItem('adhub_admin_user');
+      if (userStr) {
+        try {
+          const u = JSON.parse(userStr);
+          if (u?.email) setAdminUserEmail(u.email);
+        } catch (e) {}
       }
     }
   }, []);
@@ -125,6 +134,7 @@ export default function AdminDashboardPage() {
         {/* Security OTP Verification Modal */}
         <AdminOtpModal
           actionName={actionName}
+          adminEmail={adminUserEmail}
           isOpen={isOtpModalOpen}
           onClose={() => setIsOtpModalOpen(false)}
           onVerified={handleOtpVerified}
