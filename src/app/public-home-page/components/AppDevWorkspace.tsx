@@ -416,7 +416,6 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
                 {[
                   { id: 'Dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
                   { id: 'Registered Events', label: 'Event History & Passes', icon: Calendar },
-                  { id: 'Projects', label: 'My Projects Showcase', icon: FolderGit2 },
                 ].map(item => (
                   <button
                     key={`side-${item.id}`}
@@ -424,9 +423,6 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
                       setActiveTab(item.id);
                       if (item.id === 'Registered Events') {
                         const el = document.querySelector('#registered-events-section');
-                        if (el) el.scrollIntoView({ behavior: 'smooth' });
-                      } else if (item.id === 'Projects') {
-                        const el = document.querySelector('#projects-section');
                         if (el) el.scrollIntoView({ behavior: 'smooth' });
                       }
                     }}
@@ -511,18 +507,6 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
                 >
                   <Plus size={16} />
                   Create New Project
-                </button>
-
-                <button
-                  onClick={() => {
-                    setProjectScopeTab('my');
-                    const el = document.querySelector('#projects-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl btn-hover-premium shadow-2xs cursor-pointer"
-                >
-                  <User size={16} className="text-sky-600" />
-                  View My Projects ({myProjectsCount})
                 </button>
               </div>
             </div>
@@ -658,243 +642,7 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
             )}
           </div>
 
-          {/* 4. PROJECTS / APPLICATIONS SECTION */}
-          <div id="projects-section" className="space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">Projects Showcase</h3>
-                  <span className="text-[10px] font-bold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full border border-sky-200">
-                    Logged in as: {currentUser.name}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500">View particular projects you developed or explore workspace projects</p>
-              </div>
 
-              <div className="flex items-center gap-2.5 flex-wrap">
-                {/* User Scope Tabs: My Projects vs All Projects */}
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
-                  <button
-                    onClick={() => setProjectScopeTab('my')}
-                    className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
-                      projectScopeTab === 'my'
-                        ? 'bg-white text-slate-900 font-extrabold shadow-2xs'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    <User size={13} className={projectScopeTab === 'my' ? 'text-sky-600' : 'text-slate-400'} />
-                    My Projects ({myProjectsCount})
-                  </button>
-                  <button
-                    onClick={() => setProjectScopeTab('all')}
-                    className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
-                      projectScopeTab === 'all'
-                        ? 'bg-white text-slate-900 font-extrabold shadow-2xs'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    <FolderGit2 size={13} className={projectScopeTab === 'all' ? 'text-indigo-600' : 'text-slate-400'} />
-                    All Projects ({projects.length})
-                  </button>
-                </div>
-
-                {/* Tech Stack Filter Dropdown */}
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
-                  {['All', 'React', 'Next.js', 'FastAPI'].map(tech => (
-                    <button
-                      key={`filter-${tech}`}
-                      onClick={() => setSelectedTechFilter(tech)}
-                      className={`px-2.5 py-1 rounded-lg transition-all ${
-                        selectedTechFilter === tech
-                          ? 'bg-white text-slate-900 font-bold shadow-2xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      {tech}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setNewAppModalMode('create')}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
-                >
-                  <Plus size={14} /> New Project
-                </button>
-              </div>
-            </div>
-
-            {/* Project Cards Grid */}
-            {filteredProjects.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 mx-auto flex items-center justify-center">
-                  <FolderGit2 size={24} />
-                </div>
-                <h4 className="font-extrabold text-slate-900 text-base">No Projects Found for {currentUser.name}</h4>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  {projectScopeTab === 'my'
-                    ? `You haven't created any projects under "${currentUser.name}" yet. Click "New Project" to add your work or switch to "All Projects".`
-                    : 'No projects match your current search or tech stack filter.'}
-                </p>
-                <div className="flex items-center justify-center gap-3 pt-2">
-                  <button
-                    onClick={() => setNewAppModalMode('create')}
-                    className="px-4 py-2 rounded-xl bg-sky-600 text-white font-bold text-xs hover:bg-sky-500 transition-colors"
-                  >
-                    + Create Project Now
-                  </button>
-                  {projectScopeTab === 'my' && (
-                    <button
-                      onClick={() => setProjectScopeTab('all')}
-                      className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
-                    >
-                      View All Workspace Projects
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredProjects.map(project => (
-                  <div
-                    key={`proj-card-${project.id}`}
-                    className="bg-white rounded-2xl border border-slate-200/90 p-5 hover:border-sky-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
-                  >
-                    <div>
-                      {/* Author & Status Header */}
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
-                          <span className={`w-1.5 h-1.5 rounded-full ${project.status === 'Production' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-                          {project.status}
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-mono">
-                          By {project.authorName || 'Developer'}
-                        </span>
-                      </div>
-
-                      <h4 className="font-extrabold text-slate-900 text-base leading-snug mb-1.5 group-hover:text-sky-600 transition-colors">
-                        {project.name}
-                      </h4>
-                      <p className="text-slate-500 text-xs leading-relaxed mb-4 line-clamp-2">
-                        {project.description}
-                      </p>
-
-                      {/* Tech Badges */}
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {project.techStack.map(tech => (
-                          <span
-                            key={`proj-tech-${project.id}-${tech}`}
-                            className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-sky-50/70 text-sky-700 border border-sky-200/60"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Card Actions (View Particular Project details button added) */}
-                    <div className="pt-3 border-t border-slate-100 space-y-2">
-                      <button
-                        onClick={() => setSelectedProjectDetails(project)}
-                        className="w-full py-1.5 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-xs border border-sky-200/80 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <Eye size={14} /> View Particular Project ("What I Did")
-                      </button>
-
-                      <div className="flex items-center justify-between gap-2">
-                        <a
-                          href={project.deployUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-bold text-slate-600 hover:text-sky-600 flex items-center gap-1"
-                        >
-                          Live <ArrowUpRight size={12} />
-                        </a>
-
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => setIsCodeWorkspaceOpen(true)}
-                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
-                          >
-                            Code
-                          </button>
-                          <button
-                            onClick={() => setSelectedDeployLog(DEPLOYMENT_LOGS[0])}
-                            className="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-colors cursor-pointer"
-                          >
-                            Deploy
-                          </button>
-
-                          {/* ⋯ More Actions Menu Button */}
-                          <div className="relative">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setOpenMenuId(openMenuId === project.id ? null : project.id);
-                              }}
-                              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                              aria-label="More actions"
-                            >
-                              <MoreVertical size={15} />
-                            </button>
-
-                            {/* Action Dropdown Menu */}
-                            {openMenuId === project.id && (
-                              <div
-                                className="absolute right-0 bottom-full mb-1 w-48 bg-white rounded-2xl border border-slate-200 shadow-lg py-1.5 z-30 animate-fadeIn"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <button
-                                  onClick={() => {
-                                    setOpenMenuId(null);
-                                    setSelectedProjectDetails(project);
-                                  }}
-                                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
-                                >
-                                  <Eye size={14} className="text-sky-600" /> View Accomplishments
-                                </button>
-
-                                <button
-                                  onClick={() => {
-                                    setOpenMenuId(null);
-                                    const duplicatedApp: WorkspaceProject = {
-                                      ...project,
-                                      id: `proj-${Date.now()}`,
-                                      name: `${project.name} (Copy)`,
-                                      authorId: currentUser.id,
-                                      authorName: currentUser.name,
-                                      lastUpdated: 'Just now',
-                                    };
-                                    setProjects((prev) => [duplicatedApp, ...prev]);
-                                    toast.success(`Duplicated "${project.name}"`);
-                                  }}
-                                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
-                                >
-                                  <Copy size={14} className="text-slate-400" /> Duplicate
-                                </button>
-
-                                <div className="my-1 border-t border-slate-100" />
-
-                                <button
-                                  onClick={() => {
-                                    setOpenMenuId(null);
-                                    setDeletingProject(project);
-                                  }}
-                                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                                >
-                                  <Trash2 size={14} className="text-rose-500" /> Delete Project
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* STUDENT EVENT PARTICIPATION & HISTORY SECTION */}
           <div id="student-event-history-section" className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-2xs space-y-6">
