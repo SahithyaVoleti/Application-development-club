@@ -74,7 +74,7 @@ export async function sendOtpEmail({ toEmail, recipientName, otpCode, isResend =
   }
 
   // 2. Attempt Brevo SMTP via Nodemailer
-  const smtpUser = process.env.SMTP_USER || toEmail;
+  const smtpUser = process.env.SMTP_USER || 'a22e33001@smtp-brevo.com';
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
