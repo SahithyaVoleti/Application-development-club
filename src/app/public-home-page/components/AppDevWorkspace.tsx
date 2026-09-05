@@ -371,15 +371,6 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
               )}
             </div>
 
-            {/* Help / AI Button */}
-            <button
-              onClick={() => setIsAIAssistantOpen(true)}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-              title="AI Assistant & Help"
-            >
-              <HelpCircle size={18} />
-            </button>
-
             {/* User Profile Info & Logout Button */}
             <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
               <div className="flex items-center gap-2">
@@ -409,82 +400,35 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* 14. COLLAPSIBLE WORKSPACE SIDEBAR (Cleaned up as requested) */}
+        {/* COLLAPSIBLE WORKSPACE SIDEBAR */}
         <aside
           className={`${
             sidebarOpen ? 'w-64' : 'w-0 overflow-hidden'
           } transition-all duration-300 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-30`}
         >
           <div className="p-4 space-y-6 flex-1 overflow-y-auto">
-            {/* WORKSPACE GROUP */}
+            {/* STUDENT PORTAL GROUP */}
             <div>
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">
-                WORKSPACE
+                STUDENT PORTAL
               </div>
               <div className="space-y-1">
                 {[
-                  { id: 'Dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                  { id: 'Registered Events', label: 'My Registered Events', icon: Calendar },
-                ].map(item => (
-                  <button
-                    key={`side-${item.id}`}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                      activeTab === item.id
-                        ? 'bg-sky-50 text-sky-700 font-bold border border-sky-200/60 shadow-2xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    <item.icon size={16} className={activeTab === item.id ? 'text-sky-600' : 'text-slate-400'} />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* DEVELOPMENT GROUP */}
-            <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">
-                DEVELOPMENT
-              </div>
-              <div className="space-y-1">
-                {[
-                  { id: 'Code Editor', label: 'Code Editor IDE', icon: Code2, action: () => setIsCodeWorkspaceOpen(true) },
+                  { id: 'Dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
+                  { id: 'Registered Events', label: 'Event History & Passes', icon: Calendar },
+                  { id: 'Projects', label: 'My Projects Showcase', icon: FolderGit2 },
                 ].map(item => (
                   <button
                     key={`side-${item.id}`}
                     onClick={() => {
-                      if (item.action) item.action();
-                      else setActiveTab(item.id);
-                    }}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                      activeTab === item.id
-                        ? 'bg-sky-50 text-sky-700 font-bold border border-sky-200/60 shadow-2xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    <item.icon size={16} className={activeTab === item.id ? 'text-sky-600' : 'text-slate-400'} />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* TOOLS GROUP */}
-            <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">
-                TOOLS
-              </div>
-              <div className="space-y-1">
-                {[
-                  { id: 'AI Assistant', label: 'AI Assistant', icon: Sparkles, action: () => setIsAIAssistantOpen(true) },
-                  { id: 'Analytics', label: 'Analytics', icon: TrendingUp },
-                ].map(item => (
-                  <button
-                    key={`side-${item.id}`}
-                    onClick={() => {
-                      if (item.action) item.action();
-                      else setActiveTab(item.id);
+                      setActiveTab(item.id);
+                      if (item.id === 'Registered Events') {
+                        const el = document.querySelector('#registered-events-section');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      } else if (item.id === 'Projects') {
+                        const el = document.querySelector('#projects-section');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                       activeTab === item.id
@@ -512,7 +456,7 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
                 className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-sky-500/10 to-indigo-500/10 border border-sky-200 text-sky-800 text-xs font-bold hover:bg-sky-100/60 transition-all"
               >
                 <span className="flex items-center gap-2">
-                  <Calendar size={15} className="text-sky-600" /> CSE Events Portal
+                  <Calendar size={15} className="text-sky-600" /> Browse All Events
                 </span>
                 <ChevronRight size={14} />
               </button>
@@ -952,244 +896,150 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
             )}
           </div>
 
-          {/* 5. DEVELOPMENT ACTIVITY & 7. TECH STACK (2 Columns) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* 5. Development Activity Timeline (8 cols) */}
-            <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <Activity size={18} className="text-sky-600" />
-                  <h3 className="font-extrabold text-slate-900 text-sm">Development Activity Stream</h3>
+          {/* STUDENT EVENT PARTICIPATION & HISTORY SECTION */}
+          <div id="student-event-history-section" className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-2xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center font-bold">
+                  <Calendar size={20} />
                 </div>
-                <span className="text-[11px] text-slate-400 font-mono">Real-time Event Log</span>
-              </div>
-
-              <div className="space-y-4">
-                {RECENT_ACTIVITIES.map(act => (
-                  <div key={`act-${act.id}`} className="flex items-start gap-3 text-xs group">
-                    <div className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 size={13} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
-                          {act.title}
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-mono">{act.time}</span>
-                      </div>
-                      <p className="text-slate-500 text-[11px] mt-0.5">{act.detail}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 7. Development Tech Stack (4 cols) */}
-            <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs">
-              <div className="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                <Cpu size={18} className="text-indigo-600" />
-                <h3 className="font-extrabold text-slate-900 text-sm">Supported Tech Stack</h3>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {TECH_STACK_ITEMS.map(tech => (
-                  <div
-                    key={`tech-stack-${tech.name}`}
-                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-transform hover:scale-105 ${tech.badge}`}
-                  >
-                    <span>{tech.name}</span>
-                    <span className="text-[9px] opacity-60 font-normal">({tech.category})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-
-          {/* 8. DEPLOYMENT CENTER & 9. METRICS SECTION */}
-          <div id="deployment-center-section" className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* 8. Deployment Center Panel (7 cols) */}
-            <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Rocket size={18} className="text-blue-600" />
-                    <h3 className="font-extrabold text-slate-900 text-sm">Deployment Center</h3>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    ● Cluster Active
-                  </span>
+                <div>
+                  <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+                    Student Event Participation & History
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Complete participation log, attendance records, and certificates for {currentUser.name} ({currentUser.studentId || '221FA04049'})
+                  </p>
                 </div>
-
-                <div className="space-y-3 mb-4">
-                  {DEPLOYMENT_LOGS.map(log => (
-                    <div
-                      key={`dep-row-${log.id}`}
-                      className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/70 flex items-center justify-between gap-3 text-xs hover:bg-slate-100/80 transition-colors"
-                    >
-                      <div>
-                        <div className="font-bold text-slate-900 flex items-center gap-2">
-                          {log.appName}
-                          <span className={`text-[10px] font-bold px-2 py-0.2 rounded-full ${
-                            log.status === 'Live' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                          }`}>
-                            {log.environment} ● {log.status}
-                          </span>
-                        </div>
-                        <div className="text-[11px] text-slate-400 font-mono mt-0.5">{log.version} · {log.timestamp}</div>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => setSelectedDeployLog(log)}
-                          className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-colors text-[11px]"
-                        >
-                          View Logs
-                        </button>
-                        <button
-                          onClick={() => {
-                            toast.success(`Deployment triggered for ${log.appName}`);
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition-colors text-[11px]"
-                        >
-                          Deploy
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* 9. Metrics Section (5 cols) */}
-            <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Server size={18} className="text-emerald-600" />
-                    <h3 className="font-extrabold text-slate-900 text-sm">System Health & Metrics</h3>
-                  </div>
-                  <span className="text-[11px] text-slate-400 font-mono">Last 24h</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="bg-sky-50/60 p-3 rounded-xl border border-sky-100">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase">System Requests</div>
-                    <div className="text-xl font-extrabold text-slate-900 font-tabular mt-0.5">24,892</div>
-                  </div>
-                  <div className="bg-emerald-50/60 p-3 rounded-xl border border-emerald-100">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase">Build Uptime</div>
-                    <div className="text-xl font-extrabold text-emerald-600 font-tabular mt-0.5">99.4%</div>
-                  </div>
-                  <div className="bg-purple-50/60 p-3 rounded-xl border border-purple-100">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase">Active Projects</div>
-                    <div className="text-xl font-extrabold text-slate-900 font-tabular mt-0.5">{projects.length}</div>
-                  </div>
-                  <div className="bg-indigo-50/60 p-3 rounded-xl border border-indigo-100">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase">Avg Response</div>
-                    <div className="text-xl font-extrabold text-indigo-600 font-tabular mt-0.5">184ms</div>
-                  </div>
-                </div>
-
-                {/* Minimal Lightweight Line Chart */}
-                <div className="bg-slate-50 rounded-xl p-3 border border-slate-200/80">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
-                    <span>Traffic Volume Trend</span>
-                    <span className="text-emerald-600">Peak: 1,840 req/min</span>
-                  </div>
-                  <div className="h-20 w-full">
-                    <svg className="w-full h-full overflow-visible" viewBox="0 0 300 60" preserveAspectRatio="none">
-                      <defs>
-                        <linearGradient id="apiGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.4" />
-                          <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 0,40 Q 50,10 100,35 T 200,20 T 300,15 L 300,60 L 0,60 Z"
-                        fill="url(#apiGrad)"
-                      />
-                      <path
-                        d="M 0,40 Q 50,10 100,35 T 200,20 T 300,15"
-                        fill="none"
-                        stroke="#0284c7"
-                        strokeWidth="2.5"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          {/* 10. CODE WORKSPACE PREVIEW (IDE PREVIEW PANEL) */}
-          <div className="bg-slate-900 text-white rounded-2xl border border-slate-800 p-6 shadow-xl relative overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-4">
-              <div>
-                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 mb-1">
-                  <Terminal size={14} /> Integrated Development Environment (IDE)
-                </div>
-                <h3 className="text-xl font-extrabold text-white tracking-tight">Code Workspace</h3>
-                <p className="text-xs text-slate-400">Edit, test, debug, and commit code directly inside your browser</p>
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsCodeWorkspaceOpen(true)}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full">
+                  ✓ Verified Academic Profile
+                </span>
+              </div>
+            </div>
+
+            {/* Participation Records List */}
+            <div className="space-y-4">
+              {[
+                {
+                  id: 'hist-1',
+                  title: 'AI Smart Campus Hackathon 2026',
+                  category: 'Hackathon',
+                  date: '2026-03-14',
+                  time: '09:30 - 17:00',
+                  venue: 'N Block Classrooms, Vignan University',
+                  regId: 'REG-2026-9041',
+                  attendance: 'present',
+                  certificateAvailable: true,
+                },
+                {
+                  id: 'hist-2',
+                  title: 'Stack Hack 48H — Application Development Hackathon',
+                  category: 'Hackathon',
+                  date: '2024-10-28',
+                  time: '09:00 - 18:00',
+                  venue: 'Vignan Library, 0th Floor',
+                  regId: 'REG-2024-4112',
+                  attendance: 'present',
+                  certificateAvailable: true,
+                },
+                {
+                  id: 'hist-3',
+                  title: 'Code Storm 2025 — Competitive Coding',
+                  category: 'Coding Competition',
+                  date: '2025-09-25',
+                  time: '09:00 - 17:00',
+                  venue: 'N-Block, III Floor, Vignan University',
+                  regId: 'REG-2025-1088',
+                  attendance: 'present',
+                  certificateAvailable: true,
+                },
+                {
+                  id: 'hist-4',
+                  title: 'Sustainability Ideathon 2025',
+                  category: 'Ideathon',
+                  date: '2025-09-11',
+                  time: '09:30 - 17:00',
+                  venue: 'Sangamithra Hall, II Floor, Nagarjuna Block',
+                  regId: 'REG-2025-0421',
+                  attendance: 'present',
+                  certificateAvailable: true,
+                },
+                {
+                  id: 'hist-5',
+                  title: 'AI & Machine Learning Workshop 2026',
+                  category: 'AI/ML Workshop',
+                  date: '2026-09-10',
+                  time: '10:00 - 16:00',
+                  venue: 'CSE Seminar Hall, Block A',
+                  regId: 'REG-2026-0012',
+                  attendance: 'not_marked',
+                  certificateAvailable: false,
+                },
+              ].map(eventItem => (
+                <div
+                  key={`hist-row-${eventItem.id}`}
+                  className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <Code2 size={15} /> Open Full Code Editor
-                </button>
-              </div>
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
+                        {eventItem.category}
+                      </span>
+                      <span className="text-[11px] font-mono text-slate-500 font-bold">
+                        Pass ID: <span className="text-slate-800 bg-white px-1.5 py-0.5 rounded border border-slate-200">{eventItem.regId}</span>
+                      </span>
+                    </div>
+
+                    <h4 className="font-extrabold text-sm text-slate-900 leading-snug">
+                      {eventItem.title}
+                    </h4>
+
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar size={13} className="text-sky-600" />
+                        <span>{eventItem.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={13} className="text-sky-600" />
+                        <span>{eventItem.time}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <UserCheck size={13} className="text-sky-600" />
+                        <span>{eventItem.venue}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 self-end md:self-center flex-wrap">
+                    {/* Attendance Status Badge */}
+                    {eventItem.attendance === 'present' ? (
+                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                        <CheckCircle2 size={13} /> Present & Verified
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-300">
+                        ● Upcoming Event
+                      </span>
+                    )}
+
+                    {/* Certificate Download Button */}
+                    {eventItem.certificateAvailable && (
+                      <button
+                        onClick={() => {
+                          toast.success(`Downloading official certificate for ${eventItem.title}`);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      >
+                        <ShieldCheck size={13} /> Download Certificate
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-
-            {/* Quick Preview IDE Snippet */}
-            <div className="bg-[#0b1329] rounded-xl p-4 font-mono text-xs text-slate-300 border border-slate-800 space-y-1">
-              <div className="text-slate-500">// src/main.py — Application Development Hub API</div>
-              <div><span className="text-purple-400">from</span> fastapi <span className="text-purple-400">import</span> FastAPI</div>
-              <div>app = FastAPI(title=<span className="text-emerald-300">"AppDevHub Core OS"</span>, version=<span className="text-emerald-300">"2.4.0"</span>)</div>
-              <div><span className="text-purple-400">@app.get</span>(<span className="text-emerald-300">"/api/v1/health"</span>)</div>
-              <div><span className="text-blue-400">def</span> <span className="text-yellow-300">health_check</span>():</div>
-              <div>    <span className="text-purple-400">return</span> &#123;<span className="text-emerald-300">"status"</span>: <span className="text-emerald-300">"healthy"</span>, <span className="text-emerald-300">"build"</span>: 482&#125;</div>
-            </div>
-          </div>
-
-
-
-          {/* 12. AI DEVELOPMENT ASSISTANT CARD */}
-          <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-purple-950 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-bold px-3 py-1 rounded-full mb-3">
-                <Sparkles size={14} className="text-purple-400" /> AI Assistant Suite
-              </div>
-              <h3 className="text-2xl font-extrabold text-white tracking-tight mb-2">
-                AI Development Assistant
-              </h3>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                Build faster with intelligent assistance throughout your development workflow. Generate components, fix code, and optimize algorithms instantly.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {['Generate App', 'Fix Code', 'Explain Code', 'Generate API', 'Optimize'].map(act => (
-                  <button
-                    key={`ai-chip-${act}`}
-                    onClick={() => setIsAIAssistantOpen(true)}
-                    className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-all border border-white/15"
-                  >
-                    + {act}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsAIAssistantOpen(true)}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-bold text-sm shadow-lg shadow-purple-500/30 transition-all flex items-center gap-2 flex-shrink-0 cursor-pointer"
-            >
-              <Sparkles size={16} /> Open AI Assistant
-            </button>
           </div>
 
         </main>
