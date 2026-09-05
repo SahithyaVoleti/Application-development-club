@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum EventStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  REGISTRATION_CLOSED
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  not_marked
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(STUDENT)
+  studentId    String?
+  department   String?
+  year         String?
+  section      String?
+  phone        String?
+  college      String?  @default("VFSTR / Vignan University")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  registrations Registration[]
+  certificates  Certificate[]
+
+  @@map("users")
+}
+
+model Event {
+  id                     String      @id @default(uuid())
+  title                  String
+  category               String
+  branches               String[]    @default([])
+  description            String      @db.Text
+  date                   String
+  startTime              String
+  endTime                String
+  venue                  String
+  organizer              String
+  registrationDeadline   String
+  capacity               Int         @default(100)
+  posterUrl              String      @db.Text
+  eligibility            String      @db.Text
+  rules                  String      @db.Text
+  requirements           String      @db.Text
+  contactPerson          String
+  contactEmail           String
+  allocatedBudget        Float       @default(0)
+  certificateTemplateUrl String?     @db.Text
+  isPublished            Boolean     @default(true)
+  status                 EventStatus @default(UPCOMING)
+  createdAt              DateTime    @default(now())
+
+  registrations      Registration[]
+  galleryImages      GalleryImage[]
+  leaderboardEntries LeaderboardEntry[]
+  certificates       Certificate[]
+
+  @@map("events")
+}
+
+model Registration {
+  id               String           @id @default(uuid())
+  eventId          String
+  event            Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId           String?
+  user             User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  studentId        String
+  studentName      String
+  email            String
+  mobile           String
+  department       String
+  year             String
+  section          String
+  gender           String           @default("Unspecified")
+  skills           String           @default("")
+  registrationDate DateTime         @default(now())
+  registrationId   String           @unique
+  attendanceStatus AttendanceStatus @default(not_marked)
+
+  certificate Certificate?
+
+  @@unique([studentId, eventId])
+  @@map("registrations")
+}
+
+model Certificate {
+  id             String        @id @default(uuid())
+  certificateId  String        @unique
+  eventId        String
+  event          Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  studentId      String
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  registrationId String?       @unique
+  registration   Registration? @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  issuedAt       DateTime      @default(now())
+
+  @@map("certificates")
+}
+
+model GalleryImage {
+  id       String @id @default(uuid())
+  eventId  String
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  imageUrl String @db.Text
+  caption  String
+
+  @@map("gallery_images")
+}
+
+model LeaderboardEntry {
+  id              String   @id @default(uuid())
+  eventId         String?
+  event           Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  rank            Int
+  teamName        String
+  members         String
+  projectName     String?
+  points          Int      @default(0)
+  projectsCount   Int      @default(1)
+  hackathonsCount Int      @default(1)
+  badge           String?
+  award           String?
+  createdAt       DateTime @default(now())
+
+  @@map("leaderboard_entries")
+}
