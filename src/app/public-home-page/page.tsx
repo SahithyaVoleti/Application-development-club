@@ -8,7 +8,6 @@ import UpcomingEventsCarouselSection from './components/UpcomingEventsCarouselSe
 import PastEventsSection from './components/PastEventsSection';
 import IntroSection from './components/IntroSection';
 import RealWorldBuildingSection from './components/RealWorldBuildingSection';
-import StudentJourneySection from './components/StudentJourneySection';
 import LeaderboardSection from './components/LeaderboardSection';
 import CertificatesSection from './components/CertificatesSection';
 import GallerySection from './components/GallerySection';
@@ -174,9 +173,6 @@ export default function PublicHomePage() {
 
             {/* 9. Campus & Event Media Gallery */}
             <GallerySection />
-
-            {/* 10. Interactive Student Journey */}
-            <StudentJourneySection />
 
             {/* 11. Builders of the Month Leaderboard */}
             <LeaderboardSection />
