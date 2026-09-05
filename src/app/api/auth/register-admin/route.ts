@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { findUserByEmail, findUserByStaffId, createUser } from '@/lib/userStore';
+import { findUserByEmail, findUserByStaffId, createUser, updateUser } from '@/lib/userStore';
 import { hashPassword } from '@/lib/auth';
 import { adminOtpStore } from '@/lib/adminOtpStore';
 import { sendOtpEmail } from '@/lib/emailService';
@@ -33,38 +33,67 @@ export async function POST(request: Request) {
 
     const cleanEmail = email.toLowerCase().trim();
     const cleanStaffId = staffId.toUpperCase().trim();
+    const hashedPassword = hashPassword(password);
 
-    // 2. Prevent duplicate email registration
+    // 2. Check existing user registration
     const existingEmailUser = await findUserByEmail(cleanEmail);
     if (existingEmailUser) {
-      return NextResponse.json(
-        { success: false, error: 'An account with this email address already exists.' },
-        { status: 409 }
-      );
+      if (existingEmailUser.role === 'SUPER_ADMIN') {
+        return NextResponse.json(
+          { success: false, error: 'Super Admin account is already active.' },
+          { status: 409 }
+        );
+      }
+      if (existingEmailUser.role === 'ADMIN') {
+        if (existingEmailUser.status === 'TRUSTED_ADMIN') {
+          return NextResponse.json(
+            { success: false, error: 'This Admin account is already active and approved. Please sign in directly.' },
+            { status: 409 }
+          );
+        }
+        if (existingEmailUser.status === 'PENDING_APPROVAL') {
+          return NextResponse.json(
+            { success: false, error: 'Your Admin registration has been verified and is pending Super Admin approval.' },
+            { status: 409 }
+          );
+        }
+      }
     }
 
-    // 3. Prevent duplicate Staff / Faculty ID registration
+    // 3. Prevent duplicate Staff / Faculty ID registration for other users
     const existingStaffUser = await findUserByStaffId(cleanStaffId);
-    if (existingStaffUser) {
+    if (existingStaffUser && existingStaffUser.email.toLowerCase() !== cleanEmail) {
       return NextResponse.json(
-        { success: false, error: `Faculty/Staff ID "${cleanStaffId}" is already registered.` },
+        { success: false, error: `Faculty/Staff ID "${cleanStaffId}" is already registered to another user.` },
         { status: 409 }
       );
     }
 
-    // 4. Create Admin Account in PENDING_OTP status (NOT TRUSTED_ADMIN)
-    const hashedPassword = hashPassword(password);
-    const newUser = await createUser({
-      name: name.trim(),
-      email: cleanEmail,
-      phone: phone.trim(),
-      staffId: cleanStaffId,
-      department: department.trim(),
-      passwordHash: hashedPassword,
-      role: 'ADMIN',
-      status: 'PENDING_OTP',
-      otpVerified: false,
-    });
+    // 4. Create or Update Admin Account in PENDING_OTP status (NOT TRUSTED_ADMIN)
+    if (existingEmailUser) {
+      await updateUser(existingEmailUser.id, {
+        name: name.trim(),
+        phone: phone.trim(),
+        staffId: cleanStaffId,
+        department: department.trim(),
+        passwordHash: hashedPassword,
+        role: 'ADMIN',
+        status: 'PENDING_OTP',
+        otpVerified: false,
+      });
+    } else {
+      await createUser({
+        name: name.trim(),
+        email: cleanEmail,
+        phone: phone.trim(),
+        staffId: cleanStaffId,
+        department: department.trim(),
+        passwordHash: hashedPassword,
+        role: 'ADMIN',
+        status: 'PENDING_OTP',
+        otpVerified: false,
+      });
+    }
 
     // 5. Generate secure 6-digit OTP code & set 5-minute expiration
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();

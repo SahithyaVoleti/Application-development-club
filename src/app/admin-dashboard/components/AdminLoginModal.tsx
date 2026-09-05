@@ -116,9 +116,46 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         return;
       }
 
-      // Success Login!
+      // Success Login response - Validate Role & Status before granting entry
       const user = json.user;
       const token = json.token;
+
+      // Reject Student accounts on Admin Login form
+      if (user.role === 'STUDENT') {
+        setAuthError(
+          'Access Denied: Student accounts cannot access the Admin Panel. Only approved Faculty Admins and Super Admins can sign in here.'
+        );
+        toast.error('Access Denied', {
+          description: 'Student accounts are not authorized for Admin Panel.',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Reject non-trusted Admin accounts
+      if (user.role === 'ADMIN' && user.status !== 'TRUSTED_ADMIN') {
+        if (user.status === 'PENDING_APPROVAL') {
+          setAuthNotice(
+            'Your registration has been verified, but Admin access is still pending Super Admin approval.'
+          );
+          toast.warning('Admin Approval Pending', {
+            description: 'Awaiting Super Admin verification.',
+          });
+        } else if (user.status === 'PENDING_OTP') {
+          setPendingEmail(user.email);
+          setMode('otp');
+        } else if (user.status === 'REJECTED') {
+          setAuthError(
+            `Your Admin registration request was rejected by the Super Admin.${
+              user.rejectionReason ? ` Reason: ${user.rejectionReason}` : ''
+            }`
+          );
+        } else {
+          setAuthError('Access Denied: Admin access not granted.');
+        }
+        setIsSubmitting(false);
+        return;
+      }
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('adhub_admin_token', token);

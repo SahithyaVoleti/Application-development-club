@@ -20,21 +20,37 @@ export default function AdminAuthGuard({ children }: Props) {
 
     try {
       const user = JSON.parse(userStr);
-      // Valid if SUPER_ADMIN or TRUSTED_ADMIN (or legacy status ACTIVE / undefined for seeded users)
-      const isTrusted =
+      // STRICT ROLE & STATUS CHECK: Only SUPER_ADMIN or TRUSTED_ADMIN can enter Admin Panel
+      const isAuthorizedAdmin =
         user.role === 'SUPER_ADMIN' ||
-        user.status === 'TRUSTED_ADMIN' ||
-        user.status === 'ACTIVE' ||
-        !user.status;
+        (user.role === 'ADMIN' && user.status === 'TRUSTED_ADMIN');
 
-      setIsAuthenticated(isTrusted);
+      if (!isAuthorizedAdmin) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('adhub_admin_token');
+          localStorage.removeItem('adhub_admin_user');
+          sessionStorage.removeItem('adhub_admin_otp_verified');
+        }
+        setIsAuthenticated(false);
+        return;
+      }
+
+      setIsAuthenticated(true);
     } catch {
       setIsAuthenticated(false);
     }
   }, []);
 
   const handleLoginSuccess = (user: any) => {
-    setIsAuthenticated(true);
+    const isAuthorizedAdmin =
+      user.role === 'SUPER_ADMIN' ||
+      (user.role === 'ADMIN' && user.status === 'TRUSTED_ADMIN');
+
+    if (isAuthorizedAdmin) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
   };
 
   if (isAuthenticated === null) {
