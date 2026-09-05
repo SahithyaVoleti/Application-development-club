@@ -73,6 +73,37 @@ let globalUsers: UserRecord[] = [
     approvedAt: '2026-01-05T00:00:00.000Z',
     approvedBy: 'Super Admin',
   },
+  // 3. Seeded Student Account: Sahithya Voleti
+  {
+    id: 'user-student-001',
+    name: 'Sahithya Voleti',
+    email: 'sahithyavoleti14@gmail.com',
+    phone: '+91 9876543210',
+    studentId: '221FA04049',
+    department: 'Computer Science & Engineering',
+    year: '3rd Year',
+    section: 'A',
+    passwordHash: hashPassword('Ramana@5445'),
+    role: 'STUDENT',
+    status: 'ACTIVE',
+    otpVerified: true,
+    createdAt: '2026-01-10T00:00:00.000Z',
+  },
+  {
+    id: 'user-student-002',
+    name: 'Sahithya Voleti',
+    email: 'sahithyalakshmivoleti@gmail.com',
+    phone: '+91 9876543210',
+    studentId: '221FA04049',
+    department: 'Computer Science & Engineering',
+    year: '3rd Year',
+    section: 'A',
+    passwordHash: hashPassword('Ramana@5445'),
+    role: 'STUDENT',
+    status: 'ACTIVE',
+    otpVerified: true,
+    createdAt: '2026-01-10T00:00:00.000Z',
+  },
 ];
 
 export async function findUserByEmail(email: string): Promise<UserRecord | null> {
