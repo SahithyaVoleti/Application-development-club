@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
 import { hashPassword, generateToken } from '@/lib/auth';
-import { Role } from '@prisma/client';
+import { findUserByEmail, createUser } from '@/lib/userStore';
+import { prisma } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
@@ -15,11 +15,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check duplicate user
-    const existingUser = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
-    });
+    const cleanEmail = email.toLowerCase().trim();
 
+    // Check duplicate user in userStore
+    const existingUser = await findUserByEmail(cleanEmail);
     if (existingUser) {
       return NextResponse.json(
         { success: false, error: 'An account with this email address already exists.' },
@@ -28,29 +27,52 @@ export async function POST(request: Request) {
     }
 
     const hashedPassword = hashPassword(password);
-    const userRole = role === 'ADMIN' ? Role.ADMIN : Role.STUDENT;
+    const assignedRole = role === 'ADMIN' ? 'ADMIN' : 'STUDENT';
 
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email: email.toLowerCase().trim(),
-        passwordHash: hashedPassword,
-        role: userRole,
-        studentId: studentId || `STU-${Math.floor(10000 + Math.random() * 90000)}`,
-        department: department || 'CSE',
-        year: year || 'III Year',
-        section: section || 'A',
-        phone: phone || '',
-        college: 'VFSTR / Vignan University',
-      },
+    // 1. Create in persistent userStore
+    const newUser = await createUser({
+      name: name.trim(),
+      email: cleanEmail,
+      passwordHash: hashedPassword,
+      role: assignedRole,
+      status: 'ACTIVE',
+      studentId: studentId || `STU-${Math.floor(10000 + Math.random() * 90000)}`,
+      department: department || 'CSE',
+      year: year || 'III Year',
+      section: section || 'A',
+      phone: phone || '',
+      otpVerified: true,
     });
+
+    // 2. Sync to Prisma DB if available
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.user.create({
+          data: {
+            id: newUser.id,
+            name: newUser.name,
+            email: cleanEmail,
+            passwordHash: hashedPassword,
+            role: assignedRole as any,
+            studentId: newUser.studentId,
+            department: newUser.department,
+            year: newUser.year,
+            section: newUser.section,
+            phone: newUser.phone,
+            college: 'VFSTR / Vignan University',
+          },
+        });
+      }
+    } catch (e) {
+      console.warn('Prisma DB sync error during student register:', e);
+    }
 
     const token = generateToken({
       id: newUser.id,
       email: newUser.email,
       role: newUser.role,
       name: newUser.name,
-      status: (newUser as any).status || 'ACTIVE',
+      status: newUser.status,
     });
 
     const response = NextResponse.json({
