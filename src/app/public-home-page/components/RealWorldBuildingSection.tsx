@@ -83,9 +83,6 @@ export default function RealWorldBuildingSection() {
           `}</style>
 
           <div className="text-center max-w-2xl mx-auto">
-            <span className="text-xs font-mono font-bold text-indigo-600 uppercase tracking-widest block mb-1">
-              VISUAL PHILOSOPHY
-            </span>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
               The Application Development Pipeline
             </h3>

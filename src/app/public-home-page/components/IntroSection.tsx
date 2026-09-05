@@ -20,9 +20,6 @@ export default function IntroSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left: Large Heading & Paragraph */}
           <div className="lg:col-span-6 space-y-5">
-            <span className="text-sm font-mono font-bold text-blue-600 uppercase tracking-widest block">
-              COLLEGE INNOVATION ENVIRONMENT
-            </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight">
               Where College Coders Turn Ideas Into Real Software
             </h2>

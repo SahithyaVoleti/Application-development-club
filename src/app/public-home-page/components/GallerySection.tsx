@@ -194,12 +194,6 @@ export default function GallerySection() {
       <div className="w-full px-4 sm:px-8 lg:px-12 relative z-10">
         {/* Header Block */}
         <div className="text-center max-w-4xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 rounded-full px-4 py-1.5 mb-4 backdrop-blur-md">
-            <Camera size={14} className="text-blue-400" />
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-300">
-              Campus & Event Gallery
-            </span>
-          </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-4">
             Application Development Club <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-sky-400">Media Gallery</span>
           </h2>
@@ -335,7 +329,7 @@ export default function GallerySection() {
                   className="group relative bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:border-blue-500/50 transition-all duration-700 ease-in-out hover:-translate-y-1.5 flex flex-col animate-fadeIn"
                 >
                   {/* Image Container */}
-                  <div className="relative h-56 w-full overflow-hidden bg-slate-950">
+                  <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-950">
                     <AppImage
                       src={image.url}
                       alt={image.title}
@@ -344,47 +338,13 @@ export default function GallerySection() {
                       className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-
-                    {/* Category Pill Tag */}
-                    <div className="absolute top-3 left-3 z-10">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-900/80 text-blue-300 border border-slate-700/60 backdrop-blur-md shadow-xs flex items-center gap-1">
-                        <Sparkles size={10} className="text-sky-400" />
-                        {image.category}
-                      </span>
-                    </div>
+                    {/* Gradient Overlay on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                     {/* Zoom Icon on Hover */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
                       <div className="w-11 h-11 rounded-full bg-blue-600/90 text-white flex items-center justify-center shadow-lg shadow-blue-600/40 backdrop-blur-xs scale-90 group-hover:scale-100 transition-transform duration-300">
                         <Maximize2 size={18} />
-                      </div>
-                    </div>
-
-                    {/* Photo Number Counter */}
-                    <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-950/80 text-slate-300 border border-slate-800">
-                        #{image.id.replace('gal-', '')}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Card Metadata Footer */}
-                  <div className="p-4 bg-slate-900/90 border-t border-slate-800/80 flex flex-col flex-1 justify-between">
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-100 group-hover:text-blue-400 transition-colors line-clamp-1 mb-1">
-                        {image.title}
-                      </h4>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <Tag size={11} className="text-indigo-400" />
-                          {image.tag}
-                        </span>
-                        <span className="flex items-center gap-1 font-mono text-slate-500">
-                          <Calendar size={11} className="text-slate-500" />
-                          {image.date}
-                        </span>
                       </div>
                     </div>
                   </div>
