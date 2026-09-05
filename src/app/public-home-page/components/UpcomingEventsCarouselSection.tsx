@@ -41,22 +41,6 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
   const scrollTrackRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
 
-  // Countdown timer state for featured upcoming hackathon
-  const [timeLeft, setTimeLeft] = useState({ days: 12, hours: 8, minutes: 42, seconds: 15 });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        if (prev.days > 0) return { ...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   // Filter ONLY Upcoming Events (status !== 'COMPLETED')
   const upcomingEventsOnly = events.filter(e => e.status !== 'COMPLETED');
 
@@ -69,8 +53,6 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
 
     return matchesCategory;
   });
-
-  const featuredEvent = upcomingEventsOnly.find(e => e.category.toLowerCase().includes('hackathon')) || upcomingEventsOnly[0] || events[0];
 
   // Continuous smooth auto-scrolling animation loop
   useEffect(() => {
@@ -122,105 +104,6 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
     <section id="events" className="py-16 bg-slate-50 border-b border-slate-200/60 overflow-hidden">
       <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-12">
         
-        {/* Featured Upcoming Hackathon Panel */}
-        <div id="hackathons" className="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden border border-indigo-500/40">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-            
-            {/* Left: Featured Event Details */}
-            <div className="lg:col-span-7 space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold font-mono tracking-wider backdrop-blur-md shadow-2xs">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-                </span>
-                <span>FEATURED UPCOMING HACKATHON</span>
-              </div>
-
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
-                {featuredEvent.title}
-              </h2>
-
-              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl font-normal">
-                {featuredEvent.description}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-300 pt-2">
-                <div className="flex items-center gap-1.5 bg-white/10 px-3.5 py-2 rounded-xl border border-white/15 backdrop-blur-md">
-                  <Calendar size={14} className="text-sky-400" />
-                  <span>{formatDateFormatted(featuredEvent.date)}</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-white/10 px-3.5 py-2 rounded-xl border border-white/15 backdrop-blur-md">
-                  <MapPin size={14} className="text-indigo-400" />
-                  <span>{featuredEvent.venue}</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-white/10 px-3.5 py-2 rounded-xl border border-white/15 backdrop-blur-md">
-                  <Users size={14} className="text-emerald-400" />
-                  <span>Capacity: {featuredEvent.capacity} Coders</span>
-                </div>
-              </div>
-
-              <div className="pt-4 flex flex-wrap items-center gap-3">
-                <button
-                  onClick={() => onRegisterClick(featuredEvent)}
-                  className="px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-sky-500/30 transition-all flex items-center gap-2 cursor-pointer group"
-                >
-                  <Zap size={16} /> Register For Hackathon <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
-                </button>
-                <button
-                  onClick={() => onViewDetails(featuredEvent)}
-                  className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/20 backdrop-blur-md transition-all cursor-pointer"
-                >
-                  View Details & Rules
-                </button>
-              </div>
-            </div>
-
-            {/* Right: Live Countdown Timer */}
-            <div className="lg:col-span-5 bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 text-center space-y-4 shadow-xl">
-              <div className="text-xs font-mono font-bold text-sky-300 uppercase tracking-widest flex items-center justify-center gap-1.5">
-                <Hourglass size={14} className="animate-spin text-sky-400" /> REGISTRATION CLOSES IN
-              </div>
-
-              <div className="grid grid-cols-4 gap-2 text-white">
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/10 shadow-inner">
-                  <div className="text-2xl sm:text-3xl font-black font-tabular text-sky-400">
-                    {String(timeLeft.days).padStart(2, '0')}
-                  </div>
-                  <div className="text-[10px] font-mono text-slate-400 uppercase mt-0.5">Days</div>
-                </div>
-
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/10 shadow-inner">
-                  <div className="text-2xl sm:text-3xl font-black font-tabular text-indigo-400">
-                    {String(timeLeft.hours).padStart(2, '0')}
-                  </div>
-                  <div className="text-[10px] font-mono text-slate-400 uppercase mt-0.5">Hours</div>
-                </div>
-
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/10 shadow-inner">
-                  <div className="text-2xl sm:text-3xl font-black font-tabular text-purple-400">
-                    {String(timeLeft.minutes).padStart(2, '0')}
-                  </div>
-                  <div className="text-[10px] font-mono text-slate-400 uppercase mt-0.5">Mins</div>
-                </div>
-
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/10 shadow-inner">
-                  <div className="text-2xl sm:text-3xl font-black font-tabular text-emerald-400">
-                    {String(timeLeft.seconds).padStart(2, '0')}
-                  </div>
-                  <div className="text-[10px] font-mono text-slate-400 uppercase mt-0.5">Secs</div>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-slate-300 pt-1 font-medium">
-                ⚡ 120+ Students already registered for this challenge!
-              </div>
-            </div>
-
-          </div>
-        </div>
-
         {/* UPCOMING EVENTS SCROLLING SECTION */}
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
