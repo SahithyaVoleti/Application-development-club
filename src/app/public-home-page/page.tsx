@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import PublicNavbar from './components/PublicNavbar';
 import HeroSection from './components/HeroSection';
-import StatsStrip from './components/StatsStrip';
-import AutoScrollEventsTicker from './components/AutoScrollEventsTicker';
+
 import CseEventStatsSection from './components/CseEventStatsSection';
 import UpcomingEventsCarouselSection from './components/UpcomingEventsCarouselSection';
 import PastEventsSection from './components/PastEventsSection';
@@ -149,12 +148,7 @@ export default function PublicHomePage() {
             {/* 1. Hero Section with Background Image & Taglines */}
             <HeroSection onSwitchToWorkspace={() => setViewMode('workspace')} />
 
-            {/* 2b. Live Auto-Scrolling Event Marquee Ticker */}
-            <AutoScrollEventsTicker
-              events={MOCK_EVENTS}
-              liveCounts={liveCounts}
-              onRegisterClick={handleOpenRegistrationModal}
-            />
+
 
             {/* 3. Dedicated Scrolling Section: Upcoming Events & Hackathons */}
             <UpcomingEventsCarouselSection
