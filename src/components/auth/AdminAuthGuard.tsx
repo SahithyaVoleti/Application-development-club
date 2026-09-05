@@ -11,21 +11,29 @@ export default function AdminAuthGuard({ children }: Props) {
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('adhub_admin_token') : null;
-    setIsAuthenticated(!!token);
+    const userStr = typeof window !== 'undefined' ? localStorage.getItem('adhub_admin_user') : null;
+    
+    if (!token || !userStr) {
+      setIsAuthenticated(false);
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userStr);
+      // Valid if SUPER_ADMIN or TRUSTED_ADMIN (or legacy status ACTIVE / undefined for seeded users)
+      const isTrusted =
+        user.role === 'SUPER_ADMIN' ||
+        user.status === 'TRUSTED_ADMIN' ||
+        user.status === 'ACTIVE' ||
+        !user.status;
+
+      setIsAuthenticated(isTrusted);
+    } catch {
+      setIsAuthenticated(false);
+    }
   }, []);
 
-  const handleLoginSuccess = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('adhub_admin_token', 'jwt_session_token_' + Date.now());
-      localStorage.setItem(
-        'adhub_admin_user',
-        JSON.stringify({
-          email: 'admin@cse.vignan.ac.in',
-          name: 'Dr. Ramesh Babu',
-          role: 'Head Admin',
-        })
-      );
-    }
+  const handleLoginSuccess = (user: any) => {
     setIsAuthenticated(true);
   };
 

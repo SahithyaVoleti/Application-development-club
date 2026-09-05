@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       email: newUser.email,
       role: newUser.role,
       name: newUser.name,
+      status: (newUser as any).status || 'ACTIVE',
     });
 
     const response = NextResponse.json({

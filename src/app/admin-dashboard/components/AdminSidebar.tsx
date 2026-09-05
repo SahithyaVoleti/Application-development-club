@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppLogo from '@/components/ui/AppLogo';
 import Link from 'next/link';
 import type { AdminView } from '../page';
@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   User,
   Home,
+  UserCheck,
 } from 'lucide-react';
 
 interface Props {
@@ -27,6 +28,18 @@ interface Props {
 
 export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props) {
   const [collapsed, setCollapsed] = useState(false);
+  const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const uStr = localStorage.getItem('adhub_admin_user');
+      if (uStr) {
+        try {
+          setUser(JSON.parse(uStr));
+        } catch (e) {}
+      }
+    }
+  }, []);
 
   return (
     <aside
@@ -107,6 +120,32 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
                 )}
                 <BarChart2 size={17} className={activeView === 'analytics' ? 'text-sky-400' : 'text-slate-400'} />
                 {!collapsed && <span>Analytics</span>}
+              </button>
+
+              {/* Admin Access Approvals button for Super Admin / Admin */}
+              <button
+                onClick={() => onNavigate('approvals')}
+                title={collapsed ? 'Admin Approvals' : undefined}
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                  activeView === 'approvals'
+                    ? 'bg-indigo-600/20 text-indigo-400 font-extrabold border border-indigo-500/40 shadow-xs'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                } ${collapsed ? 'justify-center px-2' : ''}`}
+              >
+                {activeView === 'approvals' && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-indigo-500 rounded-r-md" />
+                )}
+                <UserCheck size={17} className={activeView === 'approvals' ? 'text-indigo-400' : 'text-indigo-400/80'} />
+                {!collapsed && (
+                  <div className="flex items-center justify-between w-full">
+                    <span>Admin Approvals</span>
+                    {user?.role === 'SUPER_ADMIN' && (
+                      <span className="bg-indigo-500/30 text-indigo-300 text-[9px] px-1.5 py-0.5 rounded font-mono font-bold">
+                        SUPER
+                      </span>
+                    )}
+                  </div>
+                )}
               </button>
             </div>
           </div>
@@ -222,8 +261,12 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
               <ShieldCheck size={14} />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-bold text-white truncate">Administrator</div>
-              <div className="text-[10px] text-slate-400 truncate">admin@cse.vignan.ac.in</div>
+              <div className="text-xs font-bold text-white truncate">
+                {user?.name || (user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Administrator')}
+              </div>
+              <div className="text-[10px] text-slate-400 truncate">
+                {user?.email || 'admin@cse.vignan.ac.in'}
+              </div>
             </div>
           </div>
         )}

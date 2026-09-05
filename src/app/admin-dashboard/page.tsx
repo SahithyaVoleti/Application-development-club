@@ -8,13 +8,14 @@ import AdminAnalytics from './components/AdminAnalytics';
 import AdminCreateEventWorkspace from './components/AdminCreateEventWorkspace';
 import AdminRegistrationsContent from './components/AdminRegistrationsContent';
 import AdminLeaderboardModal from './components/AdminLeaderboardModal';
+import AdminApprovalRequests from './components/AdminApprovalRequests';
 import AdminOtpModal from './components/AdminOtpModal';
 import { MOCK_EVENTS, Event } from '@/lib/mockData';
 import { toast } from 'sonner';
 
-export type AdminView = 'dashboard' | 'events' | 'analytics' | 'create-event' | 'registrations' | 'leaderboard';
+export type AdminView = 'dashboard' | 'events' | 'analytics' | 'create-event' | 'registrations' | 'leaderboard' | 'approvals';
 
-const PROTECTED_VIEWS: AdminView[] = ['create-event', 'registrations', 'leaderboard'];
+const PROTECTED_VIEWS: AdminView[] = ['create-event', 'registrations', 'leaderboard', 'approvals'];
 
 export default function AdminDashboardPage() {
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
@@ -118,6 +119,7 @@ export default function AdminDashboardPage() {
               onSave={handleSaveEvent}
             />
           )}
+          {activeView === 'approvals' && <AdminApprovalRequests />}
         </main>
 
         {/* Security OTP Verification Modal */}

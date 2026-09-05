@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { findUserByEmail } from '@/lib/userStore';
 import { hashPassword, generateToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
@@ -17,24 +17,8 @@ export async function POST(request: Request) {
     const cleanEmail = email.toLowerCase().trim();
     const hashedPassword = hashPassword(password);
 
-    // Query user from Prisma DB
-    let user = await prisma.user.findUnique({
-      where: { email: cleanEmail },
-    });
-
-    // Fallback for default Admin if not seeded yet
-    if (!user && (cleanEmail === 'admin@appdevhub.com' || cleanEmail === 'admin@vignan.ac.in') && password === 'AdminPassword2026!') {
-      user = await prisma.user.create({
-        data: {
-          name: 'Application Hub Admin',
-          email: cleanEmail,
-          passwordHash: hashedPassword,
-          role: 'ADMIN',
-          studentId: 'ADMIN-001',
-          department: 'CSE',
-        },
-      });
-    }
+    // Query user record from userStore
+    const user = await findUserByEmail(cleanEmail);
 
     if (!user || user.passwordHash !== hashedPassword) {
       return NextResponse.json(
@@ -43,11 +27,63 @@ export async function POST(request: Request) {
       );
     }
 
+    // STRICT ROLE & STATUS SECURITY ENFORCEMENT
+    if (user.role === 'ADMIN') {
+      if (user.status === 'PENDING_OTP') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Please verify your email OTP to complete your Admin registration.',
+            status: 'PENDING_OTP',
+            email: user.email,
+          },
+          { status: 403 }
+        );
+      }
+
+      if (user.status === 'PENDING_APPROVAL') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Your account has been verified successfully, but Admin access is still pending Super Admin approval.',
+            status: 'PENDING_APPROVAL',
+            email: user.email,
+          },
+          { status: 403 }
+        );
+      }
+
+      if (user.status === 'REJECTED') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Your Admin registration request was rejected by the Super Admin.${
+              user.rejectionReason ? ` Reason: ${user.rejectionReason}` : ''
+            }`,
+            status: 'REJECTED',
+            rejectionReason: user.rejectionReason,
+          },
+          { status: 403 }
+        );
+      }
+
+      if (user.status !== 'TRUSTED_ADMIN') {
+        return NextResponse.json(
+          { success: false, error: 'Admin access not granted. Please contact the Super Admin.' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // User is authorized (TRUSTED_ADMIN or SUPER_ADMIN or STUDENT)
     const token = generateToken({
       id: user.id,
       email: user.email,
       role: user.role,
       name: user.name,
+      status: user.status,
+      staffId: user.staffId,
+      department: user.department,
     });
 
     const response = NextResponse.json({
@@ -57,10 +93,10 @@ export async function POST(request: Request) {
         name: user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
+        staffId: user.staffId,
         studentId: user.studentId,
         department: user.department,
-        year: user.year,
-        section: user.section,
         phone: user.phone,
       },
       token,

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import ExcelJS from 'exceljs';
 import { getEventByIdFromDb, getRegistrationsFromDb } from '@/lib/events';
+import { verifyTrustedAdmin } from '@/lib/auth';
 
 function formatDate(dateStr: string) {
   try {
@@ -25,6 +26,15 @@ export async function GET(
   { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const authHeader = request.headers.get('authorization');
+    const adminUser = verifyTrustedAdmin(authHeader);
+    if (!adminUser) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized. Trusted Admin privileges required.' },
+        { status: 403 }
+      );
+    }
+
     const { eventId } = await params;
     const event = await getEventByIdFromDb(eventId);
 

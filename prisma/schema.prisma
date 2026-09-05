@@ -13,6 +13,15 @@ datasource db {
 enum Role {
   STUDENT
   ADMIN
+  SUPER_ADMIN
+}
+
+enum AdminStatus {
+  PENDING_OTP
+  PENDING_APPROVAL
+  TRUSTED_ADMIN
+  REJECTED
+  ACTIVE
 }
 
 enum EventStatus {
@@ -29,19 +38,25 @@ enum AttendanceStatus {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(STUDENT)
-  studentId    String?
-  department   String?
-  year         String?
-  section      String?
-  phone        String?
-  college      String?  @default("VFSTR / Vignan University")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String      @id @default(uuid())
+  name            String
+  email           String      @unique
+  passwordHash    String
+  role            Role        @default(STUDENT)
+  status          AdminStatus @default(ACTIVE)
+  studentId       String?
+  staffId         String?     @unique
+  department      String?
+  year            String?
+  section         String?
+  phone           String?
+  college         String?     @default("VFSTR / Vignan University")
+  otpVerified     Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  approvedAt      DateTime?
+  approvedBy      String?
+  rejectionReason String?
 
   registrations Registration[]
   certificates  Certificate[]
