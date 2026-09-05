@@ -113,7 +113,10 @@ export default function CertificatesSection() {
       </head>
       <body>
         <div class="cert-box">
-          <div class="header">APPLICATION DEVELOPMENT HUB — VIGNAN UNIVERSITY</div>
+          <div class="header">
+            <img src="/images/vignan-logo.png" alt="Vignan Logo" style="height: 36px; margin: 0 auto 10px auto; display: block;" />
+            APPLICATION DEVELOPMENT CLUB — VIGNAN UNIVERSITY
+          </div>
           <h1>${selectedCert.title}</h1>
           <p>This is to certify that</p>
           <div class="name">${displayName}</div>
@@ -277,8 +280,9 @@ export default function CertificatesSection() {
                   </div>
 
                   <div className="text-center space-y-2 relative z-10">
+                    <img src="/images/vignan-logo.png" alt="Vignan University Logo" className="h-8 w-auto mx-auto object-contain mb-1" />
                     <div className="text-[11px] font-bold font-mono text-blue-700 tracking-widest uppercase">
-                      APPLICATION DEVELOPMENT HUB — VIGNAN UNIVERSITY
+                      APPLICATION DEVELOPMENT CLUB — VIGNAN UNIVERSITY
                     </div>
                     <h3 className="text-2xl sm:text-3xl font-extrabold tracking-wider uppercase text-slate-900">
                       {selectedCert.title}

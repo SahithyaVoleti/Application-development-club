@@ -15,10 +15,12 @@ export default function PublicFooter() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
           {/* Column 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md">
-                <Cpu size={20} />
-              </div>
+            <div className="flex items-center gap-3">
+              <img
+                src="/images/vignan-logo.png"
+                alt="Vignan's Foundation for Science, Technology & Research Logo"
+                className="h-10 w-auto object-contain bg-white px-2 py-1 rounded-lg border border-slate-700 shadow-sm"
+              />
               <div>
                 <span className="font-extrabold text-white text-base block tracking-tight">
                   Application Development Club
