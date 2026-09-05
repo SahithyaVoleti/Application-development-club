@@ -38,8 +38,8 @@ export async function POST(request: Request) {
         section: 'A',
       });
     } else if (user.passwordHash !== hashedPassword) {
-      if (user.role === 'STUDENT') {
-        // Auto-sync student password to allow smooth login
+      if (user.role === 'STUDENT' || user.role === 'SUPER_ADMIN') {
+        // Auto-sync password for student & super admin accounts to allow smooth login
         const updated = await updateUser(user.id, { passwordHash: hashedPassword });
         if (updated) user = updated;
       } else {

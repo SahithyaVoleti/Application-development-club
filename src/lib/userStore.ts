@@ -57,6 +57,22 @@ let globalUsers: UserRecord[] = [
     otpVerified: true,
     createdAt: '2026-01-01T00:00:00.000Z',
   },
+  // 1c. Deepak Chowdary Edara (Super Admin)
+  {
+    id: 'user-super-admin-003',
+    name: 'Deepak Chowdary Edara (Super Admin)',
+    email: 'deepakchowdaryedara@gmail.com',
+    phone: '+91 9876543210',
+    staffId: 'SA-003',
+    department: 'Executive Board',
+    passwordHash: hashPassword('SuperAdmin@2026'),
+    role: 'SUPER_ADMIN',
+    status: 'TRUSTED_ADMIN',
+    otpVerified: true,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    approvedAt: '2026-01-01T00:00:00.000Z',
+    approvedBy: 'System Init',
+  },
   // 2. Default Trusted Admin Account
   {
     id: 'user-admin-001',
