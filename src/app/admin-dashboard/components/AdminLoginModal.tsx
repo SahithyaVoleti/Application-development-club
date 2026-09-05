@@ -171,9 +171,16 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       setOtpInput('');
       setMode('otp');
 
-      toast.success('Registration Step 1 Complete', {
-        description: 'Please verify the 6-digit OTP code sent to your email.',
-      });
+      if (json.devOtp) {
+        toast.info(`OTP Verification Code: ${json.devOtp}`, {
+          description: `Code for ${data.email} is ${json.devOtp}`,
+          duration: 12000,
+        });
+      } else {
+        toast.success('Registration Step 1 Complete', {
+          description: 'Please verify the 6-digit OTP code sent to your email.',
+        });
+      }
     } catch (err: any) {
       setAuthError('Network error during registration.');
     } finally {
@@ -576,6 +583,21 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             <div className="text-sm font-extrabold text-sky-950 font-mono">
               {pendingEmail}
             </div>
+            {devOtpCode && (
+              <div className="mt-3 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl text-white text-xs font-bold shadow-sm flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={16} className="text-amber-300" />
+                  <span>OTP Code: <strong className="font-mono text-base tracking-widest text-amber-200">{devOtpCode}</strong></span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOtpInput(devOtpCode)}
+                  className="px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-[11px] font-extrabold transition-all cursor-pointer"
+                >
+                  Auto-fill Code
+                </button>
+              </div>
+            )}
           </div>
 
           <div>
