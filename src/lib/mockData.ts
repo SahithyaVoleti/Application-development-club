@@ -73,6 +73,28 @@ export function computeStatus(event: Omit<Event, 'status'>): EventStatus {
 
 export const MOCK_EVENTS: Event[] = [
   {
+    id: "agentic-ai-day-2026",
+    title: "Agentic AI Day Hackathon 2026",
+    category: "Agentic AI & App Development",
+    branches: ["CSE", "IT", "AI/ML", "ECE"],
+    description: "Agentic AI Day 2026 is the flagship hackathon organized by the Application Development Club & Department of Computer Science & Engineering, Vignan University. Student developers build autonomous AI agents, LLM tool-calling applications, and multi-agent workflows for real-world problems.",
+    date: "2026-09-28",
+    startTime: "09:00",
+    endTime: "18:00",
+    venue: "N-Block Main Seminar Hall, III Floor, VFSTR",
+    organizer: "Application Development Club & Dept. of CSE",
+    registrationDeadline: "2026-09-25T23:59",
+    capacity: 200,
+    posterUrl: "/images/events/remote-event-10.png",
+    eligibility: "Open to all CSE, AI/ML, IT and Engineering Students",
+    rules: "Objectives & Outcomes:\n✅ Build autonomous AI agents using Antigravity, Python SDK, and LLM tools.\n✅ Teams of 2 to 4 students.\n✅ Real-time evaluation on agent execution speed, reasoning accuracy, and UI completeness.\n✅ Cash prizes + Certificate of Excellence for top podium winners.",
+    requirements: "College ID card, Laptop with Python 3.10+, Node.js, and API keys",
+    contactPerson: "Prof. U. V. Ramana (HOD CSE)",
+    contactEmail: "uvr_cse@vignan.ac.in",
+    status: "UPCOMING",
+    createdAt: new Date().toISOString()
+  },
+  {
     id: "remote-event-8",
     title: "SUSTAINABILITY IDEATHON",
     category: "Hackathon",

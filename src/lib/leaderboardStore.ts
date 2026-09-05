@@ -16,6 +16,53 @@ export interface LeaderboardEntry {
 
 // Default initial campus leaderboard winner entries across all events
 let globalLeaderboardEntries: LeaderboardEntry[] = [
+  // 0. Agentic AI Day Hackathon 2026 (Featured Event)
+  {
+    id: 'lb-agentic-1',
+    eventId: 'agentic-ai-day-2026',
+    eventTitle: 'Agentic AI Day Hackathon 2026',
+    rank: 1,
+    teamName: 'Team Agentic Architects',
+    members: 'Sahithya Voleti (Lead), K. Teja Sree, M. Varun',
+    projectName: 'Autonomous Agentic AI Campus Hub & Workflow Engine',
+    points: 995,
+    projectsCount: 5,
+    hackathonsCount: 5,
+    badge: '🥇 1st Rank Champion',
+    award: 'Grand Cash Prize ₹10,000 + Agentic AI Trophy',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'lb-agentic-2',
+    eventId: 'agentic-ai-day-2026',
+    eventTitle: 'Agentic AI Day Hackathon 2026',
+    rank: 2,
+    teamName: 'Team AutoBots CSE',
+    members: 'P. Rahul Varma (Lead), S. Priyanka, V. Hemanth',
+    projectName: 'Multi-Agent Code Review & Bug Repair Bot',
+    points: 940,
+    projectsCount: 4,
+    hackathonsCount: 3,
+    badge: '🥈 2nd Rank Runner-Up',
+    award: 'Cash Prize ₹5,000 + Silver Medal',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'lb-agentic-3',
+    eventId: 'agentic-ai-day-2026',
+    eventTitle: 'Agentic AI Day Hackathon 2026',
+    rank: 3,
+    teamName: 'Team GenAI Swarm',
+    members: 'Aarav Kumar (Lead), Riya Sharma',
+    projectName: 'Agentic Student Exam Assistant',
+    points: 885,
+    projectsCount: 3,
+    hackathonsCount: 3,
+    badge: '🥉 3rd Rank Winner',
+    award: 'Cash Prize ₹2,500 + Bronze Medal',
+    createdAt: new Date().toISOString(),
+  },
+
   // 1. AI Innovation Hackathon 2026
   {
     id: 'lb-1',

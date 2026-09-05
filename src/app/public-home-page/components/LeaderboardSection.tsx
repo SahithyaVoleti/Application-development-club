@@ -203,7 +203,7 @@ export default function LeaderboardSection() {
                 🏆 All Events
               </button>
 
-              {MOCK_EVENTS.slice(0, 5).map(ev => (
+              {MOCK_EVENTS.slice(0, 7).map(ev => (
                 <button
                   key={`lb-tab-${ev.id}`}
                   onClick={() => setSelectedEventId(ev.id)}
