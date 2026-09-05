@@ -19,7 +19,7 @@ let globalLeaderboardEntries: LeaderboardEntry[] = [
   {
     id: 'lb-1',
     eventId: 'event-007',
-    eventTitle: 'STACK HACK 2024',
+    eventTitle: 'AI Innovation Hackathon 2026',
     rank: 1,
     teamName: 'Team Neural Crafters',
     members: 'Arjun Patel (Lead), Priya Sharma, Rahul Verma',
@@ -34,7 +34,7 @@ let globalLeaderboardEntries: LeaderboardEntry[] = [
   {
     id: 'lb-2',
     eventId: 'event-007',
-    eventTitle: 'STACK HACK 2024',
+    eventTitle: 'AI Innovation Hackathon 2026',
     rank: 2,
     teamName: 'Team Code Nexus',
     members: 'Kiran Kumar (Lead), Ananya Rao, Vikram S.',
@@ -49,7 +49,7 @@ let globalLeaderboardEntries: LeaderboardEntry[] = [
   {
     id: 'lb-3',
     eventId: 'event-007',
-    eventTitle: 'STACK HACK 2024',
+    eventTitle: 'AI Innovation Hackathon 2026',
     rank: 3,
     teamName: 'Team Cyber Pulse',
     members: 'Deepak V. (Lead), Sneha Reddy',

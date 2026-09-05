@@ -73,28 +73,6 @@ export function computeStatus(event: Omit<Event, 'status'>): EventStatus {
 
 export const MOCK_EVENTS: Event[] = [
   {
-    id: "remote-event-7",
-    title: "STACK HACK 2024",
-    category: "Application Development hackathon",
-    branches: ["CSE","IT","AI/ML","ECE"],
-    description: "Application Development",
-    date: "2024-10-28",
-    startTime: "09:30",
-    endTime: "17:00",
-    venue: "Vignan Library",
-    organizer: "Panthagani Vijaya Babu, Dept. of CSE",
-    registrationDeadline: "2024-10-25T00:00",
-    capacity: 150,
-    posterUrl: "/images/events/remote-event-7.png",
-    eligibility: "Open to all CSE and Engineering Students",
-    rules: "Objectives & Outcomes:\n250 Students have participated and developed more than 100 Applications",
-    requirements: "College ID card, Laptop with required software tools",
-    contactPerson: "Panthagani Vijaya Babu",
-    contactEmail: "panthaganivijayababu@vignan.ac.in",
-    status: "COMPLETED",
-    createdAt: "2026-07-03T05:36:59.768Z"
-  },
-  {
     id: "remote-event-8",
     title: "SUSTAINABILITY IDEATHON",
     category: "Hackathon",

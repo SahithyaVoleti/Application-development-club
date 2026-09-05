@@ -29,7 +29,7 @@ const NAV_LINKS = [
 const ANNOUNCEMENTS = [
   '📢 Registration open for AI Innovation Hackathon 2.0 (Prize Pool ₹1,00,000)',
   '⚡ Smart India Hackathon (SIH) 2026 Internal Screening announced!',
-  '🎓 Certificates for Code Storm 2026 & Stack Hack are now live and downloadable!',
+  '🎓 Certificates for Code Storm 2026 & AI Hackathons are now live and downloadable!',
 ];
 
 interface Props {
