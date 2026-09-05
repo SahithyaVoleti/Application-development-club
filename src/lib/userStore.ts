@@ -30,8 +30,8 @@ let globalUsers: UserRecord[] = [
   // 1. Super Admin Account
   {
     id: 'user-super-admin-001',
-    name: 'Dr. K. Ranganathan (Super Admin)',
-    email: 'superadmin@vignan.ac.in',
+    name: 'Prof. U. V. Ramana (Super Admin)',
+    email: 'uvr_cse@vignan.ac.in',
     phone: '+91 9440011223',
     staffId: 'SA-001',
     department: 'CSE / Executive Board',
@@ -42,6 +42,20 @@ let globalUsers: UserRecord[] = [
     createdAt: '2026-01-01T00:00:00.000Z',
     approvedAt: '2026-01-01T00:00:00.000Z',
     approvedBy: 'System Init',
+  },
+  // 1b. Legacy Super Admin Email Alias
+  {
+    id: 'user-super-admin-002',
+    name: 'Super Admin',
+    email: 'superadmin@vignan.ac.in',
+    phone: '+91 9440011223',
+    staffId: 'SA-002',
+    department: 'CSE',
+    passwordHash: hashPassword('SuperAdmin@2026'),
+    role: 'SUPER_ADMIN',
+    status: 'TRUSTED_ADMIN',
+    otpVerified: true,
+    createdAt: '2026-01-01T00:00:00.000Z',
   },
   // 2. Default Trusted Admin Account
   {

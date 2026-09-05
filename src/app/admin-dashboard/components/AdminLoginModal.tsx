@@ -293,7 +293,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 setMode('super-admin');
                 setAuthError('');
                 setAuthNotice('');
-                setLoginValue('email', 'superadmin@vignan.ac.in');
+                setLoginValue('email', 'uvr_cse@vignan.ac.in');
                 setLoginValue('password', 'SuperAdmin@2026');
               }}
               className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
@@ -355,7 +355,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 type="email"
                 {...regLogin('email', { required: 'Email address is required' })}
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 text-sm font-bold focus:outline-none focus:border-blue-600 shadow-xs"
-                placeholder={mode === 'super-admin' ? 'superadmin@vignan.ac.in' : 'admin@cse.vignan.ac.in'}
+                placeholder={mode === 'super-admin' ? 'uvr_cse@vignan.ac.in' : 'admin@cse.vignan.ac.in'}
               />
             </div>
             {loginErrors.email && (

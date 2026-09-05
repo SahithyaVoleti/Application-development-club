@@ -16,8 +16,11 @@ import {
   XCircle,
   AlertTriangle,
   FileText,
+  Calendar,
+  Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { MOCK_EVENTS, REGISTERED_COUNTS } from '@/lib/mockData';
 
 interface AdminUserRequest {
   id: string;
@@ -188,68 +191,96 @@ export default function AdminApprovalRequests() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Stats Cards: Super Admin Dashboard Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div
           onClick={() => setFilter('PENDING')}
-          className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
             filter === 'PENDING'
               ? 'bg-amber-500/10 border-amber-500/50 shadow-md'
               : 'bg-white border-slate-200 hover:border-amber-300'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Pending Approvals
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Approval Requests
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
-              <Clock size={18} />
+            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
+              <Clock size={16} />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 mt-2">{pendingCount}</div>
-          <div className="text-xs text-amber-700 font-semibold mt-1">
-            {pendingCount > 0 ? 'Requires Super Admin Action' : 'All clear'}
+          <div className="text-2xl font-black text-slate-900 mt-2">{pendingCount}</div>
+          <div className="text-[10px] text-amber-700 font-semibold mt-1 truncate">
+            {pendingCount > 0 ? 'Pending Action' : 'All Clear'}
           </div>
         </div>
 
         <div
           onClick={() => setFilter('TRUSTED')}
-          className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
             filter === 'TRUSTED'
               ? 'bg-emerald-500/10 border-emerald-500/50 shadow-md'
               : 'bg-white border-slate-200 hover:border-emerald-300'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               Trusted Admins
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-              <UserCheck size={18} />
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+              <UserCheck size={16} />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 mt-2">{trustedCount}</div>
-          <div className="text-xs text-emerald-700 font-semibold mt-1">Active Admin Accounts</div>
+          <div className="text-2xl font-black text-slate-900 mt-2">{trustedCount}</div>
+          <div className="text-[10px] text-emerald-700 font-semibold mt-1 truncate">Active Accounts</div>
         </div>
 
         <div
           onClick={() => setFilter('REJECTED')}
-          className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
             filter === 'REJECTED'
               ? 'bg-rose-500/10 border-rose-500/50 shadow-md'
               : 'bg-white border-slate-200 hover:border-rose-300'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Rejected Requests
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Rejected Admins
             </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold">
-              <UserX size={18} />
+            <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold">
+              <UserX size={16} />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 mt-2">{rejectedCount}</div>
-          <div className="text-xs text-rose-700 font-semibold mt-1">Access Denied</div>
+          <div className="text-2xl font-black text-slate-900 mt-2">{rejectedCount}</div>
+          <div className="text-[10px] text-rose-700 font-semibold mt-1 truncate">Access Denied</div>
+        </div>
+
+        <div className="p-4 rounded-2xl border bg-white border-slate-200">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Total Events
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+              <Calendar size={16} />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-slate-900 mt-2">{MOCK_EVENTS.length}</div>
+          <div className="text-[10px] text-blue-700 font-semibold mt-1 truncate">Live Events</div>
+        </div>
+
+        <div className="p-4 rounded-2xl border bg-white border-slate-200">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Total Registrations
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+              <Users size={16} />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-slate-900 mt-2">
+            {Object.values(REGISTERED_COUNTS).reduce((a, b) => a + b, 0)}
+          </div>
+          <div className="text-[10px] text-purple-700 font-semibold mt-1 truncate">Student Signups</div>
         </div>
       </div>
 
