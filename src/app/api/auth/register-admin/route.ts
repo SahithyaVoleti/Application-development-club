@@ -2,9 +2,7 @@ import { NextResponse } from 'next/server';
 import { findUserByEmail, findUserByStaffId, createUser } from '@/lib/userStore';
 import { hashPassword } from '@/lib/auth';
 import { adminOtpStore } from '@/lib/adminOtpStore';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY || '');
+import { sendOtpEmail } from '@/lib/emailService';
 
 export async function POST(request: Request) {
   try {
@@ -74,42 +72,20 @@ export async function POST(request: Request) {
 
     adminOtpStore.set(cleanEmail, { code: otpCode, expiresAt });
 
-    // 6. Dispatch Email Notification
-    const subject = `[Admin Security] Your Verification OTP Code: ${otpCode}`;
-    const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px;">
-        <h2 style="color: #0f172a; margin-top: 0;">Admin Account Registration OTP</h2>
-        <p style="color: #475569; font-size: 14px;">Hello ${name},</p>
-        <p style="color: #475569; font-size: 14px;">Use the verification code below to verify your email address for your Application Development Club Admin Registration:</p>
-        <div style="background: #f0f9ff; border: 2px dashed #0284c7; padding: 18px; text-align: center; border-radius: 12px; margin: 20px 0;">
-          <div style="font-size: 32px; font-weight: 900; letter-spacing: 6px; color: #0369a1;">${otpCode}</div>
-          <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Valid for 5 minutes</div>
-        </div>
-        <p style="font-size: 12px; color: #94a3b8;">After OTP verification, your account will be sent to the Super Admin for approval.</p>
-      </div>
-    `;
-
-    let emailSent = false;
-    try {
-      const sendRes = await resend.emails.send({
-        from: 'onboarding@resend.dev',
-        to: cleanEmail,
-        subject,
-        html: htmlContent,
-      });
-      if (sendRes.data?.id) emailSent = true;
-    } catch (e) {
-      console.warn('Resend email error:', e);
-    }
-
-    console.log(`[ADMIN REGISTRATION OTP] Sent code ${otpCode} to ${cleanEmail}`);
+    // 6. Dispatch Email Notification via Brevo/SMTP/Resend
+    const sendResult = await sendOtpEmail({
+      toEmail: cleanEmail,
+      recipientName: name.trim(),
+      otpCode,
+      isResend: false,
+    });
 
     return NextResponse.json({
       success: true,
       email: cleanEmail,
-      message: `OTP verification code dispatched to ${cleanEmail}`,
-      emailSent,
-      devOtp: otpCode, // Provided for easy development testing
+      message: `OTP verification code sent to ${cleanEmail}`,
+      emailSent: sendResult.success,
+      provider: sendResult.provider,
     });
   } catch (error: any) {
     console.error('Admin Registration API Error:', error);
