@@ -21,7 +21,7 @@ export default function PublicFooter() {
               </div>
               <div>
                 <span className="font-extrabold text-white text-base block tracking-tight">
-                  Application Development Hub
+                  Application Development Club
                 </span>
                 <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">
                   Dept. of CSE · Vignan University
@@ -30,7 +30,7 @@ export default function PublicFooter() {
             </div>
 
             <p className="text-slate-400 leading-relaxed max-w-sm">
-              The complete enterprise platform for designing, engineering, testing, and deploying modern web, mobile, and AI applications.
+              The official campus club for designing, engineering, testing, and deploying modern web, mobile, and AI applications.
             </p>
 
             <div className="flex items-center gap-3 pt-2">
@@ -97,7 +97,7 @@ export default function PublicFooter() {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-slate-400 gap-4">
-          <p>© 2026 Application Development Hub. All rights reserved.</p>
+          <p>© 2026 Application Development Club. All rights reserved.</p>
           <p className="font-mono text-[11px]">Dept. of Computer Science & Engineering · Vignan University</p>
         </div>
       </div>

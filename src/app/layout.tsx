@@ -17,9 +17,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'AppDevHub — CSE Event Management | Vignan University',
+  title: 'Application Development Club — CSE Events | Vignan University',
   description:
-    'Application Development Hub at Vignan University CSE Department. Discover, register, and participate in technical events, hackathons, workshops, and more.',
+    'Application Development Club at Vignan University CSE Department. Discover, register, and participate in technical events, hackathons, workshops, and more.',
   icons: {
     icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
   },

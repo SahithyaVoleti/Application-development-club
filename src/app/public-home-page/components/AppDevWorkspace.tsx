@@ -276,19 +276,19 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
                 else window.location.href = '/#home';
               }}
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
                 <Code2 size={20} />
               </div>
               <div className="hidden sm:block">
                 <div className="flex items-center gap-2">
                   <span className="font-extrabold text-slate-900 text-base tracking-tight leading-none">
-                    Application Development Hub
+                    Application Development Club
                   </span>
-                  <span className="text-[10px] font-mono font-bold bg-sky-50 text-sky-700 border border-sky-200 px-1.5 py-0.5 rounded">
-                    v2.4.0
+                  <span className="text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded">
+                    Vignan University
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-400 font-medium">Unified Developer Workspace & OS</span>
+                <span className="text-[11px] text-slate-500 font-medium">VFSTR · Department of Computer Science & Engineering</span>
               </div>
             </div>
           </div>
@@ -920,126 +920,98 @@ export default function AppDevWorkspace({ onSwitchToPublicEvents, initialUser }:
               </div>
             </div>
 
-            {/* Participation Records List */}
-            <div className="space-y-4">
-              {[
-                {
-                  id: 'hist-1',
-                  title: 'AI Smart Campus Hackathon 2026',
-                  category: 'Hackathon',
-                  date: '2026-03-14',
-                  time: '09:30 - 17:00',
-                  venue: 'N Block Classrooms, Vignan University',
-                  regId: 'REG-2026-9041',
-                  attendance: 'present',
-                  certificateAvailable: true,
-                },
-                {
-                  id: 'hist-2',
-                  title: 'Stack Hack 48H — Application Development Hackathon',
-                  category: 'Hackathon',
-                  date: '2024-10-28',
-                  time: '09:00 - 18:00',
-                  venue: 'Vignan Library, 0th Floor',
-                  regId: 'REG-2024-4112',
-                  attendance: 'present',
-                  certificateAvailable: true,
-                },
-                {
-                  id: 'hist-3',
-                  title: 'Code Storm 2025 — Competitive Coding',
-                  category: 'Coding Competition',
-                  date: '2025-09-25',
-                  time: '09:00 - 17:00',
-                  venue: 'N-Block, III Floor, Vignan University',
-                  regId: 'REG-2025-1088',
-                  attendance: 'present',
-                  certificateAvailable: true,
-                },
-                {
-                  id: 'hist-4',
-                  title: 'Sustainability Ideathon 2025',
-                  category: 'Ideathon',
-                  date: '2025-09-11',
-                  time: '09:30 - 17:00',
-                  venue: 'Sangamithra Hall, II Floor, Nagarjuna Block',
-                  regId: 'REG-2025-0421',
-                  attendance: 'present',
-                  certificateAvailable: true,
-                },
-                {
-                  id: 'hist-5',
-                  title: 'AI & Machine Learning Workshop 2026',
-                  category: 'AI/ML Workshop',
-                  date: '2026-09-10',
-                  time: '10:00 - 16:00',
-                  venue: 'CSE Seminar Hall, Block A',
-                  regId: 'REG-2026-0012',
-                  attendance: 'not_marked',
-                  certificateAvailable: false,
-                },
-              ].map(eventItem => (
-                <div
-                  key={`hist-row-${eventItem.id}`}
-                  className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+            {/* Real-Time Student Participation Records List */}
+            {userRegistrations.length === 0 ? (
+              <div className="bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-3">
+                <Calendar size={36} className="text-slate-400 mx-auto" />
+                <h4 className="font-extrabold text-slate-800 text-base">No Event Registrations Found</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  You haven't registered for any events yet. Browse upcoming hackathons, coding challenges, and workshops on the portal to register in real time.
+                </p>
+                <button
+                  onClick={() => {
+                    if (onSwitchToPublicEvents) onSwitchToPublicEvents();
+                    else window.location.href = '/#events';
+                  }}
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer inline-flex items-center gap-2"
                 >
-                  <div className="space-y-1.5 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
-                        {eventItem.category}
-                      </span>
-                      <span className="text-[11px] font-mono text-slate-500 font-bold">
-                        Pass ID: <span className="text-slate-800 bg-white px-1.5 py-0.5 rounded border border-slate-200">{eventItem.regId}</span>
-                      </span>
+                  <Plus size={14} />
+                  <span>Explore & Register Events</span>
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {userRegistrations.map(reg => (
+                  <div
+                    key={`hist-row-${reg.id || reg.registrationId}`}
+                    className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  >
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
+                          {reg.eventCategory || 'Event'}
+                        </span>
+                        <span className="text-[11px] font-mono text-slate-500 font-bold">
+                          Pass ID: <span className="text-slate-800 bg-white px-1.5 py-0.5 rounded border border-slate-200">{reg.registrationId || reg.id}</span>
+                        </span>
+                      </div>
+
+                      <h4 className="font-extrabold text-sm text-slate-900 leading-snug">
+                        {reg.eventTitle || 'Registered Event'}
+                      </h4>
+
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 font-medium">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar size={13} className="text-sky-600" />
+                          <span>{reg.eventDate}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Clock size={13} className="text-sky-600" />
+                          <span>{reg.eventTime || '09:30 - 17:00'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <UserCheck size={13} className="text-sky-600" />
+                          <span>{reg.eventVenue || 'Vignan University Campus'}</span>
+                        </div>
+                      </div>
                     </div>
 
-                    <h4 className="font-extrabold text-sm text-slate-900 leading-snug">
-                      {eventItem.title}
-                    </h4>
+                    <div className="flex items-center gap-3 self-end md:self-center flex-wrap">
+                      {reg.attendanceStatus === 'present' ? (
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                          <CheckCircle2 size={13} /> Present & Verified
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-300">
+                          ● Registration Confirmed
+                        </span>
+                      )}
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 font-medium">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar size={13} className="text-sky-600" />
-                        <span>{eventItem.date}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock size={13} className="text-sky-600" />
-                        <span>{eventItem.time}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <UserCheck size={13} className="text-sky-600" />
-                        <span>{eventItem.venue}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 self-end md:self-center flex-wrap">
-                    {/* Attendance Status Badge */}
-                    {eventItem.attendance === 'present' ? (
-                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                        <CheckCircle2 size={13} /> Present & Verified
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-300">
-                        ● Upcoming Event
-                      </span>
-                    )}
-
-                    {/* Certificate Download Button */}
-                    {eventItem.certificateAvailable && (
                       <button
                         onClick={() => {
-                          toast.success(`Downloading official certificate for ${eventItem.title}`);
+                          if (onSwitchToPublicEvents) onSwitchToPublicEvents();
+                          else window.location.href = `/#${reg.eventId}`;
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                       >
-                        <ShieldCheck size={13} /> Download Certificate
+                        View Details <ChevronRight size={13} />
                       </button>
-                    )}
+
+                      {reg.attendanceStatus === 'present' && (
+                        <button
+                          onClick={() => {
+                            toast.success(`Downloading official certificate for ${reg.eventTitle}`);
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                        >
+                          <ShieldCheck size={13} /> Download Certificate
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </main>

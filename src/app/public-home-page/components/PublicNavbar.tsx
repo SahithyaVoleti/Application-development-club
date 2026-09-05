@@ -96,15 +96,20 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => handleNavClick('#home')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
               <Cpu size={22} className="group-hover:rotate-12 transition-transform duration-300" />
             </div>
             <div>
-              <span className="font-extrabold text-[0.95rem] leading-tight block tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
-                Application Development Hub
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-[0.98rem] leading-tight block tracking-tight text-slate-900 group-hover:text-blue-700 transition-colors">
+                  Application Development Club
+                </span>
+                <span className="text-[9px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded shadow-2xs">
+                  VIGNAN UNIVERSITY
+                </span>
+              </div>
               <span className="text-[0.68rem] font-bold text-slate-500 uppercase tracking-wider block">
-                College Innovation Platform · CSE
+                VFSTR · Department of Computer Science & Engineering
               </span>
             </div>
           </div>
