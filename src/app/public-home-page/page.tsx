@@ -7,7 +7,6 @@ import CseEventStatsSection from './components/CseEventStatsSection';
 import UpcomingEventsCarouselSection from './components/UpcomingEventsCarouselSection';
 import PastEventsSection from './components/PastEventsSection';
 import IntroSection from './components/IntroSection';
-import DevelopmentProcessSection from './components/DevelopmentProcessSection';
 import RealWorldBuildingSection from './components/RealWorldBuildingSection';
 import StudentJourneySection from './components/StudentJourneySection';
 import LeaderboardSection from './components/LeaderboardSection';
@@ -172,10 +171,7 @@ export default function PublicHomePage() {
             {/* 6. Introduction Section */}
             <IntroSection />
 
-            {/* 7. How Our College Builds Innovators (6-Step Journey) */}
-            <DevelopmentProcessSection />
-
-            {/* 8. Real-World Application Building & Pipeline Visual ("Don't Just Learn. Build Something Real.") */}
+            {/* 7. Real-World Application Building & Pipeline Visual ("Don't Just Learn. Build Something Real.") */}
             <RealWorldBuildingSection />
 
             {/* 9. Campus & Event Media Gallery */}
