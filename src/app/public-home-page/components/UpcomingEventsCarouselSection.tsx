@@ -302,7 +302,7 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
               className="flex gap-6 overflow-x-auto no-scrollbar pb-4 pt-1"
               style={{ scrollBehavior: isAutoScrolling && !isHovered ? 'auto' : 'smooth' }}
             >
-              {filteredEvents.map((item, idx) => {
+              {[...filteredEvents, ...filteredEvents].map((item, idx) => {
                 const registeredCount = REGISTERED_COUNTS[item.id] || Math.floor(item.capacity * 0.8);
                 let statusBadge = '🟢 Registration Open';
                 let statusStyle = 'bg-emerald-500 text-white border-emerald-400';
