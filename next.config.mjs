@@ -4,10 +4,6 @@ import { imageHosts } from './image-hosts.config.mjs';
 const nextConfig = {
   productionBrowserSourceMaps: true,
   distDir: process.env.DIST_DIR || '.next',
-  devIndicators: {
-    buildActivity: false,
-    appIsrStatus: false,
-  },
   serverExternalPackages: ['nodemailer'],
   typescript: {
     ignoreBuildErrors: true,
