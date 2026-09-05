@@ -101,75 +101,21 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
   };
 
   return (
-    <section id="events" className="py-16 bg-slate-50 border-b border-slate-200/60 overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-12">
+    <section id="events" className="py-12 bg-slate-50 border-b border-slate-200/60 overflow-hidden">
+      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-6">
         
-        {/* UPCOMING EVENTS SCROLLING SECTION */}
-        <div className="space-y-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <span className="text-xs font-mono font-extrabold text-blue-600 uppercase tracking-widest block mb-1">
-                UPCOMING EVENTS & HACKATHONS
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                Upcoming Events ({filteredEvents.length})
-              </h2>
-              <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
-                Discover upcoming hackathons, coding competitions, and technology workshops open for registration.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Category Filter Tabs */}
-              <div className="flex items-center gap-1.5 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-2xs text-xs font-bold flex-wrap">
-                {['All', 'Hackathons', 'Coding Challenges', 'Workshops'].map(cat => (
-                  <button
-                    key={`cat-${cat}`}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                      selectedCategory === cat
-                        ? 'bg-slate-900 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              {/* Auto-Scroll Toggle & Manual Controls */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsAutoScrolling(prev => !prev)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                    isAutoScrolling
-                      ? 'bg-sky-600 text-white border-sky-500 shadow-2xs'
-                      : 'bg-white text-slate-600 hover:bg-slate-100 border-slate-200'
-                  }`}
-                  title={isAutoScrolling ? 'Pause Auto-Scroll' : 'Play Auto-Scroll'}
-                >
-                  {isAutoScrolling ? <Pause size={13} /> : <Play size={13} />}
-                  <span className="hidden sm:inline">{isAutoScrolling ? 'Auto-Scrolling' : 'Paused'}</span>
-                </button>
-
-                <button
-                  onClick={handleScrollLeft}
-                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white transition-all shadow-2xs cursor-pointer"
-                  title="Scroll Left"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-
-                <button
-                  onClick={handleScrollRight}
-                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-blue-600 hover:text-white transition-all shadow-2xs cursor-pointer"
-                  title="Scroll Right"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
+        {/* Clean Title Header */}
+        <div>
+          <span className="text-xs font-mono font-extrabold text-blue-600 uppercase tracking-widest block mb-1">
+            UPCOMING EVENTS & HACKATHONS
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            Upcoming Events ({filteredEvents.length})
+          </h2>
+          <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+            Discover upcoming hackathons, coding competitions, and technology workshops open for registration.
+          </p>
+        </div>
 
           {/* Continuous Auto-Scrolling Track for Upcoming Events */}
           <div
@@ -279,8 +225,6 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
             </div>
           </div>
         </div>
-
-      </div>
-    </section>
+      </section>
   );
 }

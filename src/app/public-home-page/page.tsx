@@ -149,9 +149,6 @@ export default function PublicHomePage() {
             {/* 1. Hero Section with Background Image & Taglines */}
             <HeroSection onSwitchToWorkspace={() => setViewMode('workspace')} />
 
-            {/* 2. Count-Up Statistics Strip */}
-            <StatsStrip />
-
             {/* 2b. Live Auto-Scrolling Event Marquee Ticker */}
             <AutoScrollEventsTicker
               events={MOCK_EVENTS}
