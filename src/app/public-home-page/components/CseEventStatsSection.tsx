@@ -136,9 +136,6 @@ export default function CseEventStatsSection() {
       <div className="w-full px-4 sm:px-8 lg:px-12">
         {/* Section 7: Section Header */}
         <div className="text-center max-w-4xl mx-auto mb-14 scroll-reveal">
-          <span className="text-sm font-mono font-bold text-blue-600 uppercase tracking-widest block mb-3">
-            CSE EVENTS & COMMUNITY
-          </span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-4">
             Department Activity & Impact
           </h2>
