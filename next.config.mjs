@@ -8,6 +8,7 @@ const nextConfig = {
     buildActivity: false,
     appIsrStatus: false,
   },
+  serverExternalPackages: ['nodemailer'],
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -18,6 +19,19 @@ const nextConfig = {
     remotePatterns: imageHosts,
     minimumCacheTTL: 60,
     qualities: [75, 85, 100],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+        child_process: false,
+      };
+    }
+    return config;
   },
 };
 export default nextConfig;

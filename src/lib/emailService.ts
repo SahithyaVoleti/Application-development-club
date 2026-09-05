@@ -1,8 +1,3 @@
-import nodemailer from 'nodemailer';
-import { Resend } from 'resend';
-
-const BREVO_KEY = process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || '';
-
 export interface EmailDeliveryReceipt {
   success: boolean;
   messageId?: string;
@@ -17,6 +12,8 @@ interface SendOtpEmailOptions {
   otpCode: string;
   isResend?: boolean;
 }
+
+const BREVO_KEY = process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || '';
 
 export async function sendOtpEmail({ toEmail, recipientName, otpCode, isResend = false }: SendOtpEmailOptions): Promise<{ success: boolean; provider?: string; error?: string }> {
   const subject = `[Admin Security] ${isResend ? 'Resent ' : ''}Verification OTP Code: ${otpCode}`;
@@ -47,7 +44,7 @@ export async function sendOtpEmail({ toEmail, recipientName, otpCode, isResend =
     </div>
   `;
 
-  // 1. Attempt Brevo REST API v3
+  // 1. Attempt Brevo REST API v3 (works in any env)
   try {
     const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -73,54 +70,37 @@ export async function sendOtpEmail({ toEmail, recipientName, otpCode, isResend =
     console.warn('[BREVO REST API Exception]:', err?.message || err);
   }
 
-  // 2. Attempt Brevo SMTP via Nodemailer
-  const smtpUser = process.env.SMTP_USER || 'a22e33001@smtp-brevo.com';
-  try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
-      auth: {
-        user: smtpUser,
-        pass: BREVO_KEY,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    const info = await transporter.sendMail({
-      from: '"AppDevHub CSE Dept" <uvr_cse@vignan.ac.in>',
-      to: toEmail,
-      subject,
-      html: htmlContent,
-    });
-
-    if (info.messageId) {
-      console.log(`[EMAIL DISPATCH - BREVO SMTP] Successfully sent OTP ${otpCode} to ${toEmail}`);
-      return { success: true, provider: 'Brevo SMTP' };
-    }
-  } catch (err: any) {
-    console.warn('[BREVO SMTP Exception]:', err?.message || err);
-  }
-
-  // 3. Attempt Resend API fallback
-  if (process.env.RESEND_API_KEY) {
+  // 2. Attempt Brevo SMTP via Nodemailer (Server-side dynamic import)
+  if (typeof window === 'undefined') {
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      const sendRes = await resend.emails.send({
-        from: 'AppDevHub <onboarding@resend.dev>',
+      const nodemailer = (await import('nodemailer')).default;
+      const smtpUser = process.env.SMTP_USER || 'a22e33001@smtp-brevo.com';
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: false,
+        auth: {
+          user: smtpUser,
+          pass: BREVO_KEY,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+
+      const info = await transporter.sendMail({
+        from: '"AppDevHub CSE Dept" <uvr_cse@vignan.ac.in>',
         to: toEmail,
         subject,
         html: htmlContent,
       });
 
-      if (sendRes.data?.id) {
-        console.log(`[EMAIL DISPATCH - RESEND] Successfully sent OTP ${otpCode} to ${toEmail}`);
-        return { success: true, provider: 'Resend' };
+      if (info.messageId) {
+        console.log(`[EMAIL DISPATCH - BREVO SMTP] Successfully sent OTP ${otpCode} to ${toEmail}`);
+        return { success: true, provider: 'Brevo SMTP' };
       }
     } catch (err: any) {
-      console.warn('[RESEND API Exception]:', err?.message || err);
+      console.warn('[BREVO SMTP Exception]:', err?.message || err);
     }
   }
 
