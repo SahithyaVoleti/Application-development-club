@@ -127,9 +127,7 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-slate-50 to-transparent" />
 
             <div
-              ref={scrollTrackRef}
-              className="flex gap-6 overflow-x-auto no-scrollbar pb-4 pt-1"
-              style={{ scrollBehavior: isAutoScrolling && !isHovered ? 'auto' : 'smooth' }}
+              className="flex gap-6 animate-continuous-marquee pb-4 pt-1"
             >
               {[...filteredEvents, ...filteredEvents].map((item, idx) => {
                 const registeredCount = REGISTERED_COUNTS[item.id] || Math.floor(item.capacity * 0.8);
