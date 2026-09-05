@@ -18,9 +18,11 @@ import {
   FileText,
   Calendar,
   Users,
+  KeyRound,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { MOCK_EVENTS, REGISTERED_COUNTS } from '@/lib/mockData';
+import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 
 interface AdminUserRequest {
   id: string;
@@ -46,6 +48,7 @@ export default function AdminApprovalRequests() {
 
   // Rejection modal state
   const [rejectingUser, setRejectingUser] = useState<AdminUserRequest | null>(null);
+  const [resetUser, setResetUser] = useState<AdminUserRequest | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -462,6 +465,17 @@ export default function AdminApprovalRequests() {
                   </button>
                 )}
 
+                {(req.status === 'TRUSTED_ADMIN' || req.status === 'ACTIVE') && (
+                  <button
+                    onClick={() => setResetUser(req)}
+                    disabled={isSubmitting}
+                    className="py-2.5 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    title="Reset Admin Password"
+                  >
+                    <KeyRound size={15} /> Reset Password
+                  </button>
+                )}
+
                 {(req.status === 'PENDING_APPROVAL' || req.status === 'PENDING_OTP' || req.status === 'TRUSTED_ADMIN' || req.status === 'ACTIVE') && (
                   <button
                     onClick={() => setRejectingUser(req)}
@@ -476,6 +490,14 @@ export default function AdminApprovalRequests() {
           ))}
         </div>
       )}
+
+      {/* SUPER ADMIN RESET PASSWORD MODAL */}
+      <ChangePasswordModal
+        isOpen={!!resetUser}
+        onClose={() => setResetUser(null)}
+        targetUser={resetUser ? { id: resetUser.id, name: resetUser.name, email: resetUser.email } : undefined}
+        isSuperAdminReset={true}
+      />
 
       {/* REJECTION REASON MODAL */}
       {rejectingUser && (

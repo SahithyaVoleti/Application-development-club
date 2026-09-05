@@ -18,7 +18,9 @@ import {
   User,
   Home,
   UserCheck,
+  KeyRound,
 } from 'lucide-react';
+import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 
 interface Props {
   activeView: AdminView;
@@ -28,6 +30,7 @@ interface Props {
 
 export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props) {
   const [collapsed, setCollapsed] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(null);
 
   useEffect(() => {
@@ -272,6 +275,17 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
         )}
 
         <button
+          onClick={() => setIsChangePasswordOpen(true)}
+          title={collapsed ? 'Change Password' : undefined}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-sky-400 hover:bg-sky-500/10 hover:text-sky-300 transition-colors mb-1 ${
+            collapsed ? 'justify-center px-2' : ''
+          }`}
+        >
+          <KeyRound size={17} className="flex-shrink-0 text-sky-400" />
+          {!collapsed && <span>Change Password</span>}
+        </button>
+
+        <button
           onClick={onLogout}
           title={collapsed ? 'Logout' : undefined}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors ${
@@ -282,6 +296,12 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
           {!collapsed && <span>Logout</span>}
         </button>
       </div>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </aside>
   );
 }
