@@ -12,7 +12,6 @@ import RealWorldBuildingSection from './components/RealWorldBuildingSection';
 import StudentJourneySection from './components/StudentJourneySection';
 import LeaderboardSection from './components/LeaderboardSection';
 import CertificatesSection from './components/CertificatesSection';
-import WhyHubSection from './components/WhyHubSection';
 import GallerySection from './components/GallerySection';
 import PublicFooter from './components/PublicFooter';
 
@@ -193,9 +192,6 @@ export default function PublicHomePage() {
 
             {/* 12. Certificates & Recognition ("Build. Participate. Get Recognized.") */}
             <CertificatesSection />
-
-            {/* 13. Why Application Development Hub ("Culture of Building") */}
-            <WhyHubSection />
           </main>
 
           {/* Enterprise Multi-Column Footer */}
