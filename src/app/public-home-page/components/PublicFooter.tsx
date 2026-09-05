@@ -11,7 +11,7 @@ export default function PublicFooter() {
 
   return (
     <footer className="bg-slate-950 text-slate-400 text-xs border-t border-slate-800">
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 pt-16 pb-12">
+      <div className="w-full px-4 sm:px-8 lg:px-12 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
           {/* Column 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">

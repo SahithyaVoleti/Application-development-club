@@ -119,14 +119,14 @@ export default function StudentJourneySection() {
         }
       `}</style>
 
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-12">
+      <div className="w-full px-4 sm:px-8 lg:px-12 space-y-12">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+        <div className="text-center max-w-4xl mx-auto space-y-3">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
             The Interactive Student Journey
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed">
             Click or hover over any stage below to explore how students evolve from problem discoverers to recognized builders.
           </p>
         </div>

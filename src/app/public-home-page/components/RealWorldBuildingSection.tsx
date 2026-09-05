@@ -17,24 +17,24 @@ const PIPELINE_NODES = [
 
 export default function RealWorldBuildingSection() {
   return (
-    <section id="real-building" className="py-20 bg-white border-b border-slate-200/60 overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-16">
+    <section id="real-building" className="py-16 bg-white border-b border-slate-200/60 overflow-hidden">
+      <div className="w-full px-4 sm:px-8 lg:px-12 space-y-16">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
+        <div className="text-center max-w-4xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-4 py-1 text-xs font-mono font-bold uppercase tracking-widest">
             <Sparkles size={14} className="text-sky-600" /> REAL-WORLD UTILITY
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
             Don't Just Learn. Build Something Real.
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed">
             Students get the opportunity to move beyond classroom assignments and build applications that solve real problems on campus and in industry.
           </p>
         </div>
 
         {/* Expo UI Image Showcase Banner */}
-        <div className="relative w-full h-[320px] sm:h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 group">
+        <div className="relative w-full h-[380px] sm:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 group">
           <Image
             src="/images/ui/student_builder_expo.jpg"
             alt="University Student App Expo Presentation"
@@ -44,12 +44,12 @@ export default function RealWorldBuildingSection() {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent" />
           <div className="absolute bottom-6 left-8 right-8 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-extrabold mb-1">
-                <Rocket size={13} /> Annual Student Application Showcase
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/90 text-white text-xs font-extrabold mb-2">
+                <Rocket size={14} /> Annual Student Application Showcase
               </div>
-              <h3 className="text-xl sm:text-2xl font-extrabold text-white">Student App Expo & Innovation Challenge</h3>
+              <h3 className="text-2xl sm:text-3xl font-black text-white">Student App Expo & Innovation Challenge</h3>
             </div>
-            <span className="text-xs font-mono font-bold text-sky-300 bg-white/10 px-3 py-1.5 rounded-xl border border-white/15">
+            <span className="text-xs font-mono font-bold text-sky-300 bg-white/10 px-4 py-2 rounded-xl border border-white/15">
               100% Student Engineered Projects
             </span>
           </div>

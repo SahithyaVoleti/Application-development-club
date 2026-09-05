@@ -131,18 +131,18 @@ export default function CseEventStatsSection() {
     <section
       ref={sectionRef}
       id="cse-event-stats"
-      className="py-20 bg-slate-50 border-b border-slate-200/60 overflow-hidden relative"
+      className="py-16 bg-slate-50 border-b border-slate-200/60 overflow-hidden relative"
     >
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10">
+      <div className="w-full px-4 sm:px-8 lg:px-12">
         {/* Section 7: Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14 scroll-reveal">
-          <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest block mb-3">
+        <div className="text-center max-w-4xl mx-auto mb-14 scroll-reveal">
+          <span className="text-sm font-mono font-bold text-blue-600 uppercase tracking-widest block mb-3">
             CSE EVENTS & COMMUNITY
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-4">
             Department Activity & Impact
           </h2>
-          <p className="text-slate-600 text-base leading-relaxed">
+          <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed">
             Stay updated with events, workshops, hackathons and activities across the Department of CSE.
           </p>
         </div>

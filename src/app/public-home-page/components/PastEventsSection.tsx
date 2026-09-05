@@ -93,84 +93,21 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
   };
 
   return (
-    <section className="py-16 bg-white border-t border-slate-200/80 overflow-hidden" id="completed-events">
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-8">
+    <section className="py-14 bg-white border-t border-slate-200/80 overflow-hidden" id="completed-events">
+      <div className="w-full px-4 sm:px-8 lg:px-12 space-y-8">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full px-3.5 py-1 text-xs font-mono font-extrabold uppercase tracking-widest mb-2">
+            <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full px-4 py-1 text-xs font-mono font-extrabold uppercase tracking-widest mb-2">
               <CheckCircle2 size={14} className="text-emerald-600" /> ACCOMPLISHED DEPARTMENTAL EVENTS
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
               Completed & Finished Events ({completedEventsOnly.length})
             </h2>
-            <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+            <p className="text-slate-600 text-sm sm:text-base lg:text-lg mt-2 max-w-3xl leading-relaxed">
               Explore concluded hackathons, workshops, and student app expos — view attendance statistics, photo galleries, and certified outcomes.
             </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* View Mode & Auto-Scroll Controls */}
-            <div className="flex items-center gap-2 bg-slate-100/80 border border-slate-200 rounded-xl p-1 shadow-2xs">
-              {viewMode === 'slider' && (
-                <button
-                  onClick={() => setIsAutoScrolling(prev => !prev)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    isAutoScrolling
-                      ? 'bg-emerald-600 text-white shadow-2xs'
-                      : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
-                  }`}
-                  title={isAutoScrolling ? 'Pause Auto-Scroll' : 'Play Auto-Scroll'}
-                >
-                  {isAutoScrolling ? <Pause size={13} /> : <Play size={13} />}
-                  <span className="hidden sm:inline">{isAutoScrolling ? 'Auto-Scrolling' : 'Paused'}</span>
-                </button>
-              )}
-
-              <button
-                onClick={() => setViewMode('slider')}
-                className={`p-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                  viewMode === 'slider'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
-                }`}
-                title="Scrolling View"
-              >
-                <SlidersHorizontal size={15} />
-              </button>
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                  viewMode === 'grid'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
-                }`}
-                title="Grid View"
-              >
-                <LayoutGrid size={15} />
-              </button>
-            </div>
-
-            {/* Manual Navigation Arrows */}
-            {viewMode === 'slider' && completedEventsOnly.length > 0 && (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleScrollLeft}
-                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer"
-                  title="Scroll Left"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <button
-                  onClick={handleScrollRight}
-                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer"
-                  title="Scroll Right"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
@@ -181,11 +118,11 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-white to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white to-transparent" />
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 z-10 bg-gradient-to-r from-white to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 z-10 bg-gradient-to-l from-white to-transparent" />
 
             <div
-              className="flex gap-6 animate-continuous-marquee pb-4 pt-1"
+              className="flex gap-8 animate-continuous-marquee pb-6 pt-2"
             >
               {[...completedEventsOnly, ...completedEventsOnly].map((event, idx) => {
                 const registered = REGISTERED_COUNTS[event.id] || Math.floor(event.capacity * 0.85);
@@ -195,44 +132,44 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
                 return (
                   <div
                     key={`completed-${event.id}-${idx}`}
-                    className="w-[380px] sm:w-[420px] flex-shrink-0 bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-emerald-300"
+                    className="w-[420px] sm:w-[480px] lg:w-[520px] flex-shrink-0 bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-300"
                   >
-                    <div className="relative h-48 overflow-hidden bg-slate-900">
+                    <div className="relative h-56 sm:h-64 overflow-hidden bg-slate-900">
                       <AppImage
                         src={event.posterUrl}
                         alt={`Completed event photo for ${event.title}`}
                         fill
-                        sizes="420px"
+                        sizes="520px"
                         className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-90"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+                      <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
                         <CategoryBadge category={event.category} />
-                        <span className="px-2.5 py-1 rounded-full bg-slate-900/90 text-emerald-400 font-extrabold text-[10px] border border-emerald-500/30">
+                        <span className="px-3 py-1 rounded-full bg-slate-900/90 text-emerald-400 font-extrabold text-xs border border-emerald-500/30">
                           ⚫ COMPLETED
                         </span>
                       </div>
 
-                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
-                        <div className="flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-0.5 rounded-lg backdrop-blur-xs font-bold">
-                          <Calendar size={12} className="text-emerald-400" />
+                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-medium">
+                        <div className="flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded-lg backdrop-blur-xs font-bold">
+                          <Calendar size={14} className="text-emerald-400" />
                           <span>{formatDate(event.date)}</span>
                         </div>
 
-                        <div className="flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-0.5 rounded-lg backdrop-blur-xs font-bold">
-                          <MapPin size={12} className="text-sky-400" />
+                        <div className="flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded-lg backdrop-blur-xs font-bold">
+                          <MapPin size={14} className="text-sky-400" />
                           <span>{event.venue}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="p-5 flex flex-col flex-1 justify-between space-y-4">
+                    <div className="p-6 flex flex-col flex-1 justify-between space-y-4">
                       <div>
-                        <h3 className="font-extrabold text-slate-900 text-base sm:text-lg leading-snug line-clamp-1 group-hover:text-emerald-600 transition-colors">
+                        <h3 className="font-extrabold text-slate-900 text-xl sm:text-2xl leading-snug line-clamp-1 group-hover:text-emerald-600 transition-colors">
                           {event.title}
                         </h3>
-                        <p className="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">
+                        <p className="text-sm text-slate-600 line-clamp-2 mt-2 leading-relaxed">
                           {event.description}
                         </p>
                       </div>

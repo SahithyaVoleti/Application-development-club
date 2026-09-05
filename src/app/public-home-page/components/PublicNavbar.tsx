@@ -90,31 +90,31 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
             : 'h-[76px] bg-white/70 backdrop-blur-sm border-b border-slate-200/50'
         }`}
       >
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between h-full">
+        <div className="w-full px-4 sm:px-8 lg:px-12 flex items-center justify-between h-full">
           {/* Logo & Branding */}
           <div
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-3.5 cursor-pointer group"
             onClick={() => handleNavClick('#home')}
           >
             <img
               src="/images/vignan-logo.png"
               alt="Vignan's Foundation for Science, Technology & Research Logo"
-              className="h-10 sm:h-11 w-auto object-contain bg-white px-2 py-1 rounded-lg border border-slate-200 shadow-2xs group-hover:scale-105 transition-transform"
+              className="h-11 sm:h-13 w-auto object-contain bg-white px-2.5 py-1 rounded-xl border border-slate-200 shadow-xs group-hover:scale-105 transition-transform"
             />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-[0.98rem] leading-tight block tracking-tight text-slate-900 group-hover:text-blue-700 transition-colors">
+                <span className="font-black text-base sm:text-lg lg:text-xl leading-tight block tracking-tight text-slate-900 group-hover:text-blue-700 transition-colors">
                   Application Development Club
                 </span>
               </div>
-              <span className="text-[0.68rem] font-bold text-slate-500 uppercase tracking-wider block">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mt-0.5">
                 VFSTR · Department of Computer Science & Engineering
               </span>
             </div>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/70 p-1.5 rounded-xl border border-slate-200/60">
+          <nav className="hidden lg:flex items-center gap-1.5 bg-slate-100/80 p-2 rounded-2xl border border-slate-200/80">
             {NAV_LINKS.map(link => {
               const sectionId = link.href.replace('#', '');
               const isActive = activeSection === sectionId;
@@ -122,10 +122,10 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
                 <button
                   key={`nav-${link.label}`}
                   onClick={() => handleNavClick(link.href)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-sm font-extrabold transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-white text-blue-600 shadow-xs border border-slate-200/60'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                      ? 'bg-white text-blue-600 shadow-sm border border-slate-200/80'
+                      : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
                   }`}
                 >
                   {link.label}

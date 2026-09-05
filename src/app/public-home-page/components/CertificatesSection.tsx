@@ -151,18 +151,18 @@ export default function CertificatesSection() {
   };
 
   return (
-    <section id="certificates" className="py-20 bg-white text-slate-900 border-b border-slate-200/80 overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-12">
+    <section id="certificates" className="py-16 bg-white text-slate-900 border-b border-slate-200/80 overflow-hidden">
+      <div className="w-full px-4 sm:px-8 lg:px-12 space-y-10">
         
         {/* Section Header — Minimalist Corporate University Style */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
+        <div className="text-center max-w-4xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-800 border border-blue-200 rounded-full px-4 py-1 text-xs font-mono font-extrabold uppercase tracking-widest">
             <Building2 size={14} className="text-blue-700" /> OFFICIAL UNIVERSITY CREDENTIALS
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900">
             Build. Participate. Get Recognized.
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-normal">
+          <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed font-normal">
             Official digital certificates are generated for students who registered and participated in departmental hackathons & coding events.
           </p>
         </div>

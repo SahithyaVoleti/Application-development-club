@@ -135,18 +135,18 @@ export default function LeaderboardSection() {
   const selectedEvent = MOCK_EVENTS.find(e => e.id === selectedEventId);
 
   return (
-    <section id="leaderboard" className="py-16 bg-white border-b border-slate-200/80 overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-8">
+    <section id="leaderboard" className="py-14 bg-white border-b border-slate-200/80 overflow-hidden">
+      <div className="w-full px-4 sm:px-8 lg:px-12 space-y-8">
         
         {/* Header Block */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
+        <div className="text-center max-w-4xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-900 border border-amber-200 rounded-full px-4 py-1 text-xs font-mono font-extrabold uppercase tracking-widest">
             <Trophy size={14} className="text-amber-600" /> CAMPUS RANKINGS & PODIUM
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
             Application Development Club Leaderboard
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-normal">
+          <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed font-normal">
             Recognizing top student developers, hackathon teams, and podium winners across Vignan University.
           </p>
         </div>

@@ -101,124 +101,124 @@ export default function UpcomingEventsCarouselSection({ events, onRegisterClick,
   };
 
   return (
-    <section id="events" className="py-12 bg-slate-50 border-b border-slate-200/60 overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 space-y-6">
+    <section id="events" className="py-14 bg-slate-50 border-b border-slate-200/60 overflow-hidden">
+      <div className="w-full px-4 sm:px-8 lg:px-12 space-y-8">
         
         {/* Clean Title Header */}
         <div>
-          <span className="text-xs font-mono font-extrabold text-blue-600 uppercase tracking-widest block mb-1">
+          <span className="text-sm font-mono font-extrabold text-blue-600 uppercase tracking-widest block mb-1">
             UPCOMING EVENTS & HACKATHONS
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
             Upcoming Events ({filteredEvents.length})
           </h2>
-          <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+          <p className="text-slate-600 text-sm sm:text-base lg:text-lg mt-2 max-w-3xl leading-relaxed">
             Discover upcoming hackathons, coding competitions, and technology workshops open for registration.
           </p>
         </div>
 
-          {/* Continuous Auto-Scrolling Track for Upcoming Events */}
+        {/* Continuous Auto-Scrolling Track for Upcoming Events */}
+        <div
+          className="relative overflow-hidden"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-slate-50 to-transparent" />
+
           <div
-            className="relative overflow-hidden"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            className="flex gap-8 animate-continuous-marquee pb-6 pt-2"
           >
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-slate-50 to-transparent" />
+            {[...filteredEvents, ...filteredEvents].map((item, idx) => {
+              const registeredCount = REGISTERED_COUNTS[item.id] || Math.floor(item.capacity * 0.8);
+              let statusBadge = '🟢 Registration Open';
+              let statusStyle = 'bg-emerald-500 text-white border-emerald-400';
 
-            <div
-              className="flex gap-6 animate-continuous-marquee pb-4 pt-1"
-            >
-              {[...filteredEvents, ...filteredEvents].map((item, idx) => {
-                const registeredCount = REGISTERED_COUNTS[item.id] || Math.floor(item.capacity * 0.8);
-                let statusBadge = '🟢 Registration Open';
-                let statusStyle = 'bg-emerald-500 text-white border-emerald-400';
+              if (item.status === 'REGISTRATION_CLOSED') {
+                statusBadge = '🟡 Reg. Closed';
+                statusStyle = 'bg-amber-500 text-white border-amber-400';
+              }
 
-                if (item.status === 'REGISTRATION_CLOSED') {
-                  statusBadge = '🟡 Reg. Closed';
-                  statusStyle = 'bg-amber-500 text-white border-amber-400';
-                }
+              return (
+                <div
+                  key={`upcoming-card-${item.id}-${idx}`}
+                  className="w-[420px] sm:w-[480px] lg:w-[520px] flex-shrink-0 bg-white rounded-3xl border border-slate-200/90 overflow-hidden hover:border-sky-300 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Event Poster */}
+                    <div className="relative w-full h-56 sm:h-64 bg-slate-900 overflow-hidden">
+                      <Image
+                        src={item.posterUrl || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97'}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-90"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
-                return (
-                  <div
-                    key={`upcoming-card-${item.id}-${idx}`}
-                    className="w-[360px] sm:w-[400px] flex-shrink-0 bg-white rounded-3xl border border-slate-200/90 overflow-hidden hover:border-sky-300 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
-                  >
-                    <div>
-                      {/* Event Poster */}
-                      <div className="relative w-full h-48 bg-slate-900 overflow-hidden">
-                        <Image
-                          src={item.posterUrl || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97'}
-                          alt={item.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-90"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                      <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
+                        <span className="px-3 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-xs font-mono font-bold border border-white/20 truncate">
+                          {item.category}
+                        </span>
 
-                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                          <span className="px-2.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-[10px] font-mono font-bold border border-white/20 truncate">
-                            {item.category}
-                          </span>
-
-                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border backdrop-blur-md ${statusStyle}`}>
-                            {statusBadge}
-                          </span>
-                        </div>
-
-                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium">
-                          <div className="flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-0.5 rounded-lg backdrop-blur-xs font-bold">
-                            <Calendar size={12} className="text-sky-400" />
-                            <span>{formatDateFormatted(item.date)}</span>
-                          </div>
-
-                          <div className="flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-0.5 rounded-lg backdrop-blur-xs font-bold">
-                            <Clock size={12} className="text-indigo-400" />
-                            <span>{item.startTime}</span>
-                          </div>
-                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-extrabold border backdrop-blur-md ${statusStyle}`}>
+                          {statusBadge}
+                        </span>
                       </div>
 
-                      {/* Card Content */}
-                      <div className="p-5 space-y-3">
-                        <h3 className="text-base sm:text-lg font-extrabold text-slate-900 leading-snug line-clamp-2 group-hover:text-sky-600 transition-colors">
-                          {item.title}
-                        </h3>
+                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-medium">
+                        <div className="flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded-lg backdrop-blur-xs font-bold">
+                          <Calendar size={14} className="text-sky-400" />
+                          <span>{formatDateFormatted(item.date)}</span>
+                        </div>
 
-                        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
-                          {item.description}
-                        </p>
+                        <div className="flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded-lg backdrop-blur-xs font-bold">
+                          <Clock size={14} className="text-indigo-400" />
+                          <span>{item.startTime}</span>
+                        </div>
+                      </div>
+                    </div>
 
-                        <div className="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-medium">
-                          <div className="flex items-center gap-1">
-                            <Users size={13} className="text-sky-600" />
-                            <span>{registeredCount} Participants</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Code2 size={13} className="text-indigo-600" />
-                            <span>Venue: {item.venue}</span>
-                          </div>
+                    {/* Card Content */}
+                    <div className="p-6 space-y-4">
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug line-clamp-2 group-hover:text-sky-600 transition-colors">
+                        {item.title}
+                      </h3>
+
+                      <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
+                        {item.description}
+                      </p>
+
+                      <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs sm:text-sm text-slate-600 font-semibold">
+                        <div className="flex items-center gap-1.5">
+                          <Users size={15} className="text-sky-600" />
+                          <span>{registeredCount} Participants</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Code2 size={15} className="text-indigo-600" />
+                          <span>Venue: {item.venue}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Card Actions */}
-                    <div className="p-5 pt-0 flex items-center gap-2">
+                    <div className="p-6 pt-0 flex items-center gap-3">
                       <button
                         onClick={() => onViewDetails(item)}
-                        className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer text-center"
+                        className="flex-1 py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition-colors cursor-pointer text-center"
                       >
                         View Details
                       </button>
 
                       <button
                         onClick={() => onRegisterClick(item)}
-                        className="flex-1 py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition-colors cursor-pointer text-center shadow-xs"
+                        className="flex-1 py-3 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs sm:text-sm transition-colors cursor-pointer text-center shadow-md"
                       >
                         Register Now
                       </button>
                     </div>
                   </div>
-                );
+                </div>
+              );
               })}
             </div>
           </div>
