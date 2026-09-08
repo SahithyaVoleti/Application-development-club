@@ -87,15 +87,15 @@ export default function UpcomingEventsCarouselSection({
   };
 
   return (
-    <section className="py-20 bg-slate-50 relative overflow-hidden border-b border-slate-200/80">
+    <section className="py-20 bg-slate-50 dark:bg-slate-950 relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
       <div className="max-w-[1450px] mx-auto px-6 lg:px-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Upcoming Events ({filteredEvents.length})
             </h2>
-            <p className="text-slate-600 text-sm sm:text-base lg:text-lg mt-2 max-w-3xl leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base lg:text-lg mt-2 max-w-3xl leading-relaxed">
               Discover upcoming hackathons, coding competitions, and technology workshops open for registration.
             </p>
           </div>
@@ -104,12 +104,12 @@ export default function UpcomingEventsCarouselSection({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsAutoScrolling(!isAutoScrolling)}
-              className="p-3 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-2xs cursor-pointer flex items-center gap-2 text-xs font-bold"
+              className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs cursor-pointer flex items-center gap-2 text-xs font-bold"
               title={isAutoScrolling ? 'Pause Auto-Scroll' : 'Play Auto-Scroll'}
             >
               {isAutoScrolling ? (
                 <>
-                  <Pause size={16} className="text-sky-600" />
+                  <Pause size={16} className="text-sky-600 dark:text-sky-400" />
                   <span className="hidden sm:inline">Pause</span>
                 </>
               ) : (
@@ -122,7 +122,7 @@ export default function UpcomingEventsCarouselSection({
 
             <button
               onClick={handleScrollLeft}
-              className="p-3 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-2xs cursor-pointer"
+              className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs cursor-pointer"
               title="Previous Event"
             >
               <ChevronLeft size={20} />
@@ -130,7 +130,7 @@ export default function UpcomingEventsCarouselSection({
 
             <button
               onClick={handleScrollRight}
-              className="p-3 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-2xs cursor-pointer"
+              className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs cursor-pointer"
               title="Next Event"
             >
               <ChevronRight size={20} />
@@ -184,7 +184,7 @@ export default function UpcomingEventsCarouselSection({
               return (
                 <div
                   key={`upcoming-card-${item.id}-${idx}`}
-                  className="w-[380px] sm:w-[420px] lg:w-[450px] flex-shrink-0 bg-white rounded-3xl border border-slate-200/90 overflow-hidden hover:border-sky-300 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between group"
+                  className="w-[380px] sm:w-[420px] lg:w-[450px] flex-shrink-0 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 overflow-hidden hover:border-sky-300 dark:hover:border-sky-500 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
                     {/* Event Poster */}
@@ -209,49 +209,49 @@ export default function UpcomingEventsCarouselSection({
                     <div className="p-6 space-y-4">
                       {/* Clean Category & Status Header */}
                       <div className="flex items-center justify-between text-xs font-bold gap-2">
-                        <span className="text-sky-600 font-mono uppercase tracking-wider">{item.category}</span>
+                        <span className="text-sky-600 dark:text-sky-400 font-mono uppercase tracking-wider">{item.category}</span>
                         <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${statusStyle}`}>
                           {statusBadge}
                         </span>
                       </div>
 
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug line-clamp-2 group-hover:text-sky-600 transition-colors">
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                         {item.title}
                       </h3>
 
-                      <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
                         {item.description}
                       </p>
 
-                      <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600 pt-2 border-t border-slate-100">
+                      <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-1.5">
-                          <Calendar size={14} className="text-sky-600 shrink-0" />
+                          <Calendar size={14} className="text-sky-600 dark:text-sky-400 shrink-0" />
                           <span>{formatDateFormatted(item.date)}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Clock size={14} className="text-indigo-600 shrink-0" />
+                          <Clock size={14} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
                           <span>{item.startTime}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                        <MapPin size={14} className="text-indigo-600 shrink-0" />
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
+                        <MapPin size={14} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
                         <span className="truncate">{item.venue}</span>
                       </div>
 
                       {/* Dynamic Seat & Registration Capacity Stats */}
-                      <div className="pt-4 border-t border-slate-100 space-y-2">
+                      <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
                         <div className="flex items-center justify-between text-xs font-mono font-bold">
-                          <span className="text-slate-700">
-                            Registered: <span className="text-sky-600 font-extrabold">{registeredCount}</span> / {capacity}
+                          <span className="text-slate-700 dark:text-slate-300">
+                            Registered: <span className="text-sky-600 dark:text-sky-400 font-extrabold">{registeredCount}</span> / {capacity}
                           </span>
-                          <span className={availableSeats <= 5 ? 'text-rose-600 font-extrabold' : 'text-emerald-600 font-extrabold'}>
+                          <span className={availableSeats <= 5 ? 'text-rose-600 dark:text-rose-400 font-extrabold' : 'text-emerald-600 dark:text-emerald-400 font-extrabold'}>
                             Available Seats: {availableSeats}
                           </span>
                         </div>
 
                         {/* Seat utilization progress bar */}
-                        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div
                             className={`h-full transition-all duration-500 rounded-full ${
                               isFull
@@ -270,7 +270,7 @@ export default function UpcomingEventsCarouselSection({
                     <div className="p-6 pt-0 flex items-center gap-3">
                       <button
                         onClick={() => onViewDetails(item)}
-                        className="flex-1 py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition-colors cursor-pointer text-center"
+                        className="flex-1 py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm transition-colors cursor-pointer text-center"
                       >
                         View Details
                       </button>
