@@ -17,6 +17,7 @@ enum Role {
 }
 
 enum AdminStatus {
+  PENDING
   PENDING_OTP
   PENDING_APPROVAL
   TRUSTED_ADMIN
@@ -47,6 +48,8 @@ model User {
   studentId       String?
   staffId         String?     @unique
   department      String?
+  designation     String?
+  organization    String?
   year            String?
   section         String?
   phone           String?
@@ -56,16 +59,80 @@ model User {
   updatedAt       DateTime    @updatedAt
   approvedAt      DateTime?
   approvedBy      String?
+  rejectedAt      DateTime?
+  rejectedBy      String?
   rejectionReason String?
 
-  registrations Registration[]
-  certificates  Certificate[]
+  registrations          Registration[]
+  certificates           Certificate[]
+  createdEvents          Event[]                @relation("CreatedEvents")
+  approvalRequests       AdminApprovalRequest[]
 
   @@map("users")
 }
 
+model AdminApprovalRequest {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminName       String
+  adminEmail      String
+  status          String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  approvalToken   String?   @unique
+  approvedBy      String?
+  rejectedBy      String?
+  decisionSource  String?   @default("DASHBOARD") // EMAIL | DASHBOARD
+  decisionAt      DateTime?
+  rejectionReason String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("admin_approval_requests")
+}
+
+model Club {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  code        String   @unique
+  description String?  @db.Text
+  department  String?  @default("CSE")
+  status      String   @default("ACTIVE") // ACTIVE | INACTIVE
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assignments AdminClubAssignment[]
+  events      Event[]
+
+  @@map("clubs")
+}
+
+model AdminClubAssignment {
+  id          String    @id @default(uuid())
+  adminId     String
+  adminName   String
+  adminEmail  String
+  clubId      String
+  club        Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubName    String
+  role        Role      @default(ADMIN)
+  status      String    @default("ACTIVE") // ACTIVE | REMOVED
+  assignedBy  String    @default("Super Admin")
+  assignedAt  DateTime  @default(now())
+  removedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([adminId, clubId, status])
+  @@map("admin_club_assignments")
+}
+
 model Event {
   id                     String      @id @default(uuid())
+  clubId                 String?
+  club                   Club?       @relation(fields: [clubId], references: [id], onDelete: SetNull)
+  clubName               String?
+  createdById            String?
+  createdBy              User?       @relation("CreatedEvents", fields: [createdById], references: [id], onDelete: SetNull)
   title                  String
   category               String
   branches               String[]    @default([])
@@ -88,6 +155,7 @@ model Event {
   isPublished            Boolean     @default(true)
   status                 EventStatus @default(UPCOMING)
   createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @default(now()) @updatedAt
 
   registrations      Registration[]
   galleryImages      GalleryImage[]
@@ -95,6 +163,37 @@ model Event {
   certificates       Certificate[]
 
   @@map("events")
+}
+
+model NotificationLog {
+  id            String   @id @default(uuid())
+  recipient     String
+  type          String   // ADMIN_REGISTRATION | ADMIN_APPROVED | ADMIN_REJECTED | CLUB_ADMIN_ASSIGNED | CLUB_ADMIN_REMOVED | EVENT_CREATION | EVENT_UPDATE | EVENT_DELETION | STUDENT_REGISTRATION
+  subject       String
+  sentDate      DateTime @default(now())
+  status        String   @default("SUCCESS") // SUCCESS | FAILED
+  relatedId     String?
+  relatedUserId String?
+  relatedClubId String?
+  relatedEventId String?
+  metadata      String?  @db.Text
+
+  @@map("notification_logs")
+}
+
+model AuditLog {
+  id              String   @id @default(uuid())
+  actorId         String?
+  actorEmail      String?
+  performedBy     String
+  action          String   // ADMIN_REGISTRATION | ADMIN_APPROVED | ADMIN_REJECTED | CLUB_ADMIN_ASSIGNED | CLUB_ADMIN_REMOVED | EVENT_CREATION | EVENT_UPDATE | EVENT_DELETION | STUDENT_REGISTRATION
+  entityType      String   // USER | CLUB | EVENT | REGISTRATION | ASSIGNMENT
+  entityId        String?
+  rejectionReason String?
+  metadata        String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  @@map("audit_logs")
 }
 
 model Registration {
@@ -115,6 +214,8 @@ model Registration {
   registrationDate DateTime         @default(now())
   registrationId   String           @unique
   attendanceStatus AttendanceStatus @default(not_marked)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now()) @updatedAt
 
   certificate Certificate?
 

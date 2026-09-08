@@ -15,9 +15,7 @@ import {
   Sparkles,
   Megaphone,
   CheckCircle2,
-  KeyRound,
 } from 'lucide-react';
-import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 
 const NAV_LINKS = [
   { label: 'Home', href: '#home' },
@@ -45,7 +43,6 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [tickerIndex, setTickerIndex] = useState(0);
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,15 +99,15 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
             <img
               src="/images/vignan-logo.png"
               alt="Vignan's Foundation for Science, Technology & Research Logo"
-              className="h-11 sm:h-13 w-auto object-contain bg-white px-2.5 py-1 rounded-xl border border-slate-200 shadow-xs group-hover:scale-105 transition-transform"
+              className="h-9 sm:h-11 md:h-13 w-auto object-contain bg-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl border border-slate-200 shadow-xs group-hover:scale-105 transition-transform"
             />
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="font-black text-base sm:text-lg lg:text-xl leading-tight block tracking-tight text-slate-900 group-hover:text-blue-700 transition-colors">
+                <span className="font-black text-xs sm:text-base lg:text-xl leading-tight block tracking-tight text-slate-900 group-hover:text-blue-700 transition-colors truncate">
                   Application Development Club
                 </span>
               </div>
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mt-0.5">
+              <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider block mt-0.5 truncate hidden xs:block sm:block">
                 VFSTR · Department of Computer Science & Engineering
               </span>
             </div>
@@ -147,15 +144,6 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
             >
               <User size={14} className="text-sky-600" />
               <span>Student Login</span>
-            </button>
-
-            <button
-              onClick={() => setIsChangePasswordOpen(true)}
-              title="Change Account Password"
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-colors cursor-pointer"
-            >
-              <KeyRound size={14} className="text-slate-600" />
-              <span className="hidden sm:inline">Password</span>
             </button>
 
             <Link
@@ -229,12 +217,6 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
           </div>
         </div>
       )}
-
-      {/* Student / User Change Password Modal */}
-      <ChangePasswordModal
-        isOpen={isChangePasswordOpen}
-        onClose={() => setIsChangePasswordOpen(false)}
-      />
     </>
   );
 }

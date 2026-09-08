@@ -7,7 +7,6 @@ import CseEventStatsSection from './components/CseEventStatsSection';
 import UpcomingEventsCarouselSection from './components/UpcomingEventsCarouselSection';
 import PastEventsSection from './components/PastEventsSection';
 import IntroSection from './components/IntroSection';
-import RealWorldBuildingSection from './components/RealWorldBuildingSection';
 import LeaderboardSection from './components/LeaderboardSection';
 import CertificatesSection from './components/CertificatesSection';
 import GallerySection from './components/GallerySection';
@@ -28,6 +27,8 @@ export default function PublicHomePage() {
 
   const [viewMode, setViewMode] = useState<'workspace' | 'events'>('events');
   const [activeLoggedInUser, setActiveLoggedInUser] = useState<UserProfile | null>(null);
+  const [eventsList, setEventsList] = useState<Event[]>(MOCK_EVENTS);
+  const [userRegistrations, setUserRegistrations] = useState<any[]>([]);
   const [registrationModal, setRegistrationModal] = useState<Event | null>(null);
   const [pastEventModal, setPastEventModal] = useState<Event | null>(null);
   const [isVerifyCertOpen, setIsVerifyCertOpen] = useState(false);
@@ -49,6 +50,33 @@ export default function PublicHomePage() {
     return { ...REGISTERED_COUNTS };
   });
 
+  const loadEvents = async () => {
+    try {
+      const res = await fetch('/api/events?filter=published');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+        setEventsList(data.data);
+      }
+    } catch (e) {
+      console.error('Failed to load published events', e);
+    }
+  };
+
+  const loadUserRegistrations = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = JSON.parse(localStorage.getItem('adhub_user_registrations') || '[]');
+        setUserRegistrations(saved);
+      } catch (e) {}
+    }
+  };
+
+  // Fetch published events dynamically from database API
+  useEffect(() => {
+    loadEvents();
+    loadUserRegistrations();
+  }, []);
+
   // Check stored active user session on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -68,7 +96,7 @@ export default function PublicHomePage() {
       const hash = window.location.hash;
       if (hash && hash.startsWith('#event-')) {
         const eventId = hash.replace('#', '');
-        const targetEvent = MOCK_EVENTS.find(e => e.id === eventId);
+        const targetEvent = eventsList.find(e => e.id === eventId);
         if (targetEvent) {
           if (targetEvent.status === 'COMPLETED') {
             setPastEventModal(targetEvent);
@@ -82,7 +110,7 @@ export default function PublicHomePage() {
     checkHash();
     window.addEventListener('hashchange', checkHash);
     return () => window.removeEventListener('hashchange', checkHash);
-  }, [activeLoggedInUser]);
+  }, [activeLoggedInUser, eventsList]);
 
   const handleOpenRegistrationModal = (event: Event | null) => {
     if (!event) {
@@ -124,6 +152,10 @@ export default function PublicHomePage() {
       }
       return next;
     });
+
+    // Re-fetch database events and student registrations dynamically
+    loadEvents();
+    loadUserRegistrations();
   };
 
   return (
@@ -147,18 +179,18 @@ export default function PublicHomePage() {
             {/* 1. Hero Section with Background Image & Taglines */}
             <HeroSection onSwitchToWorkspace={() => setViewMode('workspace')} />
 
-
-
-            {/* 3. Dedicated Scrolling Section: Upcoming Events & Hackathons */}
+            {/* 2. Dedicated Scrolling Section: Upcoming Events & Hackathons */}
             <UpcomingEventsCarouselSection
-              events={MOCK_EVENTS}
+              events={eventsList}
               onRegisterClick={handleOpenRegistrationModal}
               onViewDetails={handleOpenPastEventModal}
+              currentUser={activeLoggedInUser}
+              userRegistrations={userRegistrations}
             />
 
-            {/* 4. Dedicated Scrolling Section: Completed & Finished Events */}
+            {/* 3. Past Departmental Events */}
             <PastEventsSection
-              events={MOCK_EVENTS}
+              events={eventsList}
               onViewDetails={handleOpenPastEventModal}
             />
 
@@ -167,9 +199,6 @@ export default function PublicHomePage() {
 
             {/* 6. Introduction Section */}
             <IntroSection />
-
-            {/* 7. Real-World Application Building & Pipeline Visual ("Don't Just Learn. Build Something Real.") */}
-            <RealWorldBuildingSection />
 
             {/* 9. Campus & Event Media Gallery */}
             <GallerySection />

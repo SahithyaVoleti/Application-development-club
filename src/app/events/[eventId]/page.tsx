@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import React, { useState, use } from 'react';
 import Image from 'next/image';
 import PublicNavbar from '../../public-home-page/components/PublicNavbar';
@@ -47,15 +48,21 @@ export default function EventDetailPage({ params }: Props) {
 
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden mb-8">
           {/* Poster Hero Banner */}
-          <div className="relative w-full h-64 sm:h-80 bg-slate-900 overflow-hidden">
+          <div className="relative w-full h-64 sm:h-80 bg-slate-950 overflow-hidden">
+            <Image
+              src={event.posterUrl || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97'}
+              alt=""
+              fill
+              className="object-cover blur-2xl opacity-35 scale-110 pointer-events-none"
+            />
             <Image
               src={event.posterUrl || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97'}
               alt={event.title}
               fill
-              className="object-cover opacity-80"
+              className="object-contain p-2"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent pointer-events-none" />
 
             <div className="absolute bottom-6 left-6 right-6 text-white">
               <div className="flex items-center gap-2 mb-3">

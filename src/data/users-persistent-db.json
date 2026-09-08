@@ -1,0 +1,138 @@
+{
+  "users": [
+    {
+      "id": "user-super-admin-001",
+      "name": "Sahithya Voleti (Super Admin)",
+      "email": "sahithyalakshmivoleti@gmail.com",
+      "phone": "+91 9876543210",
+      "staffId": "SA-001",
+      "studentId": "221FA04049",
+      "department": "Computer Science & Engineering",
+      "designation": "Super Admin",
+      "year": "3rd Year",
+      "section": "A",
+      "passwordHash": "efb2d36094eb0560445556129b605909c6410af7e9f90d18c7f1772e80f47324",
+      "role": "SUPER_ADMIN",
+      "status": "APPROVED",
+      "otpVerified": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "approvedAt": "2026-01-01T00:00:00.000Z",
+      "approvedBy": "System Init"
+    },
+    {
+      "id": "user-super-admin-002",
+      "name": "E. Deepak Chowdary (Super Admin)",
+      "email": "edaradeepakchowdary@gmail.com",
+      "phone": "+91 9876543211",
+      "staffId": "SA-002",
+      "department": "Computer Science & Engineering",
+      "designation": "Super Admin",
+      "passwordHash": "3b89cebbc0be0411729ffd72558992671cb82e9ea3b6a004edc9895adf535c5e",
+      "role": "SUPER_ADMIN",
+      "status": "APPROVED",
+      "otpVerified": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "approvedAt": "2026-01-01T00:00:00.000Z",
+      "approvedBy": "System Init"
+    },
+    {
+      "id": "user-super-admin-003",
+      "name": "U. Venkateswarao (Super Admin)",
+      "email": "uvr_cse@vignan.ac.in",
+      "phone": "+91 9876543212",
+      "staffId": "SA-003",
+      "department": "Computer Science & Engineering",
+      "designation": "Super Admin",
+      "passwordHash": "3b89cebbc0be0411729ffd72558992671cb82e9ea3b6a004edc9895adf535c5e",
+      "role": "SUPER_ADMIN",
+      "status": "APPROVED",
+      "otpVerified": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "approvedAt": "2026-01-01T00:00:00.000Z",
+      "approvedBy": "System Init"
+    },
+    {
+      "id": "user-student-001",
+      "name": "Sahithya Voleti",
+      "email": "sahithyavoleti14@gmail.com",
+      "phone": "+91 9876543210",
+      "studentId": "221FA04049",
+      "department": "Computer Science & Engineering",
+      "designation": "Student Developer",
+      "year": "3rd Year",
+      "section": "A",
+      "passwordHash": "efb2d36094eb0560445556129b605909c6410af7e9f90d18c7f1772e80f47324",
+      "role": "STUDENT",
+      "status": "ACTIVE",
+      "otpVerified": true,
+      "createdAt": "2026-01-10T00:00:00.000Z"
+    },
+    {
+      "id": "user-admin-1788765590352-0q91",
+      "name": "Varun",
+      "email": "varun7207404069@gmail.com",
+      "phone": "7207404069",
+      "staffId": "31323",
+      "department": "CSE",
+      "designation": "Faculty Coordinator",
+      "passwordHash": "a022311e3c296e4dd67a1d188a59b2b8d6a8a002bb016b9ec4e0d54bcf47b36c",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "otpVerified": true,
+      "createdAt": "2026-09-07T07:19:50.352Z",
+      "approvedAt": "2026-09-07T07:19:50.352Z",
+      "approvedBy": "Sahithya Voleti (Super Admin)"
+    },
+    {
+      "id": "user-admin-1788837317068-p3u1",
+      "name": "Varun K",
+      "email": "varunkaza2003@gmail.com",
+      "phone": "7207604098",
+      "staffId": "23123",
+      "department": "CSE",
+      "designation": "Faculty Coordinator",
+      "passwordHash": "2910f688b32493317c0ed621bbfcd3281f79283f30fc099620454f988912c6fa",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "otpVerified": true,
+      "createdAt": "2026-09-08T03:15:17.068Z",
+      "approvedAt": "2026-09-08T03:26:54.573Z",
+      "approvedBy": "Sahithya Voleti (Super Admin)",
+      "rejectionReason": null
+    }
+  ],
+  "auditLogs": [
+    {
+      "adminId": "user-admin-varun-001",
+      "adminName": "M. Varun Kumar",
+      "action": "REJECTED",
+      "performedBy": "Sahithya Voleti (Super Admin)",
+      "rejectionReason": "Verification details did not match CSE Faculty records.",
+      "id": "audit-1788760949283-q672",
+      "performedAt": "2026-09-07T06:02:29.283Z"
+    },
+    {
+      "adminId": "user-1788762743730-x2n5a",
+      "adminName": "Dr. M. Varun Kumar",
+      "adminEmail": "dr.varun.1788762743551@vignan.ac.in",
+      "action": "APPROVED",
+      "performedBy": "Sahithya Voleti (Super Admin)",
+      "id": "audit-1788762760969-r1mv",
+      "performedAt": "2026-09-07T06:32:40.969Z"
+    },
+    {
+      "adminId": "user-admin-1788837317068-p3u1",
+      "adminName": "Varun K",
+      "adminEmail": "varunkaza2003@gmail.com",
+      "action": "CREATED",
+      "performedBy": "Sahithya Voleti (Super Admin)",
+      "metadata": {
+        "clubId": "club-appdev",
+        "clubName": "Application Development Club"
+      },
+      "id": "audit-1788838014579-0iom",
+      "performedAt": "2026-09-08T03:26:54.579Z"
+    }
+  ],
+  "updatedAt": "2026-09-08T03:26:54.579Z"
+}

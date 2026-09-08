@@ -1,0 +1,85 @@
+{
+  "clubs": [
+    {
+      "id": "club-appdev",
+      "name": "Application Development Club",
+      "code": "ADC",
+      "description": "Official campus club for designing, engineering, and deploying modern web, mobile, and AI applications.",
+      "department": "Computer Science & Engineering",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "club-ai",
+      "name": "AI & ML Innovations Club",
+      "code": "AIML",
+      "description": "Student-led artificial intelligence, machine learning, and neural network research group.",
+      "department": "Computer Science & Engineering",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "club-coding",
+      "name": "Competitive Coding & Algorithmic Club",
+      "code": "CCAC",
+      "description": "Algorithmic problem-solving, hackathons, and LeetCode/Codeforces competitive programming division.",
+      "department": "Computer Science & Engineering",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "club-webdev",
+      "name": "Web & Cloud Developers Club",
+      "code": "WCDC",
+      "description": "Full-stack web development, DevOps, microservices, and cloud architecture group.",
+      "department": "Computer Science & Engineering",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "club-cyber",
+      "name": "Cyber Security & Digital Forensics Club",
+      "code": "CSDF",
+      "description": "Ethical hacking, Capture The Flag (CTF) challenges, network defense, and digital forensics.",
+      "department": "Computer Science & Engineering",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "assignments": [
+    {
+      "id": "assign-1788838014577-l4yf",
+      "adminId": "user-admin-1788837317068-p3u1",
+      "adminName": "Varun K",
+      "adminEmail": "varunkaza2003@gmail.com",
+      "clubId": "club-appdev",
+      "clubName": "Application Development Club",
+      "role": "ADMIN",
+      "status": "ACTIVE",
+      "assignedBy": "Sahithya Voleti (Super Admin)",
+      "assignedAt": "2026-09-08T03:26:54.577Z",
+      "createdAt": "2026-09-08T03:26:54.577Z"
+    },
+    {
+      "id": "assign-001",
+      "adminId": "user-admin-001",
+      "adminName": "Dr. Ramesh Babu (CSE Head)",
+      "adminEmail": "admin@cse.vignan.ac.in",
+      "clubId": "club-appdev",
+      "clubName": "Application Development Club",
+      "role": "ADMIN",
+      "status": "ACTIVE",
+      "assignedBy": "Super Admin",
+      "assignedAt": "2026-01-05T00:00:00.000Z",
+      "createdAt": "2026-01-05T00:00:00.000Z"
+    },
+    {
+      "id": "assign-002",
+      "adminId": "user-admin-001",
+      "adminName": "Dr. Ramesh Babu (CSE Head)",
+      "adminEmail": "admin@cse.vignan.ac.in",
+      "clubId": "club-coding",
+      "clubName": "Competitive Coding & Algorithmic Club",
+      "role": "ADMIN",
+      "status": "ACTIVE",
+      "assignedBy": "Super Admin",
+      "assignedAt": "2026-01-06T00:00:00.000Z",
+      "createdAt": "2026-01-06T00:00:00.000Z"
+    }
+  ]
+}

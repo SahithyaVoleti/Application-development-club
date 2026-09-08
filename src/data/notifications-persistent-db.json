@@ -1,0 +1,44 @@
+[
+  {
+    "recipient": "varunkaza2003@gmail.com",
+    "type": "ADMIN_ADDED",
+    "subject": "You Have Been Added as an Admin",
+    "status": "SUCCESS",
+    "metadata": {
+      "recipientName": "Varun K",
+      "provider": "SMTP Transporter"
+    },
+    "id": "notif-1788838016750-sag6",
+    "sentDate": "2026-09-08T03:26:56.750Z"
+  },
+  {
+    "recipient": "sahithyalakshmivoleti@gmail.com",
+    "type": "ADMIN_APPROVAL",
+    "subject": "[Admin Security] Verification OTP Code: 630162",
+    "status": "SUCCESS",
+    "metadata": {
+      "recipientName": "Admin",
+      "provider": "SMTP Transporter"
+    },
+    "id": "notif-1788837944874-rzsf",
+    "sentDate": "2026-09-08T03:25:44.874Z"
+  },
+  {
+    "id": "notif-001",
+    "recipient": "admin@cse.vignan.ac.in",
+    "type": "ADMIN_APPROVAL",
+    "subject": "[Admin Approved] Your Admin Account Has Been Approved!",
+    "sentDate": "2026-01-05T10:00:00.000Z",
+    "status": "SUCCESS",
+    "relatedId": "user-admin-001"
+  },
+  {
+    "id": "notif-002",
+    "recipient": "varunkumar@vignan.ac.in",
+    "type": "ADMIN_REGISTRATION",
+    "subject": "[Admin Registration] Request Received - Pending Approval",
+    "sentDate": "2026-01-10T14:30:00.000Z",
+    "status": "SUCCESS",
+    "relatedId": "user-admin-varun-001"
+  }
+]

@@ -99,13 +99,16 @@ const AppImage = memo(function AppImage({
     }, [imageSrc, alt, imageClassName, quality, placeholder, blurDataURL, resolvedUnoptimized, priority, loading, handleError, handleLoad, onClick]);
 
     if (fill) {
+        const isContain = className?.includes('object-contain');
+        const objectFitMode = isContain ? 'contain' : (props.style?.objectFit || 'cover');
+
         return (
-            <div className="relative" style={{ width: '100%', height: '100%' }}>
+            <div className="absolute inset-0 w-full h-full">
                 <Image
                     {...imageProps}
                     fill
                     sizes={sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
-                    style={{ objectFit: 'cover' }}
+                    style={{ ...props.style, objectFit: objectFitMode }}
                     {...props}
                 />
             </div>

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "reg-seed-001",
+    "eventId": "agentic-ai-day-2026",
+    "studentId": "221FA04049",
+    "studentName": "Sahithya Voleti",
+    "email": "sahithyalakshmivoleti@gmail.com",
+    "mobile": "9876543210",
+    "department": "Computer Science & Engineering",
+    "year": "3rd Year",
+    "section": "A",
+    "gender": "Female",
+    "skills": "React, Next.js, Antigravity AI, Python",
+    "registrationDate": "2026-09-02T10:30:00.000Z",
+    "registrationId": "CSE26-84920",
+    "attendanceStatus": "present"
+  },
+  {
+    "id": "reg-seed-002",
+    "eventId": "agentic-ai-day-2026",
+    "studentId": "221FA04050",
+    "studentName": "Deepak Edara",
+    "email": "deepakchowdaryedara@gmail.com",
+    "mobile": "9876543211",
+    "department": "Computer Science & Engineering",
+    "year": "3rd Year",
+    "section": "A",
+    "gender": "Male",
+    "skills": "Node.js, Express, PostgreSQL, AI Agents",
+    "registrationDate": "2026-09-02T11:15:00.000Z",
+    "registrationId": "CSE26-73194",
+    "attendanceStatus": "present"
+  },
+  {
+    "id": "reg-seed-003",
+    "eventId": "event-015",
+    "studentId": "221FA04051",
+    "studentName": "Venkateswarulu K",
+    "email": "venkateswaruluk@gmail.com",
+    "mobile": "9876543212",
+    "department": "Computer Science & Engineering",
+    "year": "3rd Year",
+    "section": "B",
+    "gender": "Male",
+    "skills": "Python, Machine Learning, TensorFlow",
+    "registrationDate": "2026-09-03T14:20:00.000Z",
+    "registrationId": "CSE26-51082",
+    "attendanceStatus": "not_marked"
+  }
+]

@@ -170,15 +170,21 @@ export default function PastEventModal({ event, onClose }: Props) {
               {/* Main Column (8 cols) */}
               <div className="lg:col-span-8 space-y-6">
                 {/* Poster Banner */}
-                <div className="relative h-64 sm:h-80 rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900">
+                <div className="relative h-64 sm:h-80 rounded-2xl overflow-hidden border border-slate-800 shadow-sm bg-slate-950">
+                  <AppImage
+                    src={event.posterUrl}
+                    alt=""
+                    fill
+                    className="object-cover blur-2xl opacity-35 scale-110 pointer-events-none"
+                  />
                   <AppImage
                     src={event.posterUrl}
                     alt={event.title}
                     fill
                     sizes="1000px"
-                    className="object-cover opacity-95"
+                    className="object-contain p-2"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent pointer-events-none" />
                   <div className="absolute bottom-4 left-5 right-5 text-white">
                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 block mb-1">
                       {event.organizer}

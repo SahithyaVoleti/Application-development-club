@@ -1,19 +1,43 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import RegistrationsTable from '@/app/event-registrations-management/components/RegistrationsTable';
 import RegistrationAnalytics from '@/app/event-registrations-management/components/RegistrationAnalytics';
 import AttendanceSummary from '@/app/event-registrations-management/components/AttendanceSummary';
-import { MOCK_EVENTS, REGISTERED_COUNTS } from '@/lib/mockData';
+import { MOCK_EVENTS, REGISTERED_COUNTS, Event } from '@/lib/mockData';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { ClipboardList, BarChart2, Calendar, Filter, Users } from 'lucide-react';
 
 type TabView = 'registrations' | 'analytics';
 
 export default function AdminRegistrationsContent() {
-  const [selectedEventId, setSelectedEventId] = useState<string>(MOCK_EVENTS[0]?.id || '');
+  const [eventsList, setEventsList] = useState<Event[]>(MOCK_EVENTS);
+  const [selectedEventId, setSelectedEventId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<TabView>('registrations');
 
-  const selectedEvent = MOCK_EVENTS.find((e) => e.id === selectedEventId) || MOCK_EVENTS[0];
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const res = await fetch('/api/events');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setEventsList(data.data);
+          setSelectedEventId(data.data[0].id);
+        } else if (MOCK_EVENTS.length > 0) {
+          setSelectedEventId(MOCK_EVENTS[0].id);
+        }
+      } catch (e) {
+        if (MOCK_EVENTS.length > 0) setSelectedEventId(MOCK_EVENTS[0].id);
+      }
+    }
+    loadEvents();
+  }, []);
+
+  const selectedEvent = eventsList.find((e) => e.id === selectedEventId) || eventsList[0];
+  const capacity = selectedEvent?.capacity || (selectedEvent as any)?.max_participants || 150;
+  const registeredCount = (selectedEvent as any)?.registeredCount !== undefined
+    ? (selectedEvent as any).registeredCount
+    : REGISTERED_COUNTS[selectedEvent?.id] || 0;
+  const availableSeats = Math.max(0, capacity - registeredCount);
 
   return (
     <div className="p-6 lg:p-10 max-w-[1450px] mx-auto space-y-6 font-sans">
@@ -24,7 +48,7 @@ export default function AdminRegistrationsContent() {
             Registrations Management
           </h1>
           <p className="text-slate-500 text-xs sm:text-sm font-medium mt-1">
-            Track student registrations, mark live attendance, export CSV, and view participation metrics.
+            Track student registrations dynamically from database, mark live attendance, and view available seat capacity.
           </p>
         </div>
       </div>
@@ -41,7 +65,7 @@ export default function AdminRegistrationsContent() {
               onChange={(e) => setSelectedEventId(e.target.value)}
               className="w-full h-11 px-4 rounded-xl bg-slate-50 border border-slate-200 text-xs font-extrabold text-slate-900 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             >
-              {MOCK_EVENTS.map((event) => (
+              {eventsList.map((event) => (
                 <option key={`event-sel-${event.id}`} value={event.id}>
                   {event.title} — {event.date} ({event.category})
                 </option>
@@ -50,14 +74,20 @@ export default function AdminRegistrationsContent() {
           </div>
 
           {selectedEvent && (
-            <div className="flex items-center gap-3 flex-shrink-0 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+            <div className="flex flex-wrap items-center gap-4 flex-shrink-0 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 font-mono text-xs">
               <StatusBadge status={selectedEvent.status} size="sm" />
-              <div className="text-xs">
+              <div>
                 <span className="text-slate-500 font-medium">Registered: </span>
-                <span className="font-extrabold text-slate-900 font-tabular">
-                  {REGISTERED_COUNTS[selectedEvent.id] || 0}
+                <span className="font-extrabold text-blue-600">
+                  {registeredCount}
                 </span>
-                <span className="text-slate-500 font-medium"> / {selectedEvent.capacity}</span>
+                <span className="text-slate-500 font-medium"> / {capacity}</span>
+              </div>
+              <div className="pl-3 border-l border-slate-200">
+                <span className="text-slate-500 font-medium">Available Seats: </span>
+                <span className={availableSeats <= 5 ? 'font-extrabold text-rose-600' : 'font-extrabold text-emerald-600'}>
+                  {availableSeats}
+                </span>
               </div>
             </div>
           )}
@@ -108,20 +138,21 @@ export default function AdminRegistrationsContent() {
           }`}
         >
           <BarChart2 size={15} />
-          <span>Event Analytics</span>
+          <span>Analytics & Metrics</span>
         </button>
       </div>
 
-      {/* Main Tab Content */}
-      {activeTab === 'registrations' && (
+      {/* Tab Contents */}
+      {selectedEvent && (
         <div className="space-y-6">
-          <AttendanceSummary eventId={selectedEventId} />
-          <RegistrationsTable eventId={selectedEventId} />
-        </div>
-      )}
+          <AttendanceSummary eventId={selectedEvent.id} />
 
-      {activeTab === 'analytics' && (
-        <RegistrationAnalytics eventId={selectedEventId} event={selectedEvent} />
+          {activeTab === 'registrations' ? (
+            <RegistrationsTable eventId={selectedEvent.id} />
+          ) : (
+            <RegistrationAnalytics eventId={selectedEvent.id} event={selectedEvent} />
+          )}
+        </div>
       )}
     </div>
   );

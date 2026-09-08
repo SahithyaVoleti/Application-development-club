@@ -58,7 +58,7 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
-    const speed = 0.5; // smooth pixels per frame
+    const speed = 0.18; // gentle, smooth pixels per frame
 
     const step = () => {
       if (scrollContainer) {
@@ -94,37 +94,34 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
 
   return (
     <section className="py-14 bg-white border-t border-slate-200/80 overflow-hidden" id="completed-events">
-      <div className="w-full px-4 sm:px-8 lg:px-12 space-y-8">
-        
-        {/* Header */}
+      {/* Header */}
+      <div className="max-w-[1450px] mx-auto px-6 lg:px-10 mb-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full px-4 py-1 text-xs font-mono font-extrabold uppercase tracking-widest mb-2">
-              <CheckCircle2 size={14} className="text-emerald-600" /> ACCOMPLISHED DEPARTMENTAL EVENTS
+              <CheckCircle2 size={14} className="text-emerald-600" /> PAST DEPARTMENTAL EVENTS
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
-              Completed & Finished Events ({completedEventsOnly.length})
+              Past Events ({completedEventsOnly.length})
             </h2>
             <p className="text-slate-600 text-sm sm:text-base lg:text-lg mt-2 max-w-3xl leading-relaxed">
-              Explore concluded hackathons, workshops, and student app expos — view attendance statistics, photo galleries, and certified outcomes.
+              Explore past hackathons, technology workshops, and student app expos — view attendance statistics, photo galleries, and certified outcomes.
             </p>
           </div>
         </div>
+      </div>
 
-        {viewMode === 'slider' ? (
-          /* Auto-Scrolling Track for Completed Events */
+      {viewMode === 'slider' ? (
+        /* Auto-Scrolling Track for Completed Events */
+        <div
+          className="w-full overflow-hidden"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <div
-            className="relative overflow-hidden"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            className="flex gap-10 animate-continuous-marquee pb-8 pt-4"
           >
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 z-10 bg-gradient-to-r from-white to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 z-10 bg-gradient-to-l from-white to-transparent" />
-
-            <div
-              className="flex gap-8 animate-continuous-marquee pb-6 pt-2"
-            >
-              {[...completedEventsOnly, ...completedEventsOnly].map((event, idx) => {
+              {[...completedEventsOnly, ...completedEventsOnly, ...completedEventsOnly].map((event, idx) => {
                 const registered = REGISTERED_COUNTS[event.id] || Math.floor(event.capacity * 0.85);
                 const attended = ATTENDED_COUNTS[event.id] || Math.floor(registered * 0.9);
                 const attendanceRate = registered > 0 ? Math.round((attended / registered) * 100) : 92;
@@ -132,71 +129,78 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
                 return (
                   <div
                     key={`completed-${event.id}-${idx}`}
-                    className="w-[420px] sm:w-[480px] lg:w-[520px] flex-shrink-0 bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-300"
+                    className="w-[520px] sm:w-[620px] lg:w-[720px] flex-shrink-0 bg-white rounded-[32px] border border-slate-200 shadow-lg overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-400 p-4 sm:p-5"
                   >
-                    <div className="relative h-56 sm:h-64 overflow-hidden bg-slate-900">
+                    {/* Neatly Formatted Poster Container Frame */}
+                    <div className="relative h-72 sm:h-80 lg:h-[360px] overflow-hidden rounded-[24px] bg-slate-950 border border-slate-800 shadow-md">
+                      {/* Ambient Blurred Background */}
                       <AppImage
                         src={event.posterUrl}
-                        alt={`Completed event photo for ${event.title}`}
+                        alt=""
                         fill
-                        sizes="520px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-90"
+                        className="object-cover blur-2xl opacity-35 scale-110 pointer-events-none"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-
-                      <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
-                        <CategoryBadge category={event.category} />
-                        <span className="px-3 py-1 rounded-full bg-slate-900/90 text-emerald-400 font-extrabold text-xs border border-emerald-500/30">
-                          ⚫ COMPLETED
-                        </span>
-                      </div>
-
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-medium">
-                        <div className="flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded-lg backdrop-blur-xs font-bold">
-                          <Calendar size={14} className="text-emerald-400" />
-                          <span>{formatDate(event.date)}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded-lg backdrop-blur-xs font-bold">
-                          <MapPin size={14} className="text-sky-400" />
-                          <span>{event.venue}</span>
-                        </div>
-                      </div>
+                      {/* Full Un-cropped Poster */}
+                      <AppImage
+                        src={event.posterUrl}
+                        alt={`Past event poster for ${event.title}`}
+                        fill
+                        sizes="720px"
+                        className="object-contain p-2 transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                     </div>
 
-                    <div className="p-6 flex flex-col flex-1 justify-between space-y-4">
+                    <div className="p-8 flex flex-col flex-1 justify-between space-y-6">
                       <div>
-                        <h3 className="font-extrabold text-slate-900 text-xl sm:text-2xl leading-snug line-clamp-1 group-hover:text-emerald-600 transition-colors">
+                        <div className="flex items-center justify-between text-xs font-bold mb-2">
+                          <span className="text-emerald-700 font-mono uppercase tracking-wider">{event.category}</span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold border border-emerald-300">
+                            Completed Event
+                          </span>
+                        </div>
+                        <h3 className="font-black text-slate-900 text-2xl sm:text-3xl leading-snug line-clamp-1 group-hover:text-emerald-600 transition-colors">
                           {event.title}
                         </h3>
-                        <p className="text-sm text-slate-600 line-clamp-2 mt-2 leading-relaxed">
+                        <p className="text-base text-slate-600 line-clamp-3 mt-3 leading-relaxed">
                           {event.description}
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2 py-2 border-y border-slate-100">
-                        <div className="bg-emerald-50/60 rounded-xl p-2 text-center border border-emerald-100">
-                          <div className="text-[10px] text-slate-400 font-bold uppercase">Registered</div>
-                          <div className="text-sm font-extrabold text-slate-900 font-tabular">{registered}</div>
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar size={15} className="text-emerald-600" />
+                          <span>{formatDate(event.date)}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin size={15} className="text-sky-600" />
+                          <span>{event.venue}</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3 py-3 border-y border-slate-100">
+                        <div className="bg-emerald-50/70 rounded-2xl p-3 text-center border border-emerald-100">
+                          <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Registered</div>
+                          <div className="text-base font-black text-slate-900 font-tabular mt-0.5">{registered}</div>
                         </div>
 
-                        <div className="bg-emerald-50/60 rounded-xl p-2 text-center border border-emerald-100">
-                          <div className="text-[10px] text-slate-400 font-bold uppercase">Attended</div>
-                          <div className="text-sm font-extrabold text-emerald-700 font-tabular">{attended}</div>
+                        <div className="bg-emerald-50/70 rounded-2xl p-3 text-center border border-emerald-100">
+                          <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Attended</div>
+                          <div className="text-base font-black text-emerald-700 font-tabular mt-0.5">{attended}</div>
                         </div>
 
-                        <div className="bg-emerald-50/60 rounded-xl p-2 text-center border border-emerald-100">
-                          <div className="text-[10px] text-slate-400 font-bold uppercase">Attendance %</div>
-                          <div className="text-sm font-extrabold text-purple-700 font-tabular">{attendanceRate}%</div>
+                        <div className="bg-emerald-50/70 rounded-2xl p-3 text-center border border-emerald-100">
+                          <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Turnout %</div>
+                          <div className="text-base font-black text-purple-700 font-tabular mt-0.5">{attendanceRate}%</div>
                         </div>
                       </div>
 
                       <button
                         onClick={() => onViewDetails(event)}
-                        className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        className="w-full py-3.5 px-6 rounded-2xl bg-slate-900 hover:bg-emerald-600 text-white font-extrabold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
                       >
-                        <BarChart2 size={14} />
-                        View Event Report & Outcomes
+                        <BarChart2 size={16} />
+                        View Event Report & Certified Outcomes
                       </button>
                     </div>
                   </div>
@@ -217,14 +221,20 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
                   key={`grid-completed-${event.id}`}
                   className="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col justify-between shadow-2xs hover:shadow-md transition-all"
                 >
-                  <div className="relative h-48 overflow-hidden bg-slate-900">
+                  <div className="relative h-56 overflow-hidden bg-slate-950">
+                    <AppImage
+                      src={event.posterUrl}
+                      alt=""
+                      fill
+                      className="object-cover blur-xl opacity-35 scale-110 pointer-events-none"
+                    />
                     <AppImage
                       src={event.posterUrl}
                       alt={`Completed event photo for ${event.title}`}
                       fill
-                      className="object-cover opacity-90"
+                      className="object-contain p-2"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
                       <CategoryBadge category={event.category} />
                       <StatusBadge status="COMPLETED" size="sm" />
@@ -264,7 +274,6 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
             })}
           </div>
         )}
-      </div>
     </section>
   );
 }

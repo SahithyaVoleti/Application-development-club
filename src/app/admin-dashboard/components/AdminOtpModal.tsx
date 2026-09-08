@@ -58,11 +58,18 @@ export default function AdminOtpModal({
     return () => clearInterval(timer);
   }, [isOpen, countdown]);
 
-  const handleSendOtp = async (overrideEmail?: string) => {
+  const handleSendOtp = async (overrideEmail?: string, isResendCall: boolean = false) => {
     const targetEmail = overrideEmail || activeEmail || getTargetEmail();
     setActiveEmail(targetEmail);
     setIsSending(true);
     setErrorMessage(null);
+
+    // Immediately clear all OTP input fields & focus box 1
+    setOtpDigits(['', '', '', '', '', '']);
+    setTimeout(() => {
+      inputRefs.current[0]?.focus();
+    }, 50);
+
     try {
       const res = await fetch('/api/admin/send-otp', {
         method: 'POST',
@@ -73,8 +80,8 @@ export default function AdminOtpModal({
 
       if (data.success) {
         setCountdown(60);
-        toast.success(`Security OTP sent to ${targetEmail}`, {
-          description: 'Check your email inbox for the 6-digit verification OTP code',
+        toast.success(isResendCall ? 'New OTP sent successfully.' : `Security OTP sent to ${targetEmail}`, {
+          description: 'Check your email inbox for the latest 6-digit verification code',
         });
       } else {
         setErrorMessage(data.error || 'Failed to send OTP email');
@@ -90,7 +97,7 @@ export default function AdminOtpModal({
     if (value.length > 1) {
       // User pasted full 6-digit code
       const pasted = value.replace(/\D/g, '').slice(0, 6).split('');
-      const newDigits = [...otpDigits];
+      const newDigits = ['', '', '', '', '', ''];
       pasted.forEach((char, i) => {
         if (i < 6) newDigits[i] = char;
       });
@@ -149,10 +156,20 @@ export default function AdminOtpModal({
         onVerified();
         onClose();
       } else {
-        setErrorMessage(data.error || 'Invalid OTP code. Please check your email inbox and try again.');
+        // WRONG OR EXPIRED OTP: Clear fields, set error, and focus box 1
+        const errorMsg = data.error || 'Invalid OTP. Please try again with the latest OTP.';
+        setErrorMessage(errorMsg);
+        setOtpDigits(['', '', '', '', '', '']);
+        setTimeout(() => {
+          inputRefs.current[0]?.focus();
+        }, 50);
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Verification request failed');
+      setOtpDigits(['', '', '', '', '', '']);
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 50);
     } finally {
       setIsVerifying(false);
     }
@@ -256,7 +273,7 @@ export default function AdminOtpModal({
           <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
             <span>Didn't receive code?</span>
             <button
-              onClick={() => handleSendOtp()}
+              onClick={() => handleSendOtp(undefined, true)}
               disabled={isSending || countdown > 0}
               className="font-bold text-sky-600 hover:text-sky-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition-colors"
             >

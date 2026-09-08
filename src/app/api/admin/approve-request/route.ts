@@ -25,13 +25,13 @@ export async function POST(request: Request) {
       );
     }
 
-    let updatedUser = null;
+    let result = null;
 
     if (action === 'ACCEPT') {
-      updatedUser = await approveAdminRequest(requestId, superAdmin.name);
+      result = await approveAdminRequest(requestId, superAdmin.name);
     } else if (action === 'REJECT') {
       const reason = rejectionReason || 'Verification details did not match CSE Faculty records.';
-      updatedUser = await rejectAdminRequest(requestId, reason);
+      result = await rejectAdminRequest(requestId, superAdmin.name, reason);
     } else {
       return NextResponse.json(
         { success: false, error: 'Invalid action. Must be ACCEPT or REJECT.' },
@@ -39,13 +39,26 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!updatedUser) {
+    if (result.alreadyProcessed) {
+      return NextResponse.json(
+        {
+          success: false,
+          alreadyProcessed: true,
+          error: 'This approval request has already been processed.',
+          user: result.user,
+        },
+        { status: 409 }
+      );
+    }
+
+    if (!result.user) {
       return NextResponse.json(
         { success: false, error: 'Admin request record not found.' },
         { status: 404 }
       );
     }
 
+    const updatedUser = result.user;
     const allRequests = await getAllAdminRequests();
     const pendingRequests = await getPendingAdminRequests();
 

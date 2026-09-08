@@ -30,6 +30,7 @@ interface Props {
 
 export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(null);
 
@@ -44,19 +45,19 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
     }
   }, []);
 
-  return (
-    <aside
-      className={`bg-slate-950 text-slate-300 flex flex-col justify-between transition-all duration-300 ease-in-out flex-shrink-0 border-r border-slate-800/80 z-30 ${
-        collapsed ? 'w-16' : 'w-[230px]'
-      }`}
-      style={{ minHeight: '100vh' }}
-    >
+  const handleNavClick = (view: AdminView) => {
+    setMobileOpen(false);
+    onNavigate(view);
+  };
+
+  const sidebarContent = (
+    <div className="flex flex-col justify-between h-full">
       <div>
         {/* Sidebar Brand Header */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-slate-800/80">
           {!collapsed ? (
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-sm shadow-md">
+              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-sm shadow-md flex-shrink-0">
                 AD
               </div>
               <div className="min-w-0">
@@ -76,7 +77,7 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
 
           <button
             onClick={() => setCollapsed(v => !v)}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors flex-shrink-0"
+            className="hidden lg:block p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors flex-shrink-0 cursor-pointer"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -94,9 +95,9 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
             )}
             <div className="space-y-1">
               <button
-                onClick={() => onNavigate('dashboard')}
+                onClick={() => handleNavClick('dashboard')}
                 title={collapsed ? 'Dashboard' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   activeView === 'dashboard'
                     ? 'bg-blue-600/15 text-sky-400 font-bold border border-blue-500/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -110,9 +111,9 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
               </button>
 
               <button
-                onClick={() => onNavigate('analytics')}
+                onClick={() => handleNavClick('analytics')}
                 title={collapsed ? 'Analytics' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   activeView === 'analytics'
                     ? 'bg-blue-600/15 text-sky-400 font-bold border border-blue-500/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -127,9 +128,9 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
 
               {/* Admin Access Approvals button for Super Admin / Admin */}
               <button
-                onClick={() => onNavigate('approvals')}
+                onClick={() => handleNavClick('approvals')}
                 title={collapsed ? 'Admin Approvals' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   activeView === 'approvals'
                     ? 'bg-indigo-600/20 text-indigo-400 font-extrabold border border-indigo-500/40 shadow-xs'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -162,9 +163,9 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
             )}
             <div className="space-y-1">
               <button
-                onClick={() => onNavigate('events')}
+                onClick={() => handleNavClick('events')}
                 title={collapsed ? 'Events' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   activeView === 'events'
                     ? 'bg-blue-600/15 text-sky-400 font-bold border border-blue-500/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -178,9 +179,9 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
               </button>
 
               <button
-                onClick={() => onNavigate('registrations')}
+                onClick={() => handleNavClick('registrations')}
                 title={collapsed ? 'Registrations' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   activeView === 'registrations'
                     ? 'bg-blue-600/15 text-sky-400 font-bold border border-blue-500/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -194,9 +195,9 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
               </button>
 
               <button
-                onClick={() => onNavigate('leaderboard')}
+                onClick={() => handleNavClick('leaderboard')}
                 title={collapsed ? 'Leaderboard' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   activeView === 'leaderboard'
                     ? 'bg-blue-600/15 text-sky-400 font-bold border border-blue-500/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -277,7 +278,7 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
         <button
           onClick={() => setIsChangePasswordOpen(true)}
           title={collapsed ? 'Change Password' : undefined}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-sky-400 hover:bg-sky-500/10 hover:text-sky-300 transition-colors mb-1 ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-sky-400 hover:bg-sky-500/10 hover:text-sky-300 transition-colors mb-1 cursor-pointer ${
             collapsed ? 'justify-center px-2' : ''
           }`}
         >
@@ -288,7 +289,7 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
         <button
           onClick={onLogout}
           title={collapsed ? 'Logout' : undefined}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer ${
             collapsed ? 'justify-center px-2' : ''
           }`}
         >
@@ -302,6 +303,68 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
         isOpen={isChangePasswordOpen}
         onClose={() => setIsChangePasswordOpen(false)}
       />
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Top Header Navigation Bar (Visible < lg) */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-slate-950 border-b border-slate-800 text-white px-4 flex items-center justify-between z-40">
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-2 rounded-xl hover:bg-slate-800 text-slate-300 transition-colors cursor-pointer"
+            aria-label="Open Admin Menu"
+          >
+            <div className="space-y-1">
+              <span className="block w-5 h-0.5 bg-white rounded" />
+              <span className="block w-5 h-0.5 bg-white rounded" />
+              <span className="block w-3 h-0.5 bg-sky-400 rounded" />
+            </div>
+          </button>
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-sm text-white">AppDevHub</span>
+            <span className="bg-sky-500/20 text-sky-400 text-[10px] px-2 py-0.5 rounded font-mono font-bold uppercase">
+              Admin
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-slate-400 font-medium truncate max-w-[120px] hidden xs:inline">
+            {user?.name || 'Admin'}
+          </span>
+          <button
+            onClick={onLogout}
+            className="p-1.5 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-xs font-bold transition-colors cursor-pointer"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          <div
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="relative w-[270px] max-w-[80vw] bg-slate-950 text-slate-300 shadow-2xl flex flex-col justify-between h-full z-10 animate-slideRight border-r border-slate-800">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar (Visible ≥ lg) */}
+      <aside
+        className={`hidden lg:flex bg-slate-950 text-slate-300 flex-col justify-between transition-all duration-300 ease-in-out flex-shrink-0 border-r border-slate-800/80 z-30 ${
+          collapsed ? 'w-16' : 'w-[230px]'
+        }`}
+        style={{ minHeight: '100vh' }}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

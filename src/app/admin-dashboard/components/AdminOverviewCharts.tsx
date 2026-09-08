@@ -67,7 +67,7 @@ export default function AdminOverviewCharts() {
           </div>
 
           <div className="h-[240px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={240} minHeight={180}>
               <AreaChart data={MONTHLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="blueAreaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -124,7 +124,7 @@ export default function AdminOverviewCharts() {
           </div>
 
           <div className="relative h-[200px] w-full flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={200} minHeight={180}>
               <PieChart>
                 <Pie
                   data={CATEGORY_DATA}
@@ -191,7 +191,7 @@ export default function AdminOverviewCharts() {
         </div>
 
         <div className="h-[220px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={220} minHeight={180}>
             <BarChart data={REGISTRATIONS_PER_EVENT} barSize={28} margin={{ top: 10, right: 10, left: -15, bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
               <XAxis

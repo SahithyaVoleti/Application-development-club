@@ -23,7 +23,7 @@ export default function AdminAuthGuard({ children }: Props) {
       // STRICT ROLE & STATUS CHECK: Only SUPER_ADMIN or TRUSTED_ADMIN can enter Admin Panel
       const isAuthorizedAdmin =
         user.role === 'SUPER_ADMIN' ||
-        (user.role === 'ADMIN' && user.status === 'TRUSTED_ADMIN');
+        (user.role === 'ADMIN' && (user.status === 'APPROVED' || user.status === 'TRUSTED_ADMIN'));
 
       if (!isAuthorizedAdmin) {
         if (typeof window !== 'undefined') {
@@ -44,7 +44,7 @@ export default function AdminAuthGuard({ children }: Props) {
   const handleLoginSuccess = (user: any) => {
     const isAuthorizedAdmin =
       user.role === 'SUPER_ADMIN' ||
-      (user.role === 'ADMIN' && user.status === 'TRUSTED_ADMIN');
+      (user.role === 'ADMIN' && (user.status === 'APPROVED' || user.status === 'TRUSTED_ADMIN'));
 
     if (isAuthorizedAdmin) {
       setIsAuthenticated(true);

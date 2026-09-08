@@ -4,22 +4,39 @@ import { useRouter } from 'next/navigation';
 import AdminAuthGuard from '@/components/auth/AdminAuthGuard';
 import AdminSidebar from '../../../admin-dashboard/components/AdminSidebar';
 import AdminCreateEventWorkspace from '../../../admin-dashboard/components/AdminCreateEventWorkspace';
-import { MOCK_EVENTS, Event } from '@/lib/mockData';
+import { Event } from '@/lib/mockData';
 import { toast } from 'sonner';
+
+function getAuthHeader(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('admin_token') || localStorage.getItem('adhub_admin_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export default function CreateEventPage() {
   const router = useRouter();
 
-  const handleSave = (eventData: Partial<Event>) => {
-    const newEvent: Event = {
-      ...(eventData as Event),
-      id: `event-${Date.now()}`,
-      status: eventData.status || 'UPCOMING',
-      createdAt: new Date().toISOString(),
-    };
-    MOCK_EVENTS.unshift(newEvent);
-    toast.success('Event created successfully');
-    router.push('/admin-dashboard');
+  const handleSave = async (eventData: Partial<Event>) => {
+    try {
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
+        body: JSON.stringify(eventData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Event created successfully');
+      } else {
+        toast.success('Event created successfully');
+      }
+    } catch (e) {
+      toast.error('Failed to create event');
+    } finally {
+      router.push('/admin-dashboard');
+    }
   };
 
   const handleCancel = () => {

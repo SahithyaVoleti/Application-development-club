@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 import { findUserByEmail, findUserByStaffId, createUser, updateUser } from '@/lib/userStore';
 import { hashPassword } from '@/lib/auth';
-import { adminOtpStore } from '@/lib/adminOtpStore';
-import { sendOtpEmail } from '@/lib/emailService';
+import {
+  sendAdminRegistrationConfirmationToApplicant,
+  sendAdminApprovalRequestToAllSuperAdmins,
+} from '@/lib/emailService';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, phone, staffId, department, password, confirmPassword } = body;
+    const { name, email, phone, staffId, department, designation, organization, college, password, confirmPassword } = body;
+    const cleanDesignation = designation ? designation.trim() : 'Faculty Coordinator';
+    const cleanOrganization = (organization || college || 'VFSTR / Vignan University').trim();
 
     // 1. Required fields validation
     if (!name || !email || !phone || !staffId || !department || !password) {
@@ -45,15 +49,15 @@ export async function POST(request: Request) {
         );
       }
       if (existingEmailUser.role === 'ADMIN') {
-        if (existingEmailUser.status === 'TRUSTED_ADMIN') {
+        if (existingEmailUser.status === 'APPROVED' || existingEmailUser.status === 'TRUSTED_ADMIN') {
           return NextResponse.json(
             { success: false, error: 'This Admin account is already active and approved. Please sign in directly.' },
             { status: 409 }
           );
         }
-        if (existingEmailUser.status === 'PENDING_APPROVAL') {
+        if (existingEmailUser.status === 'PENDING_APPROVAL' || existingEmailUser.status === 'PENDING') {
           return NextResponse.json(
-            { success: false, error: 'Your Admin registration has been verified and is pending Super Admin approval.' },
+            { success: false, error: 'Your Admin registration is already submitted and pending Super Admin approval.' },
             { status: 409 }
           );
         }
@@ -69,52 +73,71 @@ export async function POST(request: Request) {
       );
     }
 
-    // 4. Create or Update Admin Account in PENDING_OTP status (NOT TRUSTED_ADMIN)
+    let adminUser;
+    // 4. Create or Update Admin Account in PENDING_APPROVAL status
     if (existingEmailUser) {
-      await updateUser(existingEmailUser.id, {
+      adminUser = await updateUser(existingEmailUser.id, {
         name: name.trim(),
         phone: phone.trim(),
         staffId: cleanStaffId,
         department: department.trim(),
+        designation: cleanDesignation,
+        organization: cleanOrganization,
+        college: cleanOrganization,
         passwordHash: hashedPassword,
         role: 'ADMIN',
-        status: 'PENDING_OTP',
+        status: 'PENDING_APPROVAL',
         otpVerified: false,
       });
     } else {
-      await createUser({
+      adminUser = await createUser({
         name: name.trim(),
         email: cleanEmail,
         phone: phone.trim(),
         staffId: cleanStaffId,
         department: department.trim(),
+        designation: cleanDesignation,
+        organization: cleanOrganization,
+        college: cleanOrganization,
         passwordHash: hashedPassword,
         role: 'ADMIN',
-        status: 'PENDING_OTP',
+        status: 'PENDING_APPROVAL',
         otpVerified: false,
       });
     }
 
-    // 5. Generate secure 6-digit OTP code & set 5-minute expiration
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 5 * 60 * 1000;
+    const host = request.headers.get('host') || 'localhost:4028';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
 
-    adminOtpStore.set(cleanEmail, { code: otpCode, expiresAt });
+    // 5. Send registration confirmation email to applicant
+    await sendAdminRegistrationConfirmationToApplicant({
+      adminEmail: cleanEmail,
+      adminName: name.trim(),
+      registeredAt: new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
+    });
 
-    // 6. Dispatch Email Notification via Brevo/SMTP/Resend
-    const sendResult = await sendOtpEmail({
-      toEmail: cleanEmail,
-      recipientName: name.trim(),
-      otpCode,
-      isResend: false,
+    // 6. Send Admin Approval Request to ALL 3 Super Admin emails independently
+    const superAdminDispatchResult = await sendAdminApprovalRequestToAllSuperAdmins({
+      adminId: adminUser?.id || `user-admin-${Date.now()}`,
+      adminName: name.trim(),
+      adminEmail: cleanEmail,
+      adminPhone: phone.trim(),
+      staffId: cleanStaffId,
+      department: department.trim(),
+      designation: cleanDesignation,
+      organization: cleanOrganization,
+      college: cleanOrganization,
+      registeredAt: new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
+      baseUrl,
     });
 
     return NextResponse.json({
       success: true,
       email: cleanEmail,
-      message: `OTP verification code sent to ${cleanEmail}`,
-      emailSent: sendResult.success,
-      provider: sendResult.provider,
+      status: 'PENDING_APPROVAL',
+      message: 'Registration submitted successfully. Your request is waiting for Super Admin approval.',
+      superAdminNotificationsSent: superAdminDispatchResult.totalSent,
     });
   } catch (error: any) {
     console.error('Admin Registration API Error:', error);

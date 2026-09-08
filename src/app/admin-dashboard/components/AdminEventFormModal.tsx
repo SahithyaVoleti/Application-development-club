@@ -19,6 +19,7 @@ interface Props {
 
 type FormData = {
   title: string;
+  clubId?: string;
   category: string;
   status: Event['status'];
   description: string;
@@ -45,6 +46,7 @@ export default function AdminEventFormModal({ event, onClose, onSave }: Props) {
     defaultValues: event
       ? {
           title: event.title,
+          clubId: event.clubId || 'club-appdev',
           category: event.category,
           status: event.status || 'UPCOMING',
           description: event.description,
@@ -64,6 +66,7 @@ export default function AdminEventFormModal({ event, onClose, onSave }: Props) {
           certificateTemplateUrl: event.certificateTemplateUrl || '',
         }
       : {
+          clubId: 'club-appdev',
           status: 'UPCOMING',
         },
   });
@@ -104,6 +107,20 @@ export default function AdminEventFormModal({ event, onClose, onSave }: Props) {
                   placeholder="e.g. AI & Machine Learning Workshop"
                 />
                 {errors.title && <p className="error-text">{errors.title.message}</p>}
+              </div>
+              <div>
+                <label className="label-text">Associated Club / Department *</label>
+                <select
+                  {...register('clubId')}
+                  className="input-field"
+                  defaultValue={event?.clubId || 'club-appdev'}
+                >
+                  <option value="club-appdev">Application Development Club</option>
+                  <option value="club-ai">AI & ML Club</option>
+                  <option value="club-coding">Competitive Coding Club</option>
+                  <option value="club-webdev">Web & Cloud Developers Club</option>
+                  <option value="club-cyber">Cyber Security & Forensics Club</option>
+                </select>
               </div>
               <div>
                 <label className="label-text">Category *</label>

@@ -136,7 +136,7 @@ export default function ChangePasswordModal({
                   required
                   value={currentPassword}
                   onChange={e => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
+                  placeholder=""
                   className="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white"
                 />
               </div>
@@ -155,7 +155,7 @@ export default function ChangePasswordModal({
                 minLength={6}
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
-                placeholder="Minimum 6 characters"
+                placeholder=""
                 className="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white"
               />
               <button
@@ -179,7 +179,7 @@ export default function ChangePasswordModal({
                 required
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter new password"
+                placeholder=""
                 className="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white"
               />
             </div>

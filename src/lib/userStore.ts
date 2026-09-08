@@ -1,7 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 import { hashPassword } from '@/lib/auth';
 
 export type Role = 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN';
-export type AdminStatus = 'PENDING_OTP' | 'PENDING_APPROVAL' | 'TRUSTED_ADMIN' | 'REJECTED' | 'ACTIVE';
+export type AdminStatus = 'PENDING' | 'PENDING_OTP' | 'PENDING_APPROVAL' | 'APPROVED' | 'TRUSTED_ADMIN' | 'REJECTED' | 'ACTIVE';
 
 export interface UserRecord {
   id: string;
@@ -11,6 +13,9 @@ export interface UserRecord {
   staffId?: string;
   studentId?: string;
   department?: string;
+  designation?: string;
+  college?: string;
+  organization?: string;
   year?: string;
   section?: string;
   passwordHash: string;
@@ -20,60 +25,81 @@ export interface UserRecord {
   createdAt: string;
   approvedAt?: string | null;
   approvedBy?: string | null;
+  rejectedAt?: string | null;
+  rejectedBy?: string | null;
   rejectionReason?: string | null;
 }
 
-const DEFAULT_SECRET = process.env.AUTH_SECRET || 'super-secret-adhub-jwt-key-2026';
+export interface AuditLogRecord {
+  id: string;
+  adminId: string;
+  adminName: string;
+  adminEmail: string;
+  action: 'APPROVED' | 'REJECTED' | 'CREATED' | 'UPDATED' | 'DELETED' | 'REGISTERED';
+  performedBy: string;
+  performedAt: string;
+  rejectionReason?: string | null;
+  metadata?: Record<string, any>;
+}
 
-// Persistent in-memory store initialized with seed accounts
-let globalUsers: UserRecord[] = [
-  // 1. Super Admin Account
+const DB_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'users-persistent-db.json');
+
+const INITIAL_SEED_USERS: UserRecord[] = [
+  // 1. Sahithya Voleti (Super Admin)
   {
     id: 'user-super-admin-001',
-    name: 'Prof. U. V. Ramana (Super Admin)',
-    email: 'uvr_cse@vignan.ac.in',
-    phone: '+91 9440011223',
+    name: 'Sahithya Voleti (Super Admin)',
+    email: 'sahithyalakshmivoleti@gmail.com',
+    phone: '+91 9876543210',
     staffId: 'SA-001',
-    department: 'CSE / Executive Board',
-    passwordHash: hashPassword('SuperAdmin@2026'),
+    studentId: '221FA04049',
+    department: 'Computer Science & Engineering',
+    designation: 'Super Admin',
+    year: '3rd Year',
+    section: 'A',
+    passwordHash: hashPassword('Ramana@5445'),
     role: 'SUPER_ADMIN',
-    status: 'TRUSTED_ADMIN',
+    status: 'APPROVED',
     otpVerified: true,
     createdAt: '2026-01-01T00:00:00.000Z',
     approvedAt: '2026-01-01T00:00:00.000Z',
     approvedBy: 'System Init',
   },
-  // 1b. Legacy Super Admin Email Alias
+  // 2. E. Deepak Chowdary (Super Admin)
   {
     id: 'user-super-admin-002',
-    name: 'Super Admin',
-    email: 'superadmin@vignan.ac.in',
-    phone: '+91 9440011223',
+    name: 'E. Deepak Chowdary (Super Admin)',
+    email: 'edaradeepakchowdary@gmail.com',
+    phone: '+91 9876543211',
     staffId: 'SA-002',
-    department: 'CSE',
+    department: 'Computer Science & Engineering',
+    designation: 'Super Admin',
     passwordHash: hashPassword('SuperAdmin@2026'),
     role: 'SUPER_ADMIN',
-    status: 'TRUSTED_ADMIN',
-    otpVerified: true,
-    createdAt: '2026-01-01T00:00:00.000Z',
-  },
-  // 1c. Deepak Chowdary Edara (Super Admin)
-  {
-    id: 'user-super-admin-003',
-    name: 'Deepak Chowdary Edara (Super Admin)',
-    email: 'deepakchowdaryedara@gmail.com',
-    phone: '+91 9876543210',
-    staffId: 'SA-003',
-    department: 'Executive Board',
-    passwordHash: hashPassword('SuperAdmin@2026'),
-    role: 'SUPER_ADMIN',
-    status: 'TRUSTED_ADMIN',
+    status: 'APPROVED',
     otpVerified: true,
     createdAt: '2026-01-01T00:00:00.000Z',
     approvedAt: '2026-01-01T00:00:00.000Z',
     approvedBy: 'System Init',
   },
-  // 2. Default Trusted Admin Account
+  // 3. U. Venkateswarao (Super Admin)
+  {
+    id: 'user-super-admin-003',
+    name: 'U. Venkateswarao (Super Admin)',
+    email: 'uvr_cse@vignan.ac.in',
+    phone: '+91 9876543212',
+    staffId: 'SA-003',
+    department: 'Computer Science & Engineering',
+    designation: 'Super Admin',
+    passwordHash: hashPassword('SuperAdmin@2026'),
+    role: 'SUPER_ADMIN',
+    status: 'APPROVED',
+    otpVerified: true,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    approvedAt: '2026-01-01T00:00:00.000Z',
+    approvedBy: 'System Init',
+  },
+  // 4. Default Approved Admin Account: Dr. Ramesh Babu
   {
     id: 'user-admin-001',
     name: 'Dr. Ramesh Babu (CSE Head)',
@@ -81,15 +107,16 @@ let globalUsers: UserRecord[] = [
     phone: '+91 9848022334',
     staffId: 'FAC-CSE-001',
     department: 'CSE',
+    designation: 'Head of Department',
     passwordHash: hashPassword('ADHub@2026'),
     role: 'ADMIN',
-    status: 'TRUSTED_ADMIN',
+    status: 'APPROVED',
     otpVerified: true,
     createdAt: '2026-01-05T00:00:00.000Z',
     approvedAt: '2026-01-05T00:00:00.000Z',
     approvedBy: 'Super Admin',
   },
-  // 3. Seeded Student Account: Sahithya Voleti
+  // 5. Seeded Student Account: Sahithya Voleti
   {
     id: 'user-student-001',
     name: 'Sahithya Voleti',
@@ -97,6 +124,7 @@ let globalUsers: UserRecord[] = [
     phone: '+91 9876543210',
     studentId: '221FA04049',
     department: 'Computer Science & Engineering',
+    designation: 'Student Developer',
     year: '3rd Year',
     section: 'A',
     passwordHash: hashPassword('Ramana@5445'),
@@ -105,26 +133,129 @@ let globalUsers: UserRecord[] = [
     otpVerified: true,
     createdAt: '2026-01-10T00:00:00.000Z',
   },
+  // 6. Pending Admin Registration Request: M. Varun Kumar
   {
-    id: 'user-student-002',
-    name: 'Sahithya Voleti',
-    email: 'sahithyalakshmivoleti@gmail.com',
-    phone: '+91 9876543210',
-    studentId: '221FA04049',
+    id: 'user-admin-varun-001',
+    name: 'M. Varun Kumar',
+    email: 'varunkumar@vignan.ac.in',
+    phone: '+91 9876543211',
+    staffId: 'FAC-CSE-007',
     department: 'Computer Science & Engineering',
-    year: '3rd Year',
-    section: 'A',
-    passwordHash: hashPassword('Ramana@5445'),
-    role: 'STUDENT',
-    status: 'ACTIVE',
-    otpVerified: true,
-    createdAt: '2026-01-10T00:00:00.000Z',
+    designation: 'Faculty Coordinator',
+    passwordHash: hashPassword('Varun@2026'),
+    role: 'ADMIN',
+    status: 'PENDING_APPROVAL',
+    otpVerified: false,
+    createdAt: new Date().toISOString(),
   },
 ];
 
+function loadUsersFromStorage(): { users: UserRecord[]; auditLogs: AuditLogRecord[] } {
+  try {
+    if (fs.existsSync(DB_FILE_PATH)) {
+      const raw = fs.readFileSync(DB_FILE_PATH, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.users)) {
+        // Merge loaded users with seed defaults if missing essential fields
+        const mergedUsers = parsed.users.map((u: any) => {
+          const seedMatch = INITIAL_SEED_USERS.find(
+            s => s.id === u.id || (u.email && s.email.toLowerCase() === u.email.toLowerCase())
+          );
+          if (seedMatch) {
+            return { ...seedMatch, ...u };
+          }
+          return u;
+        });
+
+        // Ensure all 3 Super Admins exist
+        for (const seed of INITIAL_SEED_USERS) {
+          if (seed.role === 'SUPER_ADMIN') {
+            const exists = mergedUsers.some(
+              (u: any) => u.id === seed.id || (u.email && u.email.toLowerCase() === seed.email.toLowerCase())
+            );
+            if (!exists) {
+              mergedUsers.unshift(seed);
+            }
+          }
+        }
+
+        return {
+          users: mergedUsers,
+          auditLogs: Array.isArray(parsed.auditLogs) ? parsed.auditLogs : [],
+        };
+      }
+    }
+  } catch (err) {
+    console.error('Error reading user DB file:', err);
+  }
+  const initialData = { users: INITIAL_SEED_USERS, auditLogs: [] };
+  saveUsersToStorage(initialData.users, initialData.auditLogs);
+  return initialData;
+}
+
+function saveUsersToStorage(users: UserRecord[], auditLogs: AuditLogRecord[]) {
+  try {
+    const dir = path.dirname(DB_FILE_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(
+      DB_FILE_PATH,
+      JSON.stringify({ users, auditLogs, updatedAt: new Date().toISOString() }, null, 2),
+      'utf-8'
+    );
+  } catch (err) {
+    console.error('Error saving user DB file:', err);
+  }
+}
+
+export function ensureSuperAdminsExist() {
+  for (const seed of INITIAL_SEED_USERS) {
+    if (seed.role === 'SUPER_ADMIN') {
+      const idx = globalUsers.findIndex(
+        u => u.id === seed.id || (u.email && u.email.toLowerCase() === seed.email.toLowerCase())
+      );
+      if (idx === -1) {
+        globalUsers.unshift({ ...seed });
+      } else {
+        globalUsers[idx] = {
+          ...seed,
+          ...globalUsers[idx],
+          role: 'SUPER_ADMIN',
+          status: 'APPROVED',
+        };
+      }
+    }
+  }
+}
+
+// Global Singleton pattern to maintain in-memory state across Next.js HMR reloads
+const globalForUserStore = globalThis as unknown as {
+  globalUsers: UserRecord[] | undefined;
+  globalAuditLogs: AuditLogRecord[] | undefined;
+};
+
+if (!globalForUserStore.globalUsers) {
+  const loaded = loadUsersFromStorage();
+  globalForUserStore.globalUsers = loaded.users;
+  globalForUserStore.globalAuditLogs = loaded.auditLogs;
+}
+
+let globalUsers = globalForUserStore.globalUsers!;
+let globalAuditLogs = globalForUserStore.globalAuditLogs!;
+ensureSuperAdminsExist();
+
+function syncStore() {
+  globalForUserStore.globalUsers = globalUsers;
+  globalForUserStore.globalAuditLogs = globalAuditLogs;
+  saveUsersToStorage(globalUsers, globalAuditLogs);
+}
+
 export async function findUserByEmail(email: string): Promise<UserRecord | null> {
+  if (!email) return null;
+  ensureSuperAdminsExist();
   const cleanEmail = email.toLowerCase().trim();
-  const user = globalUsers.find(u => u.email.toLowerCase() === cleanEmail);
+  const user = globalUsers.find(u => u.email && u.email.toLowerCase() === cleanEmail);
   return user ? { ...user } : null;
 }
 
@@ -136,6 +267,7 @@ export async function findUserByStaffId(staffId: string): Promise<UserRecord | n
 }
 
 export async function findUserById(id: string): Promise<UserRecord | null> {
+  if (!id) return null;
   const user = globalUsers.find(u => u.id === id);
   return user ? { ...user } : null;
 }
@@ -145,17 +277,22 @@ export async function createUser(data: Omit<UserRecord, 'id' | 'createdAt'>): Pr
   const newUser: UserRecord = {
     ...data,
     id,
-    email: data.email.toLowerCase().trim(),
+    email: (data.email || '').toLowerCase().trim(),
     staffId: data.staffId ? data.staffId.toUpperCase().trim() : undefined,
     createdAt: new Date().toISOString(),
   };
 
   globalUsers.push(newUser);
+  syncStore();
   return { ...newUser };
 }
 
 export async function updateUser(id: string, updates: Partial<UserRecord>): Promise<UserRecord | null> {
-  const index = globalUsers.findIndex(u => u.id === id);
+  if (!id) return null;
+  const cleanId = id.trim().toLowerCase();
+  const index = globalUsers.findIndex(
+    u => (u.id && u.id.toLowerCase() === cleanId) || (u.email && u.email.toLowerCase() === cleanId)
+  );
   if (index === -1) return null;
 
   globalUsers[index] = {
@@ -163,48 +300,214 @@ export async function updateUser(id: string, updates: Partial<UserRecord>): Prom
     ...updates,
   };
 
+  syncStore();
   return { ...globalUsers[index] };
 }
 
+export async function deleteUser(id: string): Promise<boolean> {
+  if (!id) return false;
+  const clean = id.trim().toLowerCase();
+  const index = globalUsers.findIndex(
+    u =>
+      (u.id && u.id.toLowerCase() === clean) ||
+      (u.email && u.email.toLowerCase() === clean) ||
+      (u.staffId && u.staffId.toLowerCase() === clean)
+  );
+  if (index === -1) return false;
+  globalUsers.splice(index, 1);
+  syncStore();
+  return true;
+}
+
 export async function getPendingAdminRequests(): Promise<UserRecord[]> {
+  ensureSuperAdminsExist();
   return globalUsers
-    .filter(u => u.role === 'ADMIN' && u.status === 'PENDING_APPROVAL')
+    .filter(u => u.role === 'ADMIN' && (u.status === 'PENDING' || u.status === 'PENDING_APPROVAL' || u.status === 'PENDING_OTP'))
     .map(u => ({ ...u }));
 }
 
 export async function getAllAdminRequests(): Promise<UserRecord[]> {
+  ensureSuperAdminsExist();
   return globalUsers
     .filter(u => u.role === 'ADMIN' || u.role === 'SUPER_ADMIN')
     .map(u => ({ ...u }));
 }
 
-export async function approveAdminRequest(id: string, approvedBy: string = 'Super Admin'): Promise<UserRecord | null> {
-  const index = globalUsers.findIndex(u => u.id === id);
-  if (index === -1) return null;
+/** Configured Super Admin email addresses */
+export function getSuperAdminEmails(): string[] {
+  const envEmails = process.env.SUPER_ADMIN_EMAILS;
+  if (envEmails) {
+    return envEmails
+      .split(',')
+      .map(e => e.trim().toLowerCase())
+      .filter(Boolean);
+  }
+  return [
+    'sahithyalakshmivoleti@gmail.com',
+    'edaradeepakchowdary@gmail.com',
+    'uvr_cse@vignan.ac.in',
+  ];
+}
+
+export function isSuperAdminEmail(email: string): boolean {
+  if (!email) return false;
+  const clean = email.trim().toLowerCase();
+  return getSuperAdminEmails().includes(clean);
+}
+
+export async function getAuditLogs(): Promise<AuditLogRecord[]> {
+  return [...globalAuditLogs].sort(
+    (a, b) => new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime()
+  );
+}
+
+export async function addAuditLog(log: Omit<AuditLogRecord, 'id' | 'performedAt'>): Promise<AuditLogRecord> {
+  const newLog: AuditLogRecord = {
+    ...log,
+    id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    performedAt: new Date().toISOString(),
+  };
+  globalAuditLogs.push(newLog);
+  syncStore();
+  return newLog;
+}
+
+export async function approveAdminRequest(
+  id: string,
+  approvedBy: string = 'Super Admin'
+): Promise<{ user: UserRecord | null; alreadyProcessed?: boolean }> {
+  if (!id) return { user: null };
+  const cleanId = id.trim().toLowerCase();
+  const index = globalUsers.findIndex(
+    u => u.id === id || (u.id && u.id.toLowerCase() === cleanId) || (u.email && u.email.toLowerCase() === cleanId)
+  );
+  if (index === -1) return { user: null };
+
+  const target = globalUsers[index];
+
+  // Atomic Check: Prevent duplicate approval / reprocessing
+  if (target.status === 'APPROVED' || target.status === 'REJECTED') {
+    return { user: { ...target }, alreadyProcessed: true };
+  }
 
   globalUsers[index] = {
-    ...globalUsers[index],
+    ...target,
     role: 'ADMIN',
-    status: 'TRUSTED_ADMIN',
+    status: 'APPROVED',
     approvedAt: new Date().toISOString(),
     approvedBy,
     rejectionReason: null,
   };
 
-  return { ...globalUsers[index] };
+  const updatedUser = { ...globalUsers[index] };
+
+  // Add audit log
+  await addAuditLog({
+    adminId: updatedUser.id,
+    adminName: updatedUser.name,
+    adminEmail: updatedUser.email,
+    action: 'APPROVED',
+    performedBy: approvedBy,
+  });
+
+  syncStore();
+  return { user: updatedUser, alreadyProcessed: false };
 }
 
-export async function rejectAdminRequest(id: string, rejectionReason: string = 'Verification details did not match faculty records.'): Promise<UserRecord | null> {
-  const index = globalUsers.findIndex(u => u.id === id);
-  if (index === -1) return null;
+export async function rejectAdminRequest(
+  id: string,
+  rejectedBy: string = 'Super Admin',
+  rejectionReason: string = 'Verification details did not match CSE Faculty records.'
+): Promise<{ user: UserRecord | null; alreadyProcessed?: boolean }> {
+  if (!id) return { user: null };
+  const cleanId = id.trim().toLowerCase();
+  const index = globalUsers.findIndex(
+    u => u.id === id || (u.id && u.id.toLowerCase() === cleanId) || (u.email && u.email.toLowerCase() === cleanId)
+  );
+  if (index === -1) return { user: null };
+
+  const target = globalUsers[index];
+
+  // Atomic Check: Prevent duplicate rejection / reprocessing
+  if (target.status === 'APPROVED' || target.status === 'REJECTED') {
+    return { user: { ...target }, alreadyProcessed: true };
+  }
 
   globalUsers[index] = {
-    ...globalUsers[index],
+    ...target,
     status: 'REJECTED',
+    rejectedBy,
+    rejectedAt: new Date().toISOString(),
     rejectionReason,
   };
 
-  return { ...globalUsers[index] };
+  const updatedUser = { ...globalUsers[index] };
+
+  // Add audit log
+  await addAuditLog({
+    adminId: updatedUser.id,
+    adminName: updatedUser.name,
+    adminEmail: updatedUser.email,
+    action: 'REJECTED',
+    performedBy: rejectedBy,
+    rejectionReason,
+  });
+
+  syncStore();
+  return { user: updatedUser, alreadyProcessed: false };
+}
+
+export async function createDirectAdmin(data: {
+  name: string;
+  email: string;
+  phone?: string;
+  staffId?: string;
+  department?: string;
+  designation?: string;
+  passwordHash: string;
+}, approvedBy: string = 'Super Admin'): Promise<UserRecord> {
+  if (!data?.email) throw new Error('Email is required');
+  const cleanEmail = data.email.toLowerCase().trim();
+  const existing = globalUsers.find(u => u.email && u.email.toLowerCase() === cleanEmail);
+
+  if (existing) {
+    existing.role = 'ADMIN';
+    existing.status = 'APPROVED';
+    existing.otpVerified = true;
+    existing.name = data.name;
+    if (data.phone) existing.phone = data.phone;
+    if (data.staffId) existing.staffId = data.staffId.toUpperCase().trim();
+    if (data.department) existing.department = data.department;
+    if (data.designation) existing.designation = data.designation;
+    if (data.passwordHash) existing.passwordHash = data.passwordHash;
+    existing.approvedAt = new Date().toISOString();
+    existing.approvedBy = approvedBy;
+    existing.rejectionReason = null;
+    syncStore();
+    return { ...existing };
+  }
+
+  const id = `user-admin-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const newAdmin: UserRecord = {
+    id,
+    name: data.name,
+    email: cleanEmail,
+    phone: data.phone,
+    staffId: data.staffId ? data.staffId.toUpperCase().trim() : `FAC-${Date.now().toString().slice(-4)}`,
+    department: data.department || 'CSE',
+    designation: data.designation || 'Faculty Coordinator',
+    passwordHash: data.passwordHash,
+    role: 'ADMIN',
+    status: 'APPROVED',
+    otpVerified: true,
+    createdAt: new Date().toISOString(),
+    approvedAt: new Date().toISOString(),
+    approvedBy,
+  };
+
+  globalUsers.push(newAdmin);
+  syncStore();
+  return { ...newAdmin };
 }
 
 export async function getAllUsers(): Promise<UserRecord[]> {

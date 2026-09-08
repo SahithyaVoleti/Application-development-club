@@ -45,10 +45,10 @@ export function verifyToken(token: string): AuthTokenPayload | null {
 }
 
 /**
- * BACKEND SECURITY: Strict Admin Authorization Guard
- * Verifies that the user has token, role === 'ADMIN' or 'SUPER_ADMIN', and status === 'TRUSTED_ADMIN'
+ * STRICT SERVER-SIDE RBAC GUARD: Super Admin Only
+ * Enforces authenticated session AND role === 'SUPER_ADMIN'
  */
-export function verifyTrustedAdmin(authHeaderOrToken?: string | null): AuthTokenPayload | null {
+export function verifySuperAdmin(authHeaderOrToken?: string | null): AuthTokenPayload | null {
   if (!authHeaderOrToken) return null;
   const token = authHeaderOrToken.replace(/^Bearer\s+/i, '');
   const payload = verifyToken(token);
@@ -58,9 +58,84 @@ export function verifyTrustedAdmin(authHeaderOrToken?: string | null): AuthToken
     return payload;
   }
 
-  if (payload.role === 'ADMIN' && payload.status === 'TRUSTED_ADMIN') {
+  return null;
+}
+
+/**
+ * STRICT SERVER-SIDE RBAC GUARD: Approved Admin Access
+ * Enforces authenticated session AND role === 'SUPER_ADMIN' OR (role === 'ADMIN' && status === 'APPROVED')
+ */
+export function verifyApprovedAdmin(authHeaderOrToken?: string | null): AuthTokenPayload | null {
+  if (!authHeaderOrToken) return null;
+  const token = authHeaderOrToken.replace(/^Bearer\s+/i, '');
+  const payload = verifyToken(token);
+  if (!payload) return null;
+
+  if (payload.role === 'SUPER_ADMIN') {
+    return payload;
+  }
+
+  if (payload.role === 'ADMIN' && (payload.status === 'APPROVED' || payload.status === 'TRUSTED_ADMIN')) {
     return payload;
   }
 
   return null;
+}
+
+/** Backwards-compatible alias */
+export const verifyTrustedAdmin = verifyApprovedAdmin;
+
+export interface ActionTokenPayload {
+  adminId: string;
+  adminEmail: string;
+  action: 'approve' | 'reject';
+  superAdminEmail: string;
+  exp: number;
+}
+
+export function generateApprovalActionToken(
+  adminId: string,
+  adminEmail: string,
+  action: 'approve' | 'reject',
+  superAdminEmail: string,
+  expiresInMs: number = 7 * 24 * 60 * 60 * 1000 // 7 days
+): string {
+  const payload: ActionTokenPayload = {
+    adminId,
+    adminEmail,
+    action,
+    superAdminEmail,
+    exp: Date.now() + expiresInMs,
+  };
+  const data = JSON.stringify(payload);
+  const signature = crypto.createHmac('sha256', SECRET_KEY).update(`APPROVAL:${data}`).digest('hex');
+  return Buffer.from(`${data}.${signature}`).toString('base64url');
+}
+
+export function verifyApprovalActionToken(token: string): ActionTokenPayload | null {
+  try {
+    let decoded: string;
+    try {
+      decoded = Buffer.from(token, 'base64url').toString('utf-8');
+    } catch {
+      decoded = Buffer.from(token, 'base64').toString('utf-8');
+    }
+    const lastDotIndex = decoded.lastIndexOf('.');
+    if (lastDotIndex === -1) return null;
+
+    const dataStr = decoded.substring(0, lastDotIndex);
+    const signature = decoded.substring(lastDotIndex + 1);
+
+    const expectedSig = crypto.createHmac('sha256', SECRET_KEY).update(`APPROVAL:${dataStr}`).digest('hex');
+    if (signature !== expectedSig) return null;
+
+    const payload = JSON.parse(dataStr) as ActionTokenPayload;
+    if (payload.exp && payload.exp < Date.now()) {
+      return { ...payload, exp: payload.exp, isExpired: true } as any;
+    }
+
+    return payload;
+  } catch (error) {
+    return null;
+  }
 }

@@ -3,6 +3,9 @@ export type AttendanceStatus = 'present' | 'absent' | 'not_marked';
 
 export interface Event {
   id: string;
+  clubId?: string | null;
+  clubName?: string | null;
+  createdById?: string | null;
   title: string;
   category: string;
   branches?: string[];
@@ -89,8 +92,8 @@ export const MOCK_EVENTS: Event[] = [
     eligibility: "Open to all CSE, AI/ML, IT and Engineering Students",
     rules: "Objectives & Outcomes:\n✅ Build autonomous AI agents using Antigravity, Python SDK, and LLM tools.\n✅ Teams of 2 to 4 students.\n✅ Real-time evaluation on agent execution speed, reasoning accuracy, and UI completeness.\n✅ Cash prizes + Certificate of Excellence for top podium winners.",
     requirements: "College ID card, Laptop with Python 3.10+, Node.js, and API keys",
-    contactPerson: "Prof. U. V. Ramana (HOD CSE)",
-    contactEmail: "uvr_cse@vignan.ac.in",
+    contactPerson: "Deepak Chowdary Edara (Executive Board)",
+    contactEmail: "deepakchowdaryedara@gmail.com",
     status: "UPCOMING",
     createdAt: new Date().toISOString()
   },

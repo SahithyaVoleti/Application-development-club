@@ -23,16 +23,16 @@ export async function POST(request: Request) {
           verifiedAt: new Date().toISOString(),
         });
       }
-      return NextResponse.json({ success: false, error: 'OTP expired or invalid. Please request a new OTP code.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'OTP has expired. Please request a new OTP.' }, { status: 400 });
     }
 
     if (Date.now() > storedData.expiresAt) {
       adminOtpStore.delete(targetEmail);
-      return NextResponse.json({ success: false, error: 'OTP code has expired. Please click Resend OTP.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'OTP has expired. Please request a new OTP.' }, { status: 400 });
     }
 
     if (storedData.code !== submittedOtp) {
-      return NextResponse.json({ success: false, error: 'Incorrect OTP code. Please check your email and try again.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Invalid OTP. Please try again with the latest OTP.' }, { status: 400 });
     }
 
     // Clear used OTP on success

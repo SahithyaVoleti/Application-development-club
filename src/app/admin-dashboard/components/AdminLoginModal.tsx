@@ -26,7 +26,7 @@ interface Props {
   onSuccess: (user: any) => void;
 }
 
-type Mode = 'login' | 'register' | 'super-admin' | 'otp';
+type Mode = 'login' | 'register' | 'super-admin' | 'otp' | 'not-found' | 'pending' | 'rejected';
 
 export default function AdminLoginModal({ onSuccess }: Props) {
   const [mode, setMode] = useState<Mode>('login');
@@ -34,13 +34,15 @@ export default function AdminLoginModal({ onSuccess }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState('');
   const [authNotice, setAuthNotice] = useState('');
+  const [notFoundEmail, setNotFoundEmail] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
   const [pendingName, setPendingName] = useState('');
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
 
   // OTP State
   const [otpInput, setOtpInput] = useState('');
   const [otpTimeLeft, setOtpTimeLeft] = useState(300); // 5 minutes
-  const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
+  const otpInputRef = React.useRef<HTMLInputElement>(null);
 
   // Countdown timer for OTP
   useEffect(() => {
@@ -70,6 +72,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       phone: '',
       staffId: '',
       department: 'CSE',
+      designation: 'Faculty Coordinator',
       password: '',
       confirmPassword: '',
     },
@@ -91,68 +94,46 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        if (json.status === 'PENDING_APPROVAL') {
-          setAuthNotice(
-            'Your account has been verified successfully, but Admin access is still pending Super Admin approval.'
-          );
-          toast.warning('Admin Approval Pending', {
-            description: 'Your registration is awaiting Super Admin verification.',
-          });
-        } else if (json.status === 'REJECTED') {
-          setAuthError(
-            json.error ||
-              'Your Admin registration request was rejected by the Super Admin.'
-          );
-        } else if (json.status === 'PENDING_OTP') {
+        if (json.code === 'ACCOUNT_NOT_FOUND') {
+          setNotFoundEmail(json.email || data.email);
+          setMode('not-found');
+        } else if (json.code === 'ADMIN_PENDING' || json.status === 'PENDING' || json.status === 'PENDING_APPROVAL') {
           setPendingEmail(json.email || data.email);
-          setMode('otp');
-          toast.info('OTP Required', {
-            description: 'Please enter the 6-digit OTP code sent to your email.',
-          });
+          setMode('pending');
+        } else if (json.code === 'ADMIN_REJECTED' || json.status === 'REJECTED') {
+          setRejectionReason(json.rejectionReason || null);
+          setMode('rejected');
         } else {
-          setAuthError(json.error || 'Invalid credentials');
+          setAuthError(json.error || 'Incorrect email or password. Please check your credentials and try again.');
         }
         setIsSubmitting(false);
         return;
       }
 
-      // Success Login response - Validate Role & Status before granting entry
+      // Check if OTP 2FA verification is required
+      if (json.requiresOtp) {
+        setPendingEmail(json.email || data.email);
+        setOtpInput('');
+        setOtpTimeLeft(300);
+        setMode('otp');
+        toast.info('OTP Required', {
+          description: `6-digit security verification code sent to ${json.email || data.email}`,
+        });
+        setTimeout(() => {
+          otpInputRef.current?.focus();
+        }, 50);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Fallback direct login for student users
       const user = json.user;
       const token = json.token;
 
-      // Reject Student accounts on Admin Login form
       if (user.role === 'STUDENT') {
         setAuthError(
           'Access Denied: Student accounts cannot access the Admin Panel. Only approved Faculty Admins and Super Admins can sign in here.'
         );
-        toast.error('Access Denied', {
-          description: 'Student accounts are not authorized for Admin Panel.',
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Reject non-trusted Admin accounts
-      if (user.role === 'ADMIN' && user.status !== 'TRUSTED_ADMIN') {
-        if (user.status === 'PENDING_APPROVAL') {
-          setAuthNotice(
-            'Your registration has been verified, but Admin access is still pending Super Admin approval.'
-          );
-          toast.warning('Admin Approval Pending', {
-            description: 'Awaiting Super Admin verification.',
-          });
-        } else if (user.status === 'PENDING_OTP') {
-          setPendingEmail(user.email);
-          setMode('otp');
-        } else if (user.status === 'REJECTED') {
-          setAuthError(
-            `Your Admin registration request was rejected by the Super Admin.${
-              user.rejectionReason ? ` Reason: ${user.rejectionReason}` : ''
-            }`
-          );
-        } else {
-          setAuthError('Access Denied: Admin access not granted.');
-        }
         setIsSubmitting(false);
         return;
       }
@@ -162,9 +143,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         localStorage.setItem('adhub_admin_user', JSON.stringify(user));
       }
 
-      toast.success(
-        user.role === 'SUPER_ADMIN' ? 'Welcome Super Admin!' : 'Admin Sign In Successful!'
-      );
+      toast.success('Admin Sign In Successful!');
       onSuccess(user);
     } catch (err: any) {
       setAuthError('Connection error. Please try again.');
@@ -200,16 +179,13 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         return;
       }
 
-      // Transition to OTP verification mode
+      // Transition to Pending Approval screen
       setPendingEmail(data.email);
       setPendingName(data.name);
-      setDevOtpCode(json.devOtp || null);
-      setOtpTimeLeft(300);
-      setOtpInput('');
-      setMode('otp');
+      setMode('pending');
 
-      toast.success('Registration Step 1 Complete', {
-        description: `6-digit OTP verification code sent to ${data.email}`,
+      toast.success('Admin Registration Submitted', {
+        description: 'Confirmation email sent. Request is waiting for Super Admin approval.',
       });
     } catch (err: any) {
       setAuthError('Network error during registration.');
@@ -230,7 +206,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
     setAuthError('');
 
     try {
-      const res = await fetch('/api/auth/verify-admin-otp', {
+      const res = await fetch('/api/auth/verify-login-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: pendingEmail, otp: otpInput.trim() }),
@@ -239,19 +215,32 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        setAuthError(json.error || 'OTP verification failed');
+        const errorMsg = json.error || 'Invalid OTP. Please try again with the latest OTP.';
+        setAuthError(errorMsg);
+        setOtpInput(''); // Immediately clear input state
+        setTimeout(() => {
+          otpInputRef.current?.focus();
+        }, 50);
         setIsSubmitting(false);
         return;
       }
 
-      // OTP Verified! Show Pending Approval Screen
-      setAuthNotice('Registration successful. Your account is waiting for Super Admin approval.');
-      setMode('login');
-      toast.success('OTP Verification Passed!', {
-        description: 'Your request is submitted for Super Admin approval.',
-      });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('adhub_admin_token', json.token);
+        localStorage.setItem('adhub_admin_user', JSON.stringify(json.user));
+        sessionStorage.setItem('adhub_admin_otp_verified', 'true');
+      }
+
+      toast.success(
+        json.user.role === 'SUPER_ADMIN' ? 'Welcome Super Admin!' : 'Admin Sign In Successful!'
+      );
+      onSuccess(json.user);
     } catch (err: any) {
       setAuthError('OTP Verification network error.');
+      setOtpInput('');
+      setTimeout(() => {
+        otpInputRef.current?.focus();
+      }, 50);
     } finally {
       setIsSubmitting(false);
     }
@@ -259,17 +248,21 @@ export default function AdminLoginModal({ onSuccess }: Props) {
 
   // 4. RESEND OTP HANDLER
   const handleResendOtp = async () => {
+    setOtpInput(''); // Clear input
+    setAuthError('');
     try {
-      const res = await fetch('/api/auth/resend-admin-otp', {
+      const res = await fetch('/api/auth/resend-login-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: pendingEmail }),
       });
       const json = await res.json();
       if (json.success) {
-        setDevOtpCode(json.devOtp || null);
         setOtpTimeLeft(300);
-        toast.success('Fresh OTP Code Dispatched');
+        toast.success('New OTP sent successfully.');
+        setTimeout(() => {
+          otpInputRef.current?.focus();
+        }, 50);
       } else {
         toast.error(json.error || 'Failed to resend OTP');
       }
@@ -295,13 +288,15 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         </div>
 
         {/* Mode Selector Tabs */}
-        {mode !== 'otp' && (
+        {mode !== 'otp' && mode !== 'pending' && mode !== 'rejected' && mode !== 'not-found' && (
           <div className="inline-flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200/80 mb-2 font-bold text-xs">
             <button
               onClick={() => {
                 setMode('login');
                 setAuthError('');
                 setAuthNotice('');
+                setLoginValue('email', '');
+                setLoginValue('password', '');
               }}
               className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
                 mode === 'login'
@@ -330,8 +325,8 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 setMode('super-admin');
                 setAuthError('');
                 setAuthNotice('');
-                setLoginValue('email', 'uvr_cse@vignan.ac.in');
-                setLoginValue('password', 'SuperAdmin@2026');
+                setLoginValue('email', '');
+                setLoginValue('password', '');
               }}
               className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
                 mode === 'super-admin'
@@ -392,7 +387,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 type="email"
                 {...regLogin('email', { required: 'Email address is required' })}
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 text-sm font-bold focus:outline-none focus:border-blue-600 shadow-xs"
-                placeholder={mode === 'super-admin' ? 'uvr_cse@vignan.ac.in' : 'admin@cse.vignan.ac.in'}
+                placeholder="Enter your email address"
               />
             </div>
             {loginErrors.email && (
@@ -401,16 +396,29 @@ export default function AdminLoginModal({ onSuccess }: Props) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() =>
+                  toast.info('Password Reset', {
+                    description: 'Please contact the Super Admin to reset your account password.',
+                  })
+                }
+                className="text-xs font-bold text-slate-500 hover:text-sky-600 transition-colors cursor-pointer"
+              >
+                Forgot Password?
+              </button>
+            </div>
             <div className="relative">
               <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 {...regLogin('password', { required: 'Password is required' })}
                 className="w-full pl-10 pr-11 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 text-sm font-bold focus:outline-none focus:border-blue-600 shadow-xs"
-                placeholder="Enter password"
+                placeholder="Enter your password"
               />
               <button
                 type="button"
@@ -449,6 +457,123 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       )}
 
       {/* -------------------------------------------------------------
+          MODE: ACCOUNT NOT FOUND SCREEN
+      ------------------------------------------------------------- */}
+      {mode === 'not-found' && (
+        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 text-center space-y-4 animate-fadeIn">
+          <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 mx-auto flex items-center justify-center border border-amber-200 shadow-xs">
+            <AlertTriangle size={28} />
+          </div>
+
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-2">
+              Account not found
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md mx-auto">
+              We couldn't find an account associated with <span className="font-extrabold text-slate-900 font-mono bg-white px-2 py-0.5 rounded border border-slate-200">{notFoundEmail}</span>.
+            </p>
+          </div>
+
+          <div className="p-4 bg-white rounded-2xl border border-slate-200 text-xs text-slate-500 font-medium">
+            Don't have an account yet? Submit your Admin registration for Super Admin verification.
+          </div>
+
+          <div className="space-y-2.5 pt-2">
+            <button
+              onClick={() => {
+                setMode('register');
+                setLoginValue('email', notFoundEmail);
+              }}
+              className="w-full py-3.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>Create New Account</span>
+            </button>
+
+            <button
+              onClick={() => setMode('login')}
+              className="w-full py-3 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs sm:text-sm transition-colors cursor-pointer"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* -------------------------------------------------------------
+          MODE: ACCOUNT PENDING APPROVAL SCREEN
+      ------------------------------------------------------------- */}
+      {mode === 'pending' && (
+        <div className="bg-amber-50/90 border border-amber-200 rounded-3xl p-6 sm:p-8 text-center space-y-4 animate-fadeIn">
+          <div className="w-14 h-14 rounded-2xl bg-amber-500 text-white mx-auto flex items-center justify-center shadow-lg shadow-amber-500/30">
+            <Clock size={28} />
+          </div>
+
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-amber-950 tracking-tight mb-2">
+              Account Pending Approval
+            </h2>
+            <p className="text-xs sm:text-sm text-amber-900 leading-relaxed max-w-md mx-auto">
+              Your Admin account has been successfully registered and is currently waiting for Super Admin approval.
+            </p>
+            <p className="text-xs text-amber-800 mt-2 font-medium">
+              Approval notification emails have been dispatched to all Super Admins. You will be able to access the Admin Dashboard once approved.
+            </p>
+          </div>
+
+          <div className="inline-flex items-center gap-2 bg-amber-100/80 text-amber-900 px-4 py-2 rounded-full text-xs font-mono font-extrabold border border-amber-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+            Registration Status: Pending Approval
+          </div>
+
+          <div className="pt-3">
+            <button
+              onClick={() => setMode('login')}
+              className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* -------------------------------------------------------------
+          MODE: ACCOUNT REJECTED SCREEN
+      ------------------------------------------------------------- */}
+      {mode === 'rejected' && (
+        <div className="bg-rose-50/90 border border-rose-200 rounded-3xl p-6 sm:p-8 text-center space-y-4 animate-fadeIn">
+          <div className="w-14 h-14 rounded-2xl bg-rose-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-rose-600/30">
+            <ShieldAlert size={28} />
+          </div>
+
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-rose-950 tracking-tight mb-2">
+              Account Registration Rejected
+            </h2>
+            <p className="text-xs sm:text-sm text-rose-900 leading-relaxed max-w-md mx-auto">
+              Your Admin registration request was not approved by the Super Admin team.
+            </p>
+            {rejectionReason && (
+              <div className="mt-3 p-3 bg-white/80 rounded-xl border border-rose-200 text-xs text-rose-900 font-medium">
+                Reason: {rejectionReason}
+              </div>
+            )}
+            <p className="text-xs text-rose-700 mt-3 font-medium">
+              Please contact the CSE Department executive board if you believe this is an error.
+            </p>
+          </div>
+
+          <div className="pt-3">
+            <button
+              onClick={() => setMode('login')}
+              className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* -------------------------------------------------------------
           MODE 2: ADMIN REGISTRATION FORM
       ------------------------------------------------------------- */}
       {mode === 'register' && (
@@ -464,7 +589,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="text"
                   {...regAdmin('name', { required: 'Name is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="e.g. Dr. Ramesh Kumar"
+                  placeholder=""
                 />
               </div>
               {regErrors.name && (
@@ -482,7 +607,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="text"
                   {...regAdmin('staffId', { required: 'Staff/Faculty ID is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="e.g. FAC-CSE-102"
+                  placeholder=""
                 />
               </div>
               {regErrors.staffId && (
@@ -502,7 +627,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="email"
                   {...regAdmin('email', { required: 'Email address is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="faculty@vignan.ac.in"
+                  placeholder=""
                 />
               </div>
               {regErrors.email && (
@@ -520,7 +645,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="tel"
                   {...regAdmin('phone', { required: 'Phone number is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="+91 9876543210"
+                  placeholder=""
                 />
               </div>
               {regErrors.phone && (
@@ -529,23 +654,43 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-              Department *
-            </label>
-            <div className="relative">
-              <Building size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <select
-                {...regAdmin('department', { required: 'Department is required' })}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs cursor-pointer"
-              >
-                <option value="CSE">Computer Science & Engineering (CSE)</option>
-                <option value="IT">Information Technology (IT)</option>
-                <option value="AI/ML">Artificial Intelligence & Machine Learning</option>
-                <option value="ECE">Electronics & Communication (ECE)</option>
-                <option value="EEE">Electrical & Electronics (EEE)</option>
-                <option value="MECH">Mechanical Engineering</option>
-              </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Department *
+              </label>
+              <div className="relative">
+                <Building size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                  {...regAdmin('department', { required: 'Department is required' })}
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs cursor-pointer"
+                >
+                  <option value="CSE">Computer Science & Engineering (CSE)</option>
+                  <option value="IT">Information Technology (IT)</option>
+                  <option value="AI/ML">Artificial Intelligence & Machine Learning</option>
+                  <option value="ECE">Electronics & Communication (ECE)</option>
+                  <option value="EEE">Electrical & Electronics (EEE)</option>
+                  <option value="MECH">Mechanical Engineering</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Designation / Position *
+              </label>
+              <div className="relative">
+                <Sparkles size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  {...regAdmin('designation', { required: 'Designation is required' })}
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
+                  placeholder="Faculty Coordinator"
+                />
+              </div>
+              {regErrors.designation && (
+                <p className="text-[10px] text-rose-600 font-bold mt-0.5">{(regErrors.designation as any).message}</p>
+              )}
             </div>
           </div>
 
@@ -563,7 +708,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                     minLength: { value: 6, message: 'Minimum 6 chars required' },
                   })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="Password"
+                  placeholder=""
                 />
               </div>
             </div>
@@ -578,7 +723,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="password"
                   {...regAdmin('confirmPassword', { required: 'Confirm password is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="Confirm password"
+                  placeholder=""
                 />
               </div>
             </div>
@@ -608,7 +753,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         <form onSubmit={onVerifyOtpSubmit} className="space-y-4">
           <div className="bg-sky-50 border border-sky-200 rounded-2xl p-4 text-center space-y-2">
             <div className="text-xs text-sky-900 font-medium">
-              We have generated a 6-digit Security Verification OTP code for:
+              We've sent a 6-digit verification code to:
             </div>
             <div className="text-sm font-extrabold text-sky-950 font-mono">
               {pendingEmail}
@@ -617,9 +762,10 @@ export default function AdminLoginModal({ onSuccess }: Props) {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider text-center mb-2">
-              Enter 6-Digit OTP Code
+              Enter 6-Digit Verification Code
             </label>
             <input
+              ref={otpInputRef}
               type="text"
               maxLength={6}
               value={otpInput}
@@ -634,7 +780,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             <div className="flex items-center gap-1.5">
               <Clock size={14} className="text-sky-600" />
               <span>
-                Expires in: {Math.floor(otpTimeLeft / 60)}:
+                OTP expires in: {Math.floor(otpTimeLeft / 60)}:
                 {String(otpTimeLeft % 60).padStart(2, '0')}
               </span>
             </div>
@@ -653,15 +799,15 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             disabled={isSubmitting || otpInput.length !== 6}
             className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-sky-600 text-white font-extrabold text-sm shadow-md transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            {isSubmitting ? 'Verifying OTP...' : 'Verify OTP & Complete Registration'}
+            {isSubmitting ? 'Verifying OTP...' : 'Verify & Continue'}
           </button>
 
           <button
             type="button"
-            onClick={() => setMode('register')}
+            onClick={() => setMode('login')}
             className="w-full text-center text-xs font-bold text-slate-500 hover:text-slate-900 pt-1 flex items-center justify-center gap-1 cursor-pointer"
           >
-            <ArrowLeft size={14} /> Back to Admin Registration
+            <ArrowLeft size={14} /> Back to Sign In
           </button>
         </form>
       )}

@@ -38,44 +38,29 @@ export default function EventCard({ event, registeredCount, onRegisterClick }: P
       className="bg-white rounded-3xl border border-stone-200/90 overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-sky-500/15 hover:border-sky-300 h-full cursor-pointer"
     >
       {/* Poster Image & Badges Overlay */}
-      <div className="relative h-56 overflow-hidden bg-stone-100">
+      <div className="relative h-60 overflow-hidden bg-slate-950">
+        <AppImage
+          src={event.posterUrl}
+          alt=""
+          fill
+          className="object-cover blur-xl opacity-35 scale-110 pointer-events-none"
+        />
         <AppImage
           src={event.posterUrl}
           alt={`Event poster for ${event.title} — ${event.category}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-        {/* Visually Prominent Date Badge */}
-        <div className="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur-md text-stone-900 rounded-2xl p-2.5 shadow-lg border border-white/60 flex flex-col items-center justify-center min-w-[52px]">
-          <span className="text-lg font-black leading-none text-sky-600 font-tabular">{dateParts.day}</span>
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-stone-600 mt-0.5">{dateParts.month}</span>
-        </div>
-
-        {/* Top Right Badges */}
-        <div className="absolute top-3.5 right-3.5 flex flex-col items-end gap-1.5">
-          <StatusBadge status={event.status} size="sm" />
-          {event.branches && event.branches.length > 0 && (
-            <span className="bg-stone-900/80 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-sm shadow-xs border border-white/20">
-              {event.branches.slice(0, 3).join(', ')}
-            </span>
-          )}
-        </div>
-
-        {/* Bottom Floating Info Pill */}
-        <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between">
-          <CategoryBadge category={event.category} />
-          <div className="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-white/20">
-            <Users size={10} className="text-sky-400" />
-            <span className="font-tabular">{registeredCount} / {event.capacity} Registered</span>
-          </div>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
       </div>
 
       {/* Card Content */}
       <div className="flex flex-col flex-1 p-6">
+        <div className="flex items-center justify-between text-xs font-bold gap-2 mb-2">
+          <span className="text-sky-600 font-mono uppercase tracking-wider">{event.category}</span>
+          <StatusBadge status={event.status} size="sm" />
+        </div>
         <h3 className="font-extrabold text-stone-900 text-lg leading-snug mb-2 line-clamp-2 tracking-tight group-hover:text-sky-600 transition-colors">
           {event.title}
         </h3>

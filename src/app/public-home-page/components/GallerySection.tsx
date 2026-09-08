@@ -17,8 +17,6 @@ import {
   Calendar,
   Image as ImageIcon,
   Shuffle,
-  Play,
-  Pause,
   Sparkles,
 } from 'lucide-react';
 
@@ -61,10 +59,6 @@ export default function GallerySection() {
   const [visibleCount, setVisibleCount] = useState<number>(INITIAL_VISIBLE_COUNT);
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
-
-  // Auto Shuffling State
-  const [isAutoShuffling, setIsAutoShuffling] = useState<boolean>(true);
-  const [isHovered, setIsHovered] = useState<boolean>(false);
   const [shuffleVersion, setShuffleVersion] = useState<number>(0);
 
   // Base filtered images
@@ -90,22 +84,11 @@ export default function GallerySection() {
     return Array.from(map.values());
   }, [selectedCategory, searchQuery]);
 
-  // Shuffled images array recalculated when shuffleVersion increments
+  // Shuffled images array recalculated when manual shuffle button is clicked
   const filteredImages = useMemo(() => {
     if (shuffleVersion === 0) return baseFilteredImages;
     return shuffleArray(baseFilteredImages);
   }, [baseFilteredImages, shuffleVersion]);
-
-  // Auto-shuffle timer loop (shuffles every 3.5 seconds)
-  useEffect(() => {
-    if (!isAutoShuffling || isHovered || activeImageIndex !== null) return;
-
-    const timer = setInterval(() => {
-      setShuffleVersion(prev => prev + 1);
-    }, 3500);
-
-    return () => clearInterval(timer);
-  }, [isAutoShuffling, isHovered, activeImageIndex]);
 
   // Reset visible count when filter or search changes
   useEffect(() => {
@@ -237,21 +220,8 @@ export default function GallerySection() {
             })}
           </div>
 
-          {/* Auto-Shuffle Toggle, Manual Shuffle & Search */}
+          {/* Controls: Search & Manual Shuffle */}
           <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end flex-wrap">
-            {/* Auto-Shuffle Toggle */}
-            <button
-              onClick={() => setIsAutoShuffling(prev => !prev)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                isAutoShuffling
-                  ? 'bg-sky-600 text-white border-sky-500 shadow-md shadow-sky-500/25'
-                  : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
-              }`}
-              title={isAutoShuffling ? 'Pause Auto-Shuffle' : 'Play Auto-Shuffle'}
-            >
-              {isAutoShuffling ? <Pause size={13} /> : <Play size={13} />}
-              <span className="hidden sm:inline">{isAutoShuffling ? 'Auto-Shuffling 🔀' : 'Shuffle Paused'}</span>
-            </button>
 
             {/* Manual Shuffle Button */}
             <button
@@ -319,8 +289,6 @@ export default function GallerySection() {
           <>
             <div
               className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
             >
               {visibleImages.map((image, index) => (
                 <div

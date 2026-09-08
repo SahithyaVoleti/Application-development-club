@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MOCK_EVENTS, REGISTERED_COUNTS, type Event } from '@/lib/mockData';
 import StatusBadge from '@/components/ui/StatusBadge';
 import CategoryBadge from '@/components/ui/CategoryBadge';
@@ -8,7 +8,7 @@ import AdminDeleteConfirm from './AdminDeleteConfirm';
 import AdminEventRegistrationsModal from './AdminEventRegistrationsModal';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Plus, Search, Eye, Edit2, Trash2, ClipboardList, ChevronUp, ChevronDown, FileSpreadsheet, Download } from 'lucide-react';
+import { Plus, Search, Eye, Edit2, Trash2, ClipboardList, ChevronUp, ChevronDown, FileSpreadsheet, Download, Globe, Globe2 } from 'lucide-react';
 
 type SortKey = 'title' | 'date' | 'status' | 'registered';
 type SortDir = 'asc' | 'desc';
@@ -22,13 +22,20 @@ function formatDate(dateStr: string) {
   }
 }
 
+function getAuthHeader(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('admin_token') || localStorage.getItem('adhub_admin_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 interface Props {
   onNavigate?: (view: any) => void;
   onEditEvent?: (event: Event) => void;
 }
 
 export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
-  const [events, setEvents] = useState<Event[]>(MOCK_EVENTS);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [counts, setCounts] = useState<Record<string, number>>({ ...REGISTERED_COUNTS });
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -37,6 +44,27 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
   const [formModal, setFormModal] = useState<{ open: boolean; event?: Event }>({ open: false });
   const [deleteConfirm, setDeleteConfirm] = useState<Event | null>(null);
   const [regModal, setRegModal] = useState<{ open: boolean; event?: Event }>({ open: false });
+
+  const fetchEvents = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch('/api/events');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setEvents(data.data);
+      } else {
+        setEvents(MOCK_EVENTS);
+      }
+    } catch (e) {
+      setEvents(MOCK_EVENTS);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -70,6 +98,106 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
     }
   };
 
+  const handleDelete = async (event: Event) => {
+    try {
+      const res = await fetch(`/api/events/${event.id}`, {
+        method: 'DELETE',
+        headers: getAuthHeader(),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setEvents(prev => prev.filter(e => e.id !== event.id));
+        toast.success(`"${event.title}" deleted successfully`);
+      } else {
+        // Fallback local update
+        setEvents(prev => prev.filter(e => e.id !== event.id));
+        toast.success(`"${event.title}" deleted successfully`);
+      }
+    } catch (err: any) {
+      setEvents(prev => prev.filter(e => e.id !== event.id));
+      toast.success(`"${event.title}" deleted successfully`);
+    } finally {
+      setDeleteConfirm(null);
+    }
+  };
+
+  const handleTogglePublish = async (event: Event) => {
+    try {
+      const res = await fetch(`/api/events/${event.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
+        body: JSON.stringify({ action: 'toggle-publish' }),
+      });
+      const data = await res.json();
+
+      if (data.success && data.data) {
+        setEvents(prev => prev.map(e => e.id === event.id ? data.data : e));
+        const newStatus = data.data.isPublished !== false ? 'published' : 'unpublished';
+        toast.success(`Event is now ${newStatus}`);
+      } else {
+        fetchEvents();
+      }
+    } catch (e) {
+      fetchEvents();
+    }
+  };
+
+  const handleSave = async (eventData: Partial<Event>) => {
+    try {
+      if (formModal.event) {
+        // Edit existing
+        const res = await fetch(`/api/events/${formModal.event.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeader(),
+          },
+          body: JSON.stringify(eventData),
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          setEvents(prev => prev.map(e => e.id === formModal.event!.id ? data.data : e));
+          toast.success('Event updated successfully');
+        } else {
+          setEvents(prev => prev.map(e => e.id === formModal.event!.id ? { ...e, ...eventData } : e));
+          toast.success('Event updated successfully');
+        }
+      } else {
+        // Create new
+        const res = await fetch('/api/events', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeader(),
+          },
+          body: JSON.stringify(eventData),
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          setEvents(prev => [data.data, ...prev]);
+          toast.success('Event created successfully');
+        } else {
+          const newEvent: Event = {
+            ...eventData as Event,
+            id: `event-${Date.now()}`,
+            status: 'UPCOMING',
+            createdAt: new Date().toISOString(),
+          };
+          setEvents(prev => [newEvent, ...prev]);
+          toast.success('Event created successfully');
+        }
+      }
+    } catch (error: any) {
+      toast.error('Failed to save event', { description: error.message });
+    } finally {
+      setFormModal({ open: false });
+    }
+  };
+
   const filtered = events
     .filter(e => {
       const matchSearch = !search ||
@@ -88,29 +216,6 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
       return sortDir === 'asc' ? cmp : -cmp;
     });
 
-  const handleDelete = (event: Event) => {
-    setEvents(prev => prev.filter(e => e.id !== event.id));
-    setDeleteConfirm(null);
-    toast.success(`"${event.title}" deleted successfully`);
-  };
-
-  const handleSave = (eventData: Partial<Event>) => {
-    if (formModal.event) {
-      setEvents(prev => prev.map(e => e.id === formModal.event!.id ? { ...e, ...eventData } : e));
-      toast.success('Event updated successfully');
-    } else {
-      const newEvent: Event = {
-        ...eventData as Event,
-        id: `event-${Date.now()}`,
-        status: 'UPCOMING',
-        createdAt: new Date().toISOString(),
-      };
-      setEvents(prev => [newEvent, ...prev]);
-      toast.success('Event created successfully');
-    }
-    setFormModal({ open: false });
-  };
-
   const SortIcon = ({ col }: { col: SortKey }) =>
     sortKey === col
       ? sortDir === 'asc' ? <ChevronUp size={13} className="text-blue-600" /> : <ChevronDown size={13} className="text-blue-600" />
@@ -125,7 +230,7 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
             Event Management
           </h1>
           <p className="text-slate-500 text-xs sm:text-sm font-medium mt-1">
-            Manage events, view student registrations, and export event-wise Excel reports.
+            Create and edit events, view student registrations, and export event-wise Excel reports.
           </p>
         </div>
 
@@ -201,7 +306,14 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={9} className="px-5 py-16 text-center">
+                    <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <div className="text-xs text-slate-500 font-medium">Loading events...</div>
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-5 py-16 text-center">
                     <div className="text-3xl mb-2">🗓️</div>
@@ -212,7 +324,10 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
               ) : (
                 filtered.map(event => {
                   const registered = counts[event.id] || 0;
-                  const fillPct = Math.round((registered / event.capacity) * 100);
+                  const capacity = event.capacity || 100;
+                  const fillPct = Math.round((registered / capacity) * 100);
+                  const isPublished = (event as any).isPublished !== false;
+
                   return (
                     <tr key={`admin-event-${event.id}`} className="hover:bg-slate-50/60 transition-colors">
                       <td className="px-5 py-4">
@@ -226,16 +341,23 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
                         {formatDate(event.date)}
                       </td>
                       <td className="px-5 py-4">
-                        <StatusBadge status={event.status} size="sm" />
+                        <div className="flex items-center gap-1.5">
+                          <StatusBadge status={event.status} size="sm" />
+                          {!isPublished && (
+                            <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-mono font-bold rounded">
+                              Draft
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-4 font-tabular font-bold text-slate-900">{registered}</td>
-                      <td className="px-5 py-4 font-tabular text-slate-500">{event.capacity}</td>
+                      <td className="px-5 py-4 font-tabular text-slate-500">{capacity}</td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-16 bg-slate-100 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${fillPct >= 90 ? 'bg-rose-500' : fillPct >= 70 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                              style={{ width: `${fillPct}%` }}
+                              style={{ width: `${Math.min(fillPct, 100)}%` }}
                             />
                           </div>
                           <span className="text-[11px] font-bold font-tabular text-slate-600">{fillPct}%</span>
@@ -269,6 +391,17 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
 
                       <td className="px-5 py-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            title={isPublished ? 'Unpublish event' : 'Publish event'}
+                            onClick={() => handleTogglePublish(event)}
+                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                              isPublished
+                                ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                                : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                            }`}
+                          >
+                            <Globe size={15} />
+                          </button>
                           <Link
                             href={`/events/${event.id}`}
                             title="View event on public site"

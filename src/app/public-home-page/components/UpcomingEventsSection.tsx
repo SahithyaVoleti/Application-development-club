@@ -382,14 +382,13 @@ export default function UpcomingEventsSection({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUpOrLeave}
           >
-            {/* Fade Edges Mask */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-slate-50 to-transparent" />
-
             <div
               ref={scrollRef}
-              className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth py-2"
-              style={{ scrollbarWidth: 'none' }}
+              className="flex gap-6 animate-continuous-marquee overflow-x-auto scrollbar-hide scroll-smooth py-2"
+              style={{
+                scrollbarWidth: 'none',
+                animationPlayState: isHovered ? 'paused' : 'running',
+              }}
             >
               {displayCards.map((event, idx) => {
                 const { month, day } = parseDateBadge(event.date);
