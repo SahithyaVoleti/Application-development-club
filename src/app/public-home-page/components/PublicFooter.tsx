@@ -31,10 +31,6 @@ export default function PublicFooter() {
               </div>
             </div>
 
-            <p className="text-slate-400 leading-relaxed max-w-sm">
-              The official campus club for designing, engineering, testing, and deploying modern web, mobile, and AI applications.
-            </p>
-
             <div className="flex items-center gap-3 pt-2">
               <a href="https://vignan.ac.in" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 transition-colors">
                 <Globe size={15} />

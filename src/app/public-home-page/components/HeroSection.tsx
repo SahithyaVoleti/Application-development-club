@@ -53,18 +53,6 @@ export default function HeroSection({ onSwitchToWorkspace }: Props) {
                 <span>Explore Events</span>
                 <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" />
               </button>
-
-              <button
-                onClick={() => {
-                  if (onSwitchToWorkspace) onSwitchToWorkspace();
-                  else handleScrollTo('#process');
-                }}
-                className="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-base px-9 py-4.5 rounded-full backdrop-blur-md transition-all cursor-pointer group"
-              >
-                <Rocket size={18} className="text-sky-400" />
-                <span>Start Building</span>
-                <ChevronRight size={18} className="text-slate-300 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </button>
             </div>
 
           </div>
