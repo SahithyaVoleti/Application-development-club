@@ -22,6 +22,14 @@ export async function POST(request: Request) {
 
     console.log(`[ADMIN OTP DISPATCH] Sent OTP: ${otpCode} to ${targetEmail} (Success: ${sendResult.success})`);
 
+    if (!sendResult.success) {
+      return NextResponse.json({
+        success: false,
+        email: targetEmail,
+        error: sendResult.error || 'Failed to dispatch email. Please verify SMTP settings in Vercel.',
+      }, { status: 500 });
+    }
+
     return NextResponse.json({
       success: true,
       email: targetEmail,

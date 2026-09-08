@@ -37,7 +37,7 @@ async function dispatchEmail({
   type?: any;
   relatedId?: string;
 }): Promise<{ success: boolean; provider?: string; error?: string }> {
-  let outcome: { success: boolean; provider?: string; error?: string } = { success: true, provider: 'System Dispatcher' };
+  let outcome: { success: boolean; provider?: string; error?: string } = { success: false, error: 'No email service configured' };
 
   // 1. Attempt NodeMailer SMTP if SMTP env variables are provided
   if (typeof window === 'undefined') {
@@ -57,6 +57,9 @@ async function dispatchEmail({
             user: smtpUser,
             pass: smtpPass,
           },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 10000,
           tls: {
             rejectUnauthorized: false,
           },
@@ -75,12 +78,13 @@ async function dispatchEmail({
         }
       } catch (err: any) {
         console.error('[SMTP Dispatch Exception]:', err?.message || err);
+        outcome = { success: false, error: `SMTP Error: ${err?.message || 'Failed to send'}` };
       }
     }
   }
 
   // 2. Fallback: Brevo REST API v3
-  if (!outcome.provider || outcome.provider === 'System Dispatcher') {
+  if (!outcome.success) {
     if (BREVO_KEY) {
       try {
         const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -102,9 +106,17 @@ async function dispatchEmail({
         if (brevoRes.ok && (brevoJson.messageId || brevoJson.id)) {
           console.log(`[BREVO API SUCCESS] Email "${subject}" sent to ${toEmail}`);
           outcome = { success: true, provider: 'Brevo REST API v3' };
+        } else {
+          console.warn('[BREVO API Error]:', brevoJson);
+          if (!outcome.provider) {
+            outcome = { success: false, error: brevoJson?.message || 'Brevo API dispatch failed' };
+          }
         }
       } catch (err: any) {
         console.warn('[BREVO REST API Exception]:', err?.message || err);
+        if (!outcome.provider) {
+          outcome = { success: false, error: err?.message || 'Brevo API error' };
+        }
       }
     }
   }
