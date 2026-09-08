@@ -164,11 +164,11 @@ export default function AdminCreateEventWorkspace({ eventToEdit, onCancel, onSav
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans relative">
       {/* Top Fixed Breadcrumb & Header */}
       <header className="sticky top-0 z-30 bg-white border-b border-slate-200/90 shadow-2xs">
-        <div className="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3">
             <button
               onClick={handleCancelClick}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex-shrink-0"
               title="Back to Event Management"
             >
               <ArrowLeft size={18} />
@@ -193,12 +193,12 @@ export default function AdminCreateEventWorkspace({ eventToEdit, onCancel, onSav
           </div>
 
           {/* Header Action Buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button
               type="button"
               onClick={handleSaveDraft}
               disabled={isDrafting}
-              className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer flex items-center gap-1.5"
+              className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Save size={14} className="text-slate-500" />
               <span>{isDrafting ? 'Saving Draft...' : 'Save Draft'}</span>
@@ -208,7 +208,7 @@ export default function AdminCreateEventWorkspace({ eventToEdit, onCancel, onSav
               type="button"
               onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer flex items-center gap-1.5"
+              className="flex-1 sm:flex-initial px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer flex items-center justify-center gap-1.5"
             >
               <PlusCircle size={15} />
               <span>{isSubmitting ? 'Creating Event...' : eventToEdit ? 'Update Event' : 'Create Event'}</span>
@@ -218,13 +218,13 @@ export default function AdminCreateEventWorkspace({ eventToEdit, onCancel, onSav
       </header>
 
       {/* Main Full-Screen Form Container (Section 4: Max-width 1280px) */}
-      <main className="max-w-[1280px] mx-auto px-6 py-8 pb-36">
+      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-36">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
             {/* Left 8 Columns: Form Sections */}
             <div className="lg:col-span-8 space-y-6">
               {/* Card 1: EVENT INFORMATION (Section 5) */}
-              <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-5">
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-4 sm:p-8 shadow-xs space-y-5">
                 <div className="pb-3 border-b border-slate-100 flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                     <FileText size={18} />

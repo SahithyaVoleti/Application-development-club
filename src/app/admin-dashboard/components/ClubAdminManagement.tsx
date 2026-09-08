@@ -218,7 +218,7 @@ export default function ClubAdminManagement() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 self-start md:self-auto">
+          <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
             <button
               onClick={() => setIsAssignModalOpen(true)}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs backdrop-blur-md shadow-md transition-all cursor-pointer"
@@ -392,7 +392,7 @@ export default function ClubAdminManagement() {
       {/* ASSIGN ADMIN TO CLUB MODAL */}
       {isAssignModalOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 animate-scaleIn">
+          <div className="bg-white rounded-2xl sm:rounded-3xl max-w-[95vw] sm:max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto animate-scaleIn">
             <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
               <div className="w-11 h-11 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                 <UserPlus size={22} />

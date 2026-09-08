@@ -222,7 +222,7 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
       : <ChevronUp size={13} className="opacity-20" />;
 
   return (
-    <div className="p-6 lg:p-10 max-w-[1450px] mx-auto space-y-6 font-sans">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-[1450px] mx-auto space-y-6 font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80">
         <div>
@@ -241,7 +241,7 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
           }}
           title="Add Event"
           aria-label="Add Event"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer"
         >
           <Plus size={16} />
           <span>Add New Event</span>

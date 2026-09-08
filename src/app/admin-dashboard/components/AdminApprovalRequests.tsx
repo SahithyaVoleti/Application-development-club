@@ -434,12 +434,12 @@ export default function AdminApprovalRequests() {
   const rejectedCount = normalAdminsList.filter(r => r.status === 'REJECTED').length;
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
       {/* TOP GOVERNANCE SUB-NAVIGATION TABS */}
-      <div className="flex items-center gap-2 bg-slate-100 p-2 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-100 p-2 rounded-2xl border border-slate-200 shadow-xs">
         <button
           onClick={() => setTopTab('APPROVALS')}
-          className={`flex-1 py-3 px-4 rounded-xl font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`flex-1 py-3 px-3 sm:px-4 rounded-xl font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-2 ${
             topTab === 'APPROVALS'
               ? 'bg-gradient-to-r from-indigo-900 to-slate-900 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
@@ -450,7 +450,7 @@ export default function AdminApprovalRequests() {
 
         <button
           onClick={() => setTopTab('CLUB_ASSIGNMENTS')}
-          className={`flex-1 py-3 px-4 rounded-xl font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`flex-1 py-3 px-3 sm:px-4 rounded-xl font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-2 ${
             topTab === 'CLUB_ASSIGNMENTS'
               ? 'bg-gradient-to-r from-indigo-900 to-slate-900 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
@@ -461,7 +461,7 @@ export default function AdminApprovalRequests() {
 
         <button
           onClick={() => setTopTab('NOTIFICATION_HISTORY')}
-          className={`flex-1 py-3 px-4 rounded-xl font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`flex-1 py-3 px-3 sm:px-4 rounded-xl font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-2 ${
             topTab === 'NOTIFICATION_HISTORY'
               ? 'bg-gradient-to-r from-indigo-900 to-slate-900 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
@@ -684,7 +684,7 @@ export default function AdminApprovalRequests() {
         /* NORMAL ADMIN PORTAL VIEW */
         <div className="space-y-6 animate-fadeIn">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div
               onClick={() => setFilter('PENDING')}
               className={`p-4 rounded-2xl border transition-all cursor-pointer ${
@@ -966,9 +966,9 @@ export default function AdminApprovalRequests() {
 
                   {/* Info Details */}
                   <div className="space-y-2 text-xs font-semibold text-slate-700 pt-2 border-t border-slate-100">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
                       <Mail size={15} className="text-slate-400 flex-shrink-0" />
-                      <span className="truncate">{req.email}</span>
+                      <span className="break-all truncate text-xs font-semibold text-slate-700" title={req.email}>{req.email}</span>
                     </div>
 
                     <div className="flex items-center gap-2">

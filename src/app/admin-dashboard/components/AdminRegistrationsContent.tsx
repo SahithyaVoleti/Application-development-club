@@ -40,7 +40,7 @@ export default function AdminRegistrationsContent() {
   const availableSeats = Math.max(0, capacity - registeredCount);
 
   return (
-    <div className="p-6 lg:p-10 max-w-[1450px] mx-auto space-y-6 font-sans">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-[1450px] mx-auto space-y-6 font-sans">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80">
         <div>

@@ -232,7 +232,7 @@ export default function AdminOtpModal({
               <label className="block text-xs font-bold text-slate-700 text-center mb-3">
                 Enter 6-Digit Verification OTP
               </label>
-              <div className="flex items-center justify-center gap-2 sm:gap-2.5">
+              <div className="flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5">
                 {otpDigits.map((digit, idx) => (
                   <input
                     key={`otp-input-${idx}`}
@@ -243,7 +243,7 @@ export default function AdminOtpModal({
                     value={digit}
                     onChange={e => handleDigitChange(idx, e.target.value)}
                     onKeyDown={e => handleKeyDown(idx, e)}
-                    className="w-11 h-12 sm:w-12 sm:h-13 text-center text-xl font-extrabold font-mono bg-white border border-slate-300 rounded-xl focus:border-sky-500 focus:ring-4 focus:ring-sky-500/15 focus:outline-none transition-all shadow-2xs"
+                    className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-13 text-center text-lg sm:text-xl font-extrabold font-mono bg-white border border-slate-300 rounded-xl focus:border-sky-500 focus:ring-4 focus:ring-sky-500/15 focus:outline-none transition-all shadow-2xs"
                   />
                 ))}
               </div>

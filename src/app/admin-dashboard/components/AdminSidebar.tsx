@@ -19,6 +19,7 @@ import {
   Home,
   UserCheck,
   KeyRound,
+  X,
 } from 'lucide-react';
 import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 
@@ -81,6 +82,14 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="lg:hidden p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors flex-shrink-0 cursor-pointer"
+            aria-label="Close Admin Navigation"
+          >
+            <X size={18} />
           </button>
         </div>
 

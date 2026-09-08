@@ -127,9 +127,9 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminAuthGuard>
-      <div className="flex min-h-screen bg-slate-50 font-sans">
+      <div className="flex min-h-screen bg-slate-50 font-sans overflow-x-hidden">
         <AdminSidebar activeView={activeView} onNavigate={handleNavigate} onLogout={handleLogout} />
-        <main className="flex-1 min-w-0 overflow-auto pt-14 lg:pt-0">
+        <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pt-14 lg:pt-0">
           {activeView === 'dashboard' && <AdminDashboardContent onNavigate={handleNavigate} />}
           {activeView === 'events' && (
             <AdminEventsTable

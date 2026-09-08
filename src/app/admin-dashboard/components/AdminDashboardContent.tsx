@@ -238,7 +238,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
           onClick={() => onNavigate('create-event')}
           title="Add Event"
           aria-label="Add Event"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer"
         >
           <Plus size={16} />
           <span>Add New Event</span>
@@ -247,7 +247,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
 
       {/* KPI Summary Cards */}
       <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {KPI_CARDS.map((card, idx) => {
             const Icon = card.icon;
             return (
@@ -306,7 +306,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Upcoming Events Table (8 Cols) */}
         <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-          <div className="flex items-center justify-between p-5 border-b border-slate-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-100">
             <div>
               <h3 className="text-base font-extrabold text-slate-900">
                 Upcoming Events Management
@@ -316,7 +316,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => onNavigate('create-event')}
                 title="Add Event"
@@ -328,7 +328,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
               </button>
               <button
                 onClick={() => onNavigate('events')}
-                className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 ml-2"
+                className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 ml-1 sm:ml-2"
               >
                 <span>Manage All ({totalEvents})</span>
                 <ArrowRight size={13} />
