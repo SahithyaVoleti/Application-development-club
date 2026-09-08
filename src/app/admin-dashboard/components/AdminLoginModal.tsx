@@ -26,9 +26,11 @@ interface Props {
   onSuccess: (user: any) => void;
 }
 
-type Mode = 'login' | 'register' | 'super-admin' | 'otp' | 'not-found' | 'pending' | 'rejected';
+type AuthType = 'admin' | 'super-admin';
+type Mode = 'login' | 'register' | 'otp' | 'not-found' | 'pending' | 'rejected';
 
 export default function AdminLoginModal({ onSuccess }: Props) {
+  const [authType, setAuthType] = useState<AuthType>('admin');
   const [mode, setMode] = useState<Mode>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,7 +90,10 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          loginAs: authType === 'super-admin' ? 'SUPER_ADMIN' : 'ADMIN',
+        }),
       });
 
       const json = await res.json();
@@ -116,7 +121,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         setOtpInput('');
         setOtpTimeLeft(300);
         setMode('otp');
-        toast.info('OTP Required', {
+        toast.info('Security OTP Required', {
           description: `6-digit security verification code sent to ${json.email || data.email}`,
         });
         setTimeout(() => {
@@ -126,7 +131,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         return;
       }
 
-      // Fallback direct login for student users
+      // Role check from backend response
       const user = json.user;
       const token = json.token;
 
@@ -143,7 +148,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         localStorage.setItem('adhub_admin_user', JSON.stringify(user));
       }
 
-      toast.success('Admin Sign In Successful!');
+      toast.success(user.role === 'SUPER_ADMIN' ? 'Welcome Super Admin!' : 'Admin Sign In Successful!');
       onSuccess(user);
     } catch (err: any) {
       setAuthError('Connection error. Please try again.');
@@ -152,7 +157,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
     }
   };
 
-  // 2. ADMIN REGISTRATION SUBMIT HANDLER
+  // 2. ADMIN REGISTRATION SUBMIT HANDLER (Admin ONLY)
   const onAdminRegisterSubmit = async (data: any) => {
     setIsSubmitting(true);
     setAuthError('');
@@ -184,8 +189,8 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       setPendingName(data.name);
       setMode('pending');
 
-      toast.success('Admin Registration Submitted', {
-        description: 'Confirmation email sent. Request is waiting for Super Admin approval.',
+      toast.success('Account Created Successfully', {
+        description: 'Your account is waiting for Super Admin approval.',
       });
     } catch (err: any) {
       setAuthError('Network error during registration.');
@@ -217,7 +222,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       if (!res.ok || !json.success) {
         const errorMsg = json.error || 'Invalid OTP. Please try again with the latest OTP.';
         setAuthError(errorMsg);
-        setOtpInput(''); // Immediately clear input state
+        setOtpInput('');
         setTimeout(() => {
           otpInputRef.current?.focus();
         }, 50);
@@ -248,7 +253,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
 
   // 4. RESEND OTP HANDLER
   const handleResendOtp = async () => {
-    setOtpInput(''); // Clear input
+    setOtpInput('');
     setAuthError('');
     try {
       const res = await fetch('/api/auth/resend-login-otp', {
@@ -272,84 +277,79 @@ export default function AdminLoginModal({ onSuccess }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-8 border border-slate-200 animate-scaleIn relative overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6 sm:p-8 border border-slate-200 animate-scaleIn relative overflow-hidden font-sans">
       {/* Header Branding */}
       <div className="text-center mb-6">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <AppLogo size={42} />
+        <div className="flex items-center justify-center gap-2.5 mb-3">
+          <AppLogo size={40} />
           <div className="text-left">
-            <div className="font-extrabold text-slate-900 text-lg leading-tight">
+            <div className="font-extrabold text-slate-900 text-base sm:text-lg leading-tight tracking-tight">
               Application Development Club
             </div>
-            <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+            <div className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-wider">
               Vignan University · CSE Dept
             </div>
           </div>
         </div>
 
-        {/* Mode Selector Tabs */}
+        {/* TWO SEPARATE LOGIN OPTIONS TAB SWITCHER */}
         {mode !== 'otp' && mode !== 'pending' && mode !== 'rejected' && mode !== 'not-found' && (
-          <div className="inline-flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200/80 mb-2 font-bold text-xs">
+          <div className="flex items-center p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 shadow-xs my-4 max-w-md mx-auto">
             <button
+              type="button"
               onClick={() => {
+                setAuthType('admin');
                 setMode('login');
                 setAuthError('');
                 setAuthNotice('');
-                setLoginValue('email', '');
-                setLoginValue('password', '');
               }}
-              className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
-                mode === 'login'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                authType === 'admin'
+                  ? 'bg-white text-slate-900 shadow-md ring-1 ring-slate-200'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              Admin Login
+              <Shield size={16} className={authType === 'admin' ? 'text-blue-600' : 'text-slate-400'} />
+              <span>Admin</span>
             </button>
+
             <button
+              type="button"
               onClick={() => {
-                setMode('register');
+                setAuthType('super-admin');
+                setMode('login');
                 setAuthError('');
                 setAuthNotice('');
               }}
-              className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
-                mode === 'register'
-                  ? 'bg-sky-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                authType === 'super-admin'
+                  ? 'bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 text-white shadow-md ring-1 ring-purple-500/40'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              Register New Admin
-            </button>
-            <button
-              onClick={() => {
-                setMode('super-admin');
-                setAuthError('');
-                setAuthNotice('');
-                setLoginValue('email', '');
-                setLoginValue('password', '');
-              }}
-              className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
-                mode === 'super-admin'
-                  ? 'bg-indigo-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Super Admin
+              <ShieldCheck size={16} className={authType === 'super-admin' ? 'text-purple-300' : 'text-slate-400'} />
+              <span>Super Admin</span>
             </button>
           </div>
         )}
 
         <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-          {mode === 'login' && 'Sign In'}
           {mode === 'register' && 'Admin Account Registration'}
-          {mode === 'super-admin' && 'Super Admin Command Center'}
           {mode === 'otp' && 'OTP Email Security Verification'}
+          {mode === 'login' && (authType === 'super-admin' ? 'Super Admin Login' : 'Admin Login')}
         </h1>
+        {mode === 'login' && (
+          <p className="text-xs text-slate-500 font-medium mt-1">
+            {authType === 'super-admin'
+              ? 'Welcome Back — Restricted Super Admin Governance'
+              : 'Welcome Back — Enter your credentials to sign in'}
+          </p>
+        )}
       </div>
 
       {/* Global Status Banner Notices */}
       {authNotice && (
-        <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold flex items-start gap-3 shadow-2xs">
+        <div className="mb-5 p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold flex items-start gap-3 shadow-2xs">
           <Clock size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
           <div>
             <div className="font-extrabold text-amber-950 text-sm mb-1">
@@ -361,7 +361,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       )}
 
       {authError && (
-        <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold flex items-start gap-3 shadow-2xs">
+        <div className="mb-5 p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold flex items-start gap-3 shadow-2xs">
           <ShieldAlert size={20} className="text-rose-600 flex-shrink-0 mt-0.5" />
           <div>
             <div className="font-extrabold text-rose-950 text-sm mb-1">
@@ -373,9 +373,9 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       )}
 
       {/* -------------------------------------------------------------
-          MODE 1: ADMIN & SUPER ADMIN LOGIN FORM
+          MODE 1: LOGIN FORM (ADMIN & SUPER ADMIN)
       ------------------------------------------------------------- */}
-      {(mode === 'login' || mode === 'super-admin') && (
+      {mode === 'login' && (
         <form onSubmit={handleLoginSubmit(onLoginSubmit)} className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -423,7 +423,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
               <button
                 type="button"
                 onClick={() => setShowPassword(v => !v)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -437,8 +437,8 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             type="submit"
             disabled={isSubmitting}
             className={`w-full py-3.5 px-4 rounded-xl text-white font-extrabold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              mode === 'super-admin'
-                ? 'bg-gradient-to-r from-indigo-900 via-slate-900 to-purple-900 hover:from-indigo-800 hover:to-purple-800'
+              authType === 'super-admin'
+                ? 'bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 hover:from-purple-800 hover:to-indigo-800'
                 : 'bg-slate-900 hover:bg-slate-800'
             }`}
           >
@@ -447,12 +447,33 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Authenticating...
               </span>
-            ) : mode === 'super-admin' ? (
-              'Sign In as Super Admin'
             ) : (
               'Sign In'
             )}
           </button>
+
+          {/* ADMIN ONLY: Don't Have an Account? -> Create Account */}
+          {authType === 'admin' ? (
+            <div className="mt-6 pt-4 border-t border-slate-100 text-center text-xs text-slate-600 font-medium">
+              <span>Don't have an account? </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('register');
+                  setAuthError('');
+                  setAuthNotice('');
+                }}
+                className="font-extrabold text-blue-600 hover:text-blue-700 underline cursor-pointer ml-1"
+              >
+                Create Account
+              </button>
+            </div>
+          ) : (
+            <div className="mt-6 pt-4 border-t border-slate-100 text-center text-[11px] text-slate-500 font-mono font-medium flex items-center justify-center gap-1.5">
+              <ShieldCheck size={13} className="text-purple-600 flex-shrink-0" />
+              <span>Super Admin access is strictly limited to pre-configured accounts.</span>
+            </div>
+          )}
         </form>
       )}
 
@@ -470,24 +491,25 @@ export default function AdminLoginModal({ onSuccess }: Props) {
               Account not found
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md mx-auto">
-              We couldn't find an account associated with <span className="font-extrabold text-slate-900 font-mono bg-white px-2 py-0.5 rounded border border-slate-200">{notFoundEmail}</span>.
+              Account not found. Please create an Admin account first.
+            </p>
+            <p className="text-xs text-slate-400 font-mono mt-1">
+              Email: {notFoundEmail}
             </p>
           </div>
 
-          <div className="p-4 bg-white rounded-2xl border border-slate-200 text-xs text-slate-500 font-medium">
-            Don't have an account yet? Submit your Admin registration for Super Admin verification.
-          </div>
-
           <div className="space-y-2.5 pt-2">
-            <button
-              onClick={() => {
-                setMode('register');
-                setLoginValue('email', notFoundEmail);
-              }}
-              className="w-full py-3.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>Create New Account</span>
-            </button>
+            {authType === 'admin' && (
+              <button
+                onClick={() => {
+                  setMode('register');
+                  setLoginValue('email', notFoundEmail);
+                }}
+                className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>Create Account</span>
+              </button>
+            )}
 
             <button
               onClick={() => setMode('login')}
@@ -512,22 +534,25 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             <h2 className="text-xl sm:text-2xl font-black text-amber-950 tracking-tight mb-2">
               Account Pending Approval
             </h2>
-            <p className="text-xs sm:text-sm text-amber-900 leading-relaxed max-w-md mx-auto">
-              Your Admin account has been successfully registered and is currently waiting for Super Admin approval.
+            <p className="text-xs sm:text-sm font-extrabold text-amber-900 leading-relaxed max-w-md mx-auto">
+              Account created successfully. Your account is waiting for Super Admin approval.
             </p>
             <p className="text-xs text-amber-800 mt-2 font-medium">
-              Approval notification emails have been dispatched to all Super Admins. You will be able to access the Admin Dashboard once approved.
+              Approval notification emails have been dispatched to Super Admins. You will be able to sign in once approved.
             </p>
           </div>
 
           <div className="inline-flex items-center gap-2 bg-amber-100/80 text-amber-900 px-4 py-2 rounded-full text-xs font-mono font-extrabold border border-amber-300">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-            Registration Status: Pending Approval
+            Status: Pending Super Admin Approval
           </div>
 
           <div className="pt-3">
             <button
-              onClick={() => setMode('login')}
+              onClick={() => {
+                setAuthType('admin');
+                setMode('login');
+              }}
               className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
             >
               Back to Sign In
@@ -549,8 +574,8 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             <h2 className="text-xl sm:text-2xl font-black text-rose-950 tracking-tight mb-2">
               Account Registration Rejected
             </h2>
-            <p className="text-xs sm:text-sm text-rose-900 leading-relaxed max-w-md mx-auto">
-              Your Admin registration request was not approved by the Super Admin team.
+            <p className="text-xs sm:text-sm text-rose-900 font-extrabold leading-relaxed max-w-md mx-auto">
+              Your Admin account request has been rejected.
             </p>
             {rejectionReason && (
               <div className="mt-3 p-3 bg-white/80 rounded-xl border border-rose-200 text-xs text-rose-900 font-medium">
@@ -558,13 +583,16 @@ export default function AdminLoginModal({ onSuccess }: Props) {
               </div>
             )}
             <p className="text-xs text-rose-700 mt-3 font-medium">
-              Please contact the CSE Department executive board if you believe this is an error.
+              Please contact the Super Admin team if you believe this was an error.
             </p>
           </div>
 
           <div className="pt-3">
             <button
-              onClick={() => setMode('login')}
+              onClick={() => {
+                setAuthType('admin');
+                setMode('login');
+              }}
               className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
             >
               Back to Sign In
@@ -574,9 +602,9 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       )}
 
       {/* -------------------------------------------------------------
-          MODE 2: ADMIN REGISTRATION FORM
+          MODE 2: ADMIN REGISTRATION FORM (ADMIN ONLY)
       ------------------------------------------------------------- */}
-      {mode === 'register' && (
+      {mode === 'register' && authType === 'admin' && (
         <form onSubmit={handleAdminRegSubmit(onAdminRegisterSubmit)} className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -589,7 +617,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="text"
                   {...regAdmin('name', { required: 'Name is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder=""
+                  placeholder="e.g. Dr. K. Radhika"
                 />
               </div>
               {regErrors.name && (
@@ -607,7 +635,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="text"
                   {...regAdmin('staffId', { required: 'Staff/Faculty ID is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder=""
+                  placeholder="e.g. CSE-1024"
                 />
               </div>
               {regErrors.staffId && (
@@ -627,7 +655,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="email"
                   {...regAdmin('email', { required: 'Email address is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder=""
+                  placeholder="e.g. faculty@vignan.ac.in"
                 />
               </div>
               {regErrors.email && (
@@ -645,7 +673,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="tel"
                   {...regAdmin('phone', { required: 'Phone number is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder=""
+                  placeholder="+91 9876543210"
                 />
               </div>
               {regErrors.phone && (
@@ -708,7 +736,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                     minLength: { value: 6, message: 'Minimum 6 chars required' },
                   })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder=""
+                  placeholder="••••••••"
                 />
               </div>
             </div>
@@ -723,7 +751,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="password"
                   {...regAdmin('confirmPassword', { required: 'Confirm password is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder=""
+                  placeholder="••••••••"
                 />
               </div>
             </div>
@@ -732,7 +760,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+            className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">
@@ -740,9 +768,19 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 Submitting Registration...
               </span>
             ) : (
-              'Submit Admin Account Request'
+              'Create Account'
             )}
           </button>
+
+          <div className="text-center pt-2">
+            <button
+              type="button"
+              onClick={() => setMode('login')}
+              className="text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer inline-flex items-center gap-1"
+            >
+              <ArrowLeft size={14} /> Already have an account? Back to Sign In
+            </button>
+          </div>
         </form>
       )}
 

@@ -7,7 +7,7 @@ import { sendOtpEmail } from '@/lib/emailService';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email, password, loginAs } = body;
 
     // 1. Input Validation
     if (!email || typeof email !== 'string' || !email.trim()) {
@@ -35,8 +35,8 @@ export async function POST(request: Request) {
         {
           success: false,
           code: 'ACCOUNT_NOT_FOUND',
-          error: 'Account not found. Please create an account first.',
-          message: 'Account not found. Please create an account first.',
+          error: 'Account not found. Please create an Admin account first.',
+          message: 'Account not found. Please create an Admin account first.',
           email: cleanEmail,
         },
         { status: 404 }
@@ -75,7 +75,32 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5. Role and Status Security Authorization Checks
+    // 5. Role & Option Verification — Never trust frontend selection alone
+    if (loginAs === 'SUPER_ADMIN' && user.role !== 'SUPER_ADMIN' && !isSuperAdminEmail(cleanEmail)) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: 'NOT_SUPER_ADMIN',
+          error: 'Access denied. This account does not have Super Admin privileges.',
+          message: 'Access denied. This account does not have Super Admin privileges.',
+        },
+        { status: 403 }
+      );
+    }
+
+    if (user.role === 'STUDENT') {
+      return NextResponse.json(
+        {
+          success: false,
+          code: 'STUDENT_DENIED',
+          error: 'Access Denied: Student accounts cannot access the Admin Panel.',
+          message: 'Access Denied: Student accounts cannot access the Admin Panel.',
+        },
+        { status: 403 }
+      );
+    }
+
+    // 6. Role and Status Security Authorization Checks for ADMIN
     if (user.role === 'ADMIN') {
       if (user.status === 'PENDING' || user.status === 'PENDING_APPROVAL' || user.status === 'PENDING_OTP') {
         return NextResponse.json(
