@@ -92,10 +92,6 @@ export default function UpcomingEventsCarouselSection({
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="px-3.5 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-mono font-bold uppercase tracking-widest inline-flex items-center gap-1.5 mb-3">
-              <Sparkles size={13} className="text-sky-600" />
-              <span>LIVE AUTO-SCROLLING UPCOMING EVENTS</span>
-            </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
               Upcoming Events ({filteredEvents.length})
             </h2>

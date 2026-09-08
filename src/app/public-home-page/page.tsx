@@ -5,7 +5,6 @@ import HeroSection from './components/HeroSection';
 
 import CseEventStatsSection from './components/CseEventStatsSection';
 import UpcomingEventsCarouselSection from './components/UpcomingEventsCarouselSection';
-import PastEventsSection from './components/PastEventsSection';
 import IntroSection from './components/IntroSection';
 import LeaderboardSection from './components/LeaderboardSection';
 import CertificatesSection from './components/CertificatesSection';
@@ -186,12 +185,6 @@ export default function PublicHomePage() {
               onViewDetails={handleOpenPastEventModal}
               currentUser={activeLoggedInUser}
               userRegistrations={userRegistrations}
-            />
-
-            {/* 3. Past Departmental Events */}
-            <PastEventsSection
-              events={eventsList}
-              onViewDetails={handleOpenPastEventModal}
             />
 
             {/* 5. CSE Department Impact & Community Stats */}
