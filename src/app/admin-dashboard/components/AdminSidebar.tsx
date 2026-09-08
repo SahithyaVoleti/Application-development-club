@@ -193,22 +193,6 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
                 <ClipboardList size={17} className={activeView === 'registrations' ? 'text-sky-400' : 'text-slate-400'} />
                 {!collapsed && <span>Registrations</span>}
               </button>
-
-              <button
-                onClick={() => handleNavClick('leaderboard')}
-                title={collapsed ? 'Leaderboard' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                  activeView === 'leaderboard'
-                    ? 'bg-blue-600/15 text-sky-400 font-bold border border-blue-500/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-                } ${collapsed ? 'justify-center px-2' : ''}`}
-              >
-                {activeView === 'leaderboard' && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-500 rounded-r-md" />
-                )}
-                <Trophy size={17} className={activeView === 'leaderboard' ? 'text-amber-400' : 'text-slate-400'} />
-                {!collapsed && <span>Leaderboards</span>}
-              </button>
             </div>
           </div>
 

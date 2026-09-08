@@ -8,15 +8,14 @@ import AdminEventsTable from './components/AdminEventsTable';
 import AdminAnalytics from './components/AdminAnalytics';
 import AdminCreateEventWorkspace from './components/AdminCreateEventWorkspace';
 import AdminRegistrationsContent from './components/AdminRegistrationsContent';
-import AdminLeaderboardModal from './components/AdminLeaderboardModal';
 import AdminApprovalRequests from './components/AdminApprovalRequests';
 import AdminOtpModal from './components/AdminOtpModal';
 import { MOCK_EVENTS, Event } from '@/lib/mockData';
 import { toast } from 'sonner';
 
-export type AdminView = 'dashboard' | 'events' | 'analytics' | 'create-event' | 'registrations' | 'leaderboard' | 'approvals';
+export type AdminView = 'dashboard' | 'events' | 'analytics' | 'create-event' | 'registrations' | 'approvals';
 
-const PROTECTED_VIEWS: AdminView[] = ['create-event', 'registrations', 'leaderboard', 'approvals'];
+const PROTECTED_VIEWS: AdminView[] = ['create-event', 'registrations', 'approvals'];
 
 function getAuthHeader(): Record<string, string> {
   if (typeof window === 'undefined') return {};
@@ -62,12 +61,11 @@ export default function AdminDashboardPage() {
   };
 
   const handleNavigate = (targetView: AdminView) => {
-    // If navigating to protected view (Add Event, View/Download Reports, Leaderboard) and not verified yet
+    // If navigating to protected view (Add Event, View/Download Reports) and not verified yet
     if (PROTECTED_VIEWS.includes(targetView) && !isOtpVerified) {
       let desc = 'Access Protected View';
       if (targetView === 'create-event') desc = 'Add / Edit Events';
       if (targetView === 'registrations') desc = 'View & Download Event Reports';
-      if (targetView === 'leaderboard') desc = 'Manage Event Leaderboards';
 
       setActionName(desc);
       setPendingView(targetView);
@@ -144,12 +142,6 @@ export default function AdminDashboardPage() {
           )}
           {activeView === 'analytics' && <AdminAnalytics />}
           {activeView === 'registrations' && <AdminRegistrationsContent />}
-          {activeView === 'leaderboard' && (
-            <AdminLeaderboardModal
-              events={MOCK_EVENTS}
-              onClose={() => setActiveView('dashboard')}
-            />
-          )}
           {activeView === 'create-event' && (
             <AdminCreateEventWorkspace
               eventToEdit={editingEvent}

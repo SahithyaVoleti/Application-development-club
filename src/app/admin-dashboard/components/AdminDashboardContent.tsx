@@ -22,6 +22,8 @@ import {
   Activity,
   Sparkles,
   Trash2,
+  Eye,
+  Pencil,
 } from 'lucide-react';
 
 const AdminOverviewCharts = dynamic(() => import('./AdminOverviewCharts'), { ssr: false });
@@ -234,6 +236,8 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
         {/* Add New Event Button */}
         <button
           onClick={() => onNavigate('create-event')}
+          title="Add Event"
+          aria-label="Add Event"
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer"
         >
           <Plus size={16} />
@@ -315,6 +319,8 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onNavigate('create-event')}
+                title="Add Event"
+                aria-label="Add Event"
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-colors cursor-pointer border border-blue-200/80"
               >
                 <Plus size={13} />
@@ -381,14 +387,25 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => onNavigate('events')}
-                              className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold text-[11px] transition-colors cursor-pointer border border-blue-200/80"
+                              className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200/80"
+                              title="View Event"
+                              aria-label="View Event"
                             >
-                              View / Edit
+                              <Eye size={14} />
+                            </button>
+                            <button
+                              onClick={() => onNavigate('events')}
+                              className="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors cursor-pointer border border-amber-200/80"
+                              title="Edit Event"
+                              aria-label="Edit Event"
+                            >
+                              <Pencil size={14} />
                             </button>
                             <button
                               onClick={() => setDeleteConfirmEvent(event)}
-                              className="p-1 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer border border-rose-200/80"
-                              title="Delete upcoming event"
+                              className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer border border-rose-200/80"
+                              title="Delete Event"
+                              aria-label="Delete Event"
                             >
                               <Trash2 size={14} />
                             </button>

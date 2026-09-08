@@ -8,7 +8,7 @@ import AdminDeleteConfirm from './AdminDeleteConfirm';
 import AdminEventRegistrationsModal from './AdminEventRegistrationsModal';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Plus, Search, Eye, Edit2, Trash2, ClipboardList, ChevronUp, ChevronDown, FileSpreadsheet, Download, Globe, Globe2 } from 'lucide-react';
+import { Plus, Search, Eye, Pencil, Trash2, ClipboardList, ChevronUp, ChevronDown, FileSpreadsheet, Download, Globe, Globe2 } from 'lucide-react';
 
 type SortKey = 'title' | 'date' | 'status' | 'registered';
 type SortDir = 'asc' | 'desc';
@@ -239,6 +239,8 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
             if (onNavigate) onNavigate('create-event');
             else setFormModal({ open: true });
           }}
+          title="Add Event"
+          aria-label="Add Event"
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer"
         >
           <Plus size={16} />
@@ -404,20 +406,26 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
                           </button>
                           <Link
                             href={`/events/${event.id}`}
-                            title="View event on public site"
+                            title="View Event"
+                            aria-label="View Event"
                             className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-500 hover:text-blue-600 transition-colors"
                           >
                             <Eye size={15} />
                           </Link>
                           <button
-                            title="Edit event"
-                            onClick={() => setFormModal({ open: true, event })}
+                            title="Edit Event"
+                            aria-label="Edit Event"
+                            onClick={() => {
+                              if (onEditEvent) onEditEvent(event);
+                              else setFormModal({ open: true, event });
+                            }}
                             className="p-1.5 rounded-lg hover:bg-amber-50 text-slate-500 hover:text-amber-600 transition-colors cursor-pointer"
                           >
-                            <Edit2 size={15} />
+                            <Pencil size={15} />
                           </button>
                           <button
-                            title="Delete event"
+                            title="Delete Event"
+                            aria-label="Delete Event"
                             onClick={() => setDeleteConfirm(event)}
                             className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
                           >
