@@ -118,20 +118,23 @@ async function main() {
 
   // 4. Seed Gallery Images
   for (const img of GALLERY_IMAGES) {
-    await prisma.galleryImage.upsert({
-      where: { id: img.id },
-      update: {
-        eventId: img.eventId,
-        imageUrl: img.imageUrl,
-        caption: img.caption,
-      },
-      create: {
-        id: img.id,
-        eventId: img.eventId,
-        imageUrl: img.imageUrl,
-        caption: img.caption,
-      },
-    });
+    const existingEvent = await prisma.event.findUnique({ where: { id: img.eventId } });
+    if (existingEvent) {
+      await prisma.galleryImage.upsert({
+        where: { id: img.id },
+        update: {
+          eventId: img.eventId,
+          imageUrl: img.imageUrl,
+          caption: img.caption,
+        },
+        create: {
+          id: img.id,
+          eventId: img.eventId,
+          imageUrl: img.imageUrl,
+          caption: img.caption,
+        },
+      });
+    }
   }
 
   console.log('PostgreSQL database seeded successfully!');
