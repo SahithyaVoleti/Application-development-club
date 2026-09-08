@@ -340,7 +340,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         )}
 
         <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-          {mode === 'login' && 'Admin Portal Sign In'}
+          {mode === 'login' && 'Sign In'}
           {mode === 'register' && 'Admin Account Registration'}
           {mode === 'super-admin' && 'Super Admin Command Center'}
           {mode === 'otp' && 'OTP Email Security Verification'}
@@ -450,7 +450,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
             ) : mode === 'super-admin' ? (
               'Sign In as Super Admin'
             ) : (
-              'Sign In to Admin Dashboard'
+              'Sign In'
             )}
           </button>
         </form>
