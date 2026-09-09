@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Award, Lightbulb, Code2, Users, Sparkles, Terminal, BookOpen, Layers } from 'lucide-react';
+import { Lightbulb, Code2, Users, Sparkles, Terminal, BookOpen, Layers } from 'lucide-react';
 
 export default function AboutSection() {
   return (
@@ -10,11 +10,6 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column: Narrative Content */}
           <div className="lg:col-span-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-100/80 dark:bg-sky-950/70 border border-sky-300/50 dark:border-sky-800 text-sky-700 dark:text-sky-300 text-xs font-bold uppercase tracking-widest mb-5">
-              <Award size={14} className="text-sky-600 dark:text-sky-400" />
-              <span>About Application Development Hub</span>
-            </div>
-
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-6">
               Where CSE Students<br />
               <span className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 dark:from-sky-400 dark:via-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
