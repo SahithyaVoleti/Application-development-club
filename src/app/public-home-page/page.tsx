@@ -6,6 +6,7 @@ import HeroSection from './components/HeroSection';
 import CseEventStatsSection from './components/CseEventStatsSection';
 import UpcomingEventsCarouselSection from './components/UpcomingEventsCarouselSection';
 import PastEventsSection from './components/PastEventsSection';
+import AboutSection from './components/AboutSection';
 import IntroSection from './components/IntroSection';
 import LeaderboardSection from './components/LeaderboardSection';
 import CertificatesSection from './components/CertificatesSection';
@@ -193,6 +194,9 @@ export default function PublicHomePage() {
               events={eventsList}
               onViewDetails={handleOpenPastEventModal}
             />
+
+            {/* 4. About Application Development Club */}
+            <AboutSection />
 
             {/* 5. CSE Department Impact & Community Stats */}
             <CseEventStatsSection />

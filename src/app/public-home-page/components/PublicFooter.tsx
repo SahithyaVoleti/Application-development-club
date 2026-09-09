@@ -6,7 +6,14 @@ import { Cpu, ArrowUpRight, Globe, Share2, Code } from 'lucide-react';
 export default function PublicFooter() {
   const handleScrollTo = (id: string) => {
     const el = document.querySelector(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      const navOffset = 80;
+      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: Math.max(0, elementPosition - navOffset),
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
@@ -80,7 +87,7 @@ export default function PublicFooter() {
             </h4>
             <ul className="space-y-2">
               <li><button onClick={() => handleScrollTo('#images-gallery')} className="hover:text-white transition-colors cursor-pointer text-blue-400 font-bold">Media Gallery</button></li>
-              <li><button onClick={() => handleScrollTo('#home')} className="hover:text-white transition-colors cursor-pointer">About Us</button></li>
+              <li><button onClick={() => handleScrollTo('#about-hub')} className="hover:text-white transition-colors cursor-pointer">About Us</button></li>
               <li><span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span></li>
               <li><span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span></li>
               <li className="pt-2">

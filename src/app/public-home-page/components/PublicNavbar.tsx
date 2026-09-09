@@ -54,10 +54,13 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
 
       const sections = NAV_LINKS.map(link => link.href.replace('#', ''));
       for (const sectionId of sections.reverse()) {
-        const el = document.getElementById(sectionId);
+        const el =
+          document.getElementById(sectionId) ||
+          (sectionId === 'about-hub' ? document.getElementById('about') : null) ||
+          (sectionId === 'about' ? document.getElementById('about-hub') : null);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 140) {
+          if (rect.top <= 160) {
             setActiveSection(sectionId);
             break;
           }
@@ -79,9 +82,19 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
     const targetId = href.replace('#', '');
-    const el = document.getElementById(targetId);
+    const el =
+      document.getElementById(targetId) ||
+      (targetId === 'about-hub' ? document.getElementById('about') : null) ||
+      (targetId === 'about' ? document.getElementById('about-hub') : null) ||
+      (targetId === 'events' ? document.getElementById('upcoming-events') : null);
+
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      const navOffset = 80;
+      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: Math.max(0, elementPosition - navOffset),
+        behavior: 'smooth',
+      });
     }
   };
 

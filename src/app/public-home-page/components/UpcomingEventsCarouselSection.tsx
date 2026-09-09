@@ -87,7 +87,7 @@ export default function UpcomingEventsCarouselSection({
   };
 
   return (
-    <section className="py-10 sm:py-14 bg-slate-50 dark:bg-slate-950 relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
+    <section id="events" className="py-10 sm:py-14 bg-slate-50 dark:bg-slate-950 relative overflow-hidden border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-200">
       <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
