@@ -46,47 +46,22 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
   // Filter strictly Completed / Finished events
   const completedEventsOnly = events.filter(e => e.status === 'COMPLETED');
 
-  // Auto-scrolling animation loop
-  useEffect(() => {
-    if (viewMode !== 'slider' || !isAutoScrolling || isHovered) {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      return;
-    }
-
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    const speed = 0.18; // gentle, smooth pixels per frame
-
-    const step = () => {
-      if (scrollContainer) {
-        if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5) {
-          scrollContainer.scrollLeft = 0;
-        } else {
-          scrollContainer.scrollLeft += speed;
-        }
-      }
-      animationFrameRef.current = requestAnimationFrame(step);
-    };
-
-    animationFrameRef.current = requestAnimationFrame(step);
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [viewMode, isAutoScrolling, isHovered, events]);
+  // Duplicate array to ensure seamless 50% infinite continuous marquee
+  const baseList =
+    completedEventsOnly.length < 4
+      ? [...completedEventsOnly, ...completedEventsOnly]
+      : completedEventsOnly;
+  const marqueeEvents = [...baseList, ...baseList];
 
   const handleScrollLeft = () => {
+    setIsAutoScrolling(false);
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -360, behavior: 'smooth' });
     }
   };
 
   const handleScrollRight = () => {
+    setIsAutoScrolling(false);
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 360, behavior: 'smooth' });
     }
@@ -95,11 +70,6 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
   if (completedEventsOnly.length === 0) {
     return null;
   }
-
-  const marqueeEvents =
-    completedEventsOnly.length < 6
-      ? [...completedEventsOnly, ...completedEventsOnly, ...completedEventsOnly]
-      : [...completedEventsOnly, ...completedEventsOnly];
 
   return (
     <section className="py-10 sm:py-14 bg-white border-t border-slate-200/80 overflow-hidden" id="completed-events">
@@ -175,14 +145,20 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
       </div>
 
       {viewMode === 'slider' ? (
-        /* Compact Auto-Scrolling Track for Completed Events */
+        /* Continuous Auto-Scrolling Track for Completed Events */
         <div
           ref={scrollRef}
-          className="w-full overflow-x-auto scrollbar-hide scroll-smooth"
+          className="w-full overflow-hidden overflow-x-auto scrollbar-hide scroll-smooth"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="flex gap-4 pb-4 pt-1 px-4 sm:px-6 lg:px-10">
+          <div
+            className="flex gap-4 animate-continuous-marquee pb-4 pt-1"
+            style={{
+              animationPlayState: isAutoScrolling ? (isHovered ? 'paused' : 'running') : 'paused',
+              animationDuration: '45s',
+            }}
+          >
             {marqueeEvents.map((event, idx) => {
               const registered = REGISTERED_COUNTS[event.id] || Math.floor(event.capacity * 0.85);
               const attended = ATTENDED_COUNTS[event.id] || Math.floor(registered * 0.9);
