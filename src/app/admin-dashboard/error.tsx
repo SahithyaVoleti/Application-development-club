@@ -34,6 +34,11 @@ export default function AdminDashboardError({
           <p className="text-xs text-slate-400 mt-1 font-medium leading-relaxed">
             A temporary client view error occurred while rendering the dashboard.
           </p>
+          {error?.message && (
+            <p className="mt-2 text-[11px] font-mono text-rose-300 bg-rose-950/40 p-2 rounded-lg border border-rose-900/40 break-words">
+              {error.message}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2 pt-2">

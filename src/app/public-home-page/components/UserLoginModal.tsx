@@ -243,7 +243,6 @@ export default function UserLoginModal({ isOpen, bannerNotice, onClose, onSelect
                   <input
                     type="email"
                     required
-                    placeholder="Enter your Edu Email ID"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     className="w-full bg-[#F1F3F5] text-slate-900 placeholder-slate-400 border border-transparent focus:border-amber-400 focus:bg-white rounded-2xl px-5 py-3.5 text-sm outline-none font-medium transition-all"
@@ -258,7 +257,6 @@ export default function UserLoginModal({ isOpen, bannerNotice, onClose, onSelect
                   <input
                     type="password"
                     required
-                    placeholder="Enter your password"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="w-full bg-[#F1F3F5] text-slate-900 placeholder-slate-400 border border-transparent focus:border-amber-400 focus:bg-white rounded-2xl px-5 py-3.5 text-sm outline-none font-medium transition-all"

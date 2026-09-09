@@ -8,6 +8,7 @@ import {
   Lock,
   Mail,
   Shield,
+  ShieldCheck,
   User,
   Phone,
   Building,
@@ -74,7 +75,7 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       phone: '',
       staffId: '',
       department: 'CSE',
-      designation: 'Faculty Coordinator',
+      designation: '',
       password: '',
       confirmPassword: '',
     },
@@ -387,7 +388,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 type="email"
                 {...regLogin('email', { required: 'Email address is required' })}
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 text-sm font-bold focus:outline-none focus:border-blue-600 shadow-xs"
-                placeholder="Enter your email address"
               />
             </div>
             {loginErrors.email && (
@@ -418,7 +418,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                 type={showPassword ? 'text' : 'password'}
                 {...regLogin('password', { required: 'Password is required' })}
                 className="w-full pl-10 pr-11 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 text-sm font-bold focus:outline-none focus:border-blue-600 shadow-xs"
-                placeholder="Enter your password"
               />
               <button
                 type="button"
@@ -617,7 +616,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="text"
                   {...regAdmin('name', { required: 'Name is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="e.g. Dr. K. Radhika"
                 />
               </div>
               {regErrors.name && (
@@ -635,7 +633,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="text"
                   {...regAdmin('staffId', { required: 'Staff/Faculty ID is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="e.g. CSE-1024"
                 />
               </div>
               {regErrors.staffId && (
@@ -655,7 +652,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="email"
                   {...regAdmin('email', { required: 'Email address is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="e.g. faculty@vignan.ac.in"
                 />
               </div>
               {regErrors.email && (
@@ -673,7 +669,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="tel"
                   {...regAdmin('phone', { required: 'Phone number is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="+91 9876543210"
                 />
               </div>
               {regErrors.phone && (
@@ -713,7 +708,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="text"
                   {...regAdmin('designation', { required: 'Designation is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="Faculty Coordinator"
                 />
               </div>
               {regErrors.designation && (
@@ -736,7 +730,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                     minLength: { value: 6, message: 'Minimum 6 chars required' },
                   })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="••••••••"
                 />
               </div>
             </div>
@@ -751,7 +744,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
                   type="password"
                   {...regAdmin('confirmPassword', { required: 'Confirm password is required' })}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-bold focus:outline-none focus:border-sky-600 shadow-2xs"
-                  placeholder="••••••••"
                 />
               </div>
             </div>
@@ -808,7 +800,6 @@ export default function AdminLoginModal({ onSuccess }: Props) {
               maxLength={6}
               value={otpInput}
               onChange={e => setOtpInput(e.target.value.replace(/\D/g, ''))}
-              placeholder="000000"
               className="w-full py-3 text-center font-mono font-black text-2xl tracking-[12px] bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-sky-600 focus:bg-white shadow-inner"
               autoFocus
             />

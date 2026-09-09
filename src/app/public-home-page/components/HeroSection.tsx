@@ -13,7 +13,7 @@ export default function HeroSection({ onSwitchToWorkspace }: Props) {
   };
 
   return (
-    <section id="home" className="relative w-full min-h-[720px] md:h-[780px] lg:h-[840px] xl:h-[880px] flex items-center bg-slate-950 text-white overflow-hidden border-b border-slate-800">
+    <section id="home" className="relative w-full min-h-[480px] md:h-[540px] lg:h-[600px] flex items-center bg-slate-950 text-white overflow-hidden border-b border-slate-800">
       
       {/* Full Background Image */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -31,27 +31,27 @@ export default function HeroSection({ onSwitchToWorkspace }: Props) {
       <div className="relative z-10 w-full px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
           
-          <div className="lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left max-w-2xl lg:max-w-3xl py-8 sm:py-12">
+          <div className="lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left max-w-2xl lg:max-w-3xl py-6 sm:py-8">
             {/* Main Headline on Background */}
-            <h1 className="animate-hero-fade delay-heading font-black text-white tracking-tight leading-[1.05] mb-6 text-5xl sm:text-6xl lg:text-7xl xl:text-8xl">
+            <h1 className="animate-hero-fade delay-heading font-black text-white tracking-tight leading-[1.1] mb-4 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl">
               Imagine Build <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-300">Innovate</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="animate-hero-fade delay-desc text-slate-100 text-lg sm:text-xl lg:text-2xl font-medium leading-relaxed mb-10 max-w-xl">
+            <p className="animate-hero-fade delay-desc text-slate-200 text-sm sm:text-base lg:text-lg font-medium leading-relaxed mb-6 max-w-xl">
               Empowering students to turn ideas into real-world solutions through innovation, collaboration, and code.
             </p>
 
             {/* Action CTA Buttons */}
-            <div className="animate-hero-fade delay-buttons flex flex-wrap items-center gap-5">
+            <div className="animate-hero-fade delay-buttons flex flex-wrap items-center gap-4">
               <button
                 onClick={() => handleScrollTo('#events')}
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-base px-9 py-4.5 rounded-full shadow-2xl shadow-sky-500/30 transition-all cursor-pointer group"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-sm px-6 py-3 rounded-full shadow-xl shadow-sky-500/25 transition-all cursor-pointer group"
               >
-                <Sparkles size={18} />
+                <Sparkles size={16} />
                 <span>Explore Events</span>
-                <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" />
+                <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
               </button>
             </div>
 

@@ -69,6 +69,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
+  const [eventTab, setEventTab] = useState<'upcoming' | 'completed'>('upcoming');
 
   const fetchEvents = async () => {
     try {
@@ -116,6 +117,16 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
       return e.status !== 'COMPLETED' && d >= today;
     })
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 8);
+
+  // Past / Completed events list
+  const pastEventsList = eventsList
+    .filter((e) => {
+      const d = new Date(e.date);
+      d.setHours(0, 0, 0, 0);
+      return e.status === 'COMPLETED' || d < today;
+    })
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 8);
 
   const handleDeleteEvent = async (event: Event) => {
@@ -221,15 +232,15 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
   ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10 max-w-[1450px] mx-auto space-y-6 sm:space-y-9 font-sans">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1450px] mx-auto space-y-5 sm:space-y-6 font-sans">
       {/* Top Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200/80">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Dashboard
           </h1>
-          <p className="text-slate-500 text-xs sm:text-sm font-medium mt-1">
-            CSE Event Management — Add, view, and delete upcoming events and monitor participation.
+          <p className="text-slate-500 text-xs font-medium mt-0.5">
+            CSE Event Management — Add, view, and manage upcoming and past events.
           </p>
         </div>
 
@@ -238,43 +249,43 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
           onClick={() => onNavigate('create-event')}
           title="Add Event"
           aria-label="Add Event"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 btn-hover-premium cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-sm cursor-pointer"
         >
-          <Plus size={16} />
+          <Plus size={15} />
           <span>Add New Event</span>
         </button>
       </div>
 
       {/* KPI Summary Cards */}
       <div>
-        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {KPI_CARDS.map((card, idx) => {
             const Icon = card.icon;
             return (
               <div
                 key={card.id}
-                className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-card-hover flex flex-col justify-between"
+                className="bg-white rounded-xl border border-slate-200/90 p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className={`w-10 h-10 rounded-xl ${card.bgColor} ${card.borderColor} border flex items-center justify-center`}>
-                      <Icon size={18} className={card.color} />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className={`w-8 h-8 rounded-lg ${card.bgColor} ${card.borderColor} border flex items-center justify-center`}>
+                      <Icon size={15} className={card.color} />
                     </div>
                     <span className="text-[10px] font-mono text-slate-400 font-bold">
                       0{idx + 1}
                     </span>
                   </div>
 
-                  <div className="text-3xl font-extrabold text-slate-900 font-tabular mb-1 tracking-tight">
+                  <div className="text-2xl font-bold text-slate-900 font-tabular mb-0.5 tracking-tight">
                     <AnimatedCountUp target={card.val} />
                   </div>
 
-                  <div className="text-xs font-bold text-slate-600 mb-2">
+                  <div className="text-xs font-bold text-slate-600 mb-1">
                     {card.label}
                   </div>
                 </div>
 
-                <div className="pt-2.5 border-t border-slate-100 text-[11px] font-semibold text-slate-500 flex items-center gap-1.5">
+                <div className="pt-2 border-t border-slate-100 text-[10px] font-semibold text-slate-500 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                   <span>{card.sub}</span>
                 </div>
@@ -285,9 +296,9 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
       </div>
 
       {/* Analytics Section */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-mono font-bold text-slate-400 uppercase tracking-widest">
+          <h2 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
             EVENT ANALYTICS
           </h2>
           <button
@@ -302,18 +313,33 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
         <AdminOverviewCharts />
       </div>
 
-      {/* Upcoming Events Table + Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Upcoming Events Table (8 Cols) */}
+      {/* Events Table + Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Events Table (8 Cols) */}
         <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-100">
-            <div>
-              <h3 className="text-base font-extrabold text-slate-900">
-                Upcoming Events Management
-              </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Admins can view, add, or delete upcoming scheduled events
-              </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 border-b border-slate-100">
+            {/* Upcoming vs Past Toggle Tabs */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEventTab('upcoming')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  eventTab === 'upcoming'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Upcoming Events ({upcomingEvents})
+              </button>
+              <button
+                onClick={() => setEventTab('completed')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  eventTab === 'completed'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Past Events ({completedEvents})
+              </button>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
@@ -321,7 +347,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
                 onClick={() => onNavigate('create-event')}
                 title="Add Event"
                 aria-label="Add Event"
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-colors cursor-pointer border border-blue-200/80"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-colors cursor-pointer border border-blue-200/80"
               >
                 <Plus size={13} />
                 <span>Add Event</span>
@@ -340,58 +366,60 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-100 text-slate-500 font-mono uppercase font-bold text-[10px]">
-                  <th className="px-5 py-3">Event Title</th>
-                  <th className="px-5 py-3">Date & Time</th>
-                  <th className="px-5 py-3">Venue</th>
-                  <th className="px-5 py-3">Registrations</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3 text-right">Admin Controls</th>
+                  <th className="px-4 py-2.5">Event Title</th>
+                  <th className="px-4 py-2.5">Date & Time</th>
+                  <th className="px-4 py-2.5">Venue</th>
+                  <th className="px-4 py-2.5">Registrations</th>
+                  <th className="px-4 py-2.5">Status</th>
+                  <th className="px-4 py-2.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {isLoadingEvents ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400">
-                      Loading upcoming events...
+                    <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
+                      Loading events...
                     </td>
                   </tr>
-                ) : nextUpcomingList.length === 0 ? (
+                ) : (eventTab === 'upcoming' ? nextUpcomingList : pastEventsList).length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center text-slate-500 font-medium">
-                      No upcoming events scheduled. Click "Add Event" above to create one.
+                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500 font-medium">
+                      {eventTab === 'upcoming'
+                        ? 'No upcoming events scheduled. Click "Add Event" above to create one.'
+                        : 'No past events found in the system.'}
                     </td>
                   </tr>
                 ) : (
-                  nextUpcomingList.map((event) => {
+                  (eventTab === 'upcoming' ? nextUpcomingList : pastEventsList).map((event) => {
                     const regCount = REGISTERED_COUNTS[event.id] || 0;
                     return (
-                      <tr key={`dash-up-${event.id}`} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="px-5 py-3.5 font-bold text-slate-900">
+                      <tr key={`dash-${eventTab}-${event.id}`} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="px-4 py-2.5 font-bold text-slate-900">
                           <div className="line-clamp-1">{event.title}</div>
-                          <div className="text-[10px] text-slate-600 font-mono font-normal">{event.category}</div>
+                          <div className="text-[10px] text-slate-500 font-mono font-normal">{event.category}</div>
                         </td>
-                        <td className="px-5 py-3.5 text-slate-600 font-mono">
+                        <td className="px-4 py-2.5 text-slate-600 font-mono text-[11px]">
                           <div>{event.date}</div>
-                          <div className="text-[10px] text-slate-600">{event.startTime}</div>
+                          <div className="text-[10px] text-slate-400">{event.startTime}</div>
                         </td>
-                        <td className="px-5 py-3.5 text-slate-600 font-medium">
-                          <div className="truncate max-w-[130px]">{event.venue}</div>
+                        <td className="px-4 py-2.5 text-slate-600 font-medium text-[11px]">
+                          <div className="truncate max-w-[120px]">{event.venue}</div>
                         </td>
-                        <td className="px-5 py-3.5 font-bold text-slate-900 font-tabular">
+                        <td className="px-4 py-2.5 font-bold text-slate-900 font-tabular text-[11px]">
                           {regCount} / {event.capacity}
                         </td>
-                        <td className="px-5 py-3.5">
+                        <td className="px-4 py-2.5">
                           <StatusBadge status={event.status} size="sm" />
                         </td>
-                        <td className="px-5 py-3.5 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <td className="px-4 py-2.5 text-right">
+                          <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => onNavigate('events')}
                               className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200/80"
                               title="View Event"
                               aria-label="View Event"
                             >
-                              <Eye size={14} />
+                              <Eye size={13} />
                             </button>
                             <button
                               onClick={() => onNavigate('events')}
@@ -399,7 +427,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
                               title="Edit Event"
                               aria-label="Edit Event"
                             >
-                              <Pencil size={14} />
+                              <Pencil size={13} />
                             </button>
                             <button
                               onClick={() => setDeleteConfirmEvent(event)}
@@ -407,7 +435,7 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
                               title="Delete Event"
                               aria-label="Delete Event"
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={13} />
                             </button>
                           </div>
                         </td>
