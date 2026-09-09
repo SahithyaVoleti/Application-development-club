@@ -41,35 +41,32 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
   const [isHovered, setIsHovered] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number | null>(null);
 
   // Filter strictly Completed / Finished events
   const completedEventsOnly = events.filter(e => e.status === 'COMPLETED');
 
-  // Duplicate array to ensure seamless 50% infinite continuous marquee
-  const baseList =
-    completedEventsOnly.length < 4
-      ? [...completedEventsOnly, ...completedEventsOnly]
-      : completedEventsOnly;
-  const marqueeEvents = [...baseList, ...baseList];
-
   const handleScrollLeft = () => {
-    setIsAutoScrolling(false);
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -360, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: -390, behavior: 'smooth' });
     }
   };
 
   const handleScrollRight = () => {
-    setIsAutoScrolling(false);
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 360, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: 390, behavior: 'smooth' });
     }
   };
 
   if (completedEventsOnly.length === 0) {
     return null;
   }
+
+  // Seamless marquee loop: duplicate list so translateX(0%) to translateX(-50%) creates an infinite continuous scroll
+  const marqueeBase =
+    completedEventsOnly.length < 4
+      ? [...completedEventsOnly, ...completedEventsOnly, ...completedEventsOnly]
+      : completedEventsOnly;
+  const marqueeEvents = [...marqueeBase, ...marqueeBase];
 
   return (
     <section className="py-10 sm:py-14 bg-white border-t border-slate-200/80 overflow-hidden" id="completed-events">
@@ -145,7 +142,7 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
       </div>
 
       {viewMode === 'slider' ? (
-        /* Continuous Auto-Scrolling Track for Completed Events */
+        /* Continuous Auto-Scrolling Marquee Track for Completed Events */
         <div
           ref={scrollRef}
           className="w-full overflow-hidden overflow-x-auto scrollbar-hide scroll-smooth"
@@ -153,10 +150,9 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
           onMouseLeave={() => setIsHovered(false)}
         >
           <div
-            className="flex gap-4 animate-continuous-marquee pb-4 pt-1"
+            className="flex gap-5 animate-continuous-marquee pb-4 pt-1"
             style={{
               animationPlayState: isAutoScrolling ? (isHovered ? 'paused' : 'running') : 'paused',
-              animationDuration: '45s',
             }}
           >
             {marqueeEvents.map((event, idx) => {
@@ -167,11 +163,11 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
               return (
                 <div
                   key={`completed-${event.id}-${idx}`}
-                  className="w-[280px] sm:w-[320px] lg:w-[340px] flex-shrink-0 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between p-3.5 group"
+                  className="w-[310px] sm:w-[360px] lg:w-[390px] flex-shrink-0 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between p-4 group"
                 >
                   <div>
-                    {/* Compact Poster Container */}
-                    <div className="relative h-40 sm:h-44 overflow-hidden rounded-xl bg-slate-950 border border-slate-800 shadow-xs mb-3">
+                    {/* Poster Container */}
+                    <div className="relative h-44 sm:h-48 overflow-hidden rounded-xl bg-slate-950 border border-slate-800 shadow-xs mb-3">
                       <AppImage
                         src={event.posterUrl}
                         alt=""
@@ -182,7 +178,7 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
                         src={event.posterUrl}
                         alt={`Past event poster for ${event.title}`}
                         fill
-                        sizes="340px"
+                        sizes="390px"
                         className="object-contain p-1.5 transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
@@ -244,8 +240,8 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
           </div>
         </div>
       ) : (
-        /* Compact Grid View */
-        <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        /* Grid View */
+        <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {completedEventsOnly.map(event => {
             const registered = REGISTERED_COUNTS[event.id] || Math.floor(event.capacity * 0.85);
             const attended = ATTENDED_COUNTS[event.id] || Math.floor(registered * 0.9);
@@ -254,10 +250,10 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
             return (
               <div
                 key={`grid-completed-${event.id}`}
-                className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-md transition-all p-3.5 group"
+                className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-md transition-all p-4 group"
               >
                 <div>
-                  <div className="relative h-40 overflow-hidden rounded-xl bg-slate-950 mb-3">
+                  <div className="relative h-44 sm:h-48 overflow-hidden rounded-xl bg-slate-950 mb-3">
                     <AppImage
                       src={event.posterUrl}
                       alt=""
@@ -268,6 +264,7 @@ export default function PastEventsSection({ events, onViewDetails }: Props) {
                       src={event.posterUrl}
                       alt={`Completed event photo for ${event.title}`}
                       fill
+                      sizes="390px"
                       className="object-contain p-1.5"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
