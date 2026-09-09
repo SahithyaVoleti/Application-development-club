@@ -47,7 +47,7 @@ export async function GET(
     const eventRegistrations = allRegistrations.filter((r) => r.eventId === eventId);
 
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'Application Development Hub - Dept. of CSE';
+    workbook.creator = 'Application Development Club - Dept. of CSE';
     workbook.created = new Date();
 
     const sheetName = event.title.replace(/[:\\/?*\[\]]/g, '').slice(0, 31) || 'Registrations';

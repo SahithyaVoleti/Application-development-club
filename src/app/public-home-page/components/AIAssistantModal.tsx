@@ -46,7 +46,7 @@ export default function AIAssistantModal({ isOpen, onClose }: Props) {
 
     let result = '';
     if (activeAction === 'Generate Component') {
-      result = `// AI-Generated React Component for Application Development Hub
+      result = `// AI-Generated React Component for Application Development Club
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 

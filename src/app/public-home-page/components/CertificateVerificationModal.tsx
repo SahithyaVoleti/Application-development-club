@@ -59,7 +59,7 @@ export default function CertificateVerificationModal({ isOpen, onClose }: Props)
           </div>
           <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Verify Credential</h2>
           <p className="text-xs text-slate-500 max-w-xs mx-auto">
-            Enter an official Application Development Hub Certificate ID to verify authentic student participation.
+            Enter an official Application Development Club Certificate ID to verify authentic student participation.
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export default function CertificateVerificationModal({ isOpen, onClose }: Props)
               type="text"
               value={certInput}
               onChange={(e) => setCertInput(e.target.value)}
-              placeholder="e.g. ADH-2026-AIH-00042"
+              placeholder="e.g. ADC-2026-AIH-00042"
               className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600 shadow-2xs"
             />
           </div>

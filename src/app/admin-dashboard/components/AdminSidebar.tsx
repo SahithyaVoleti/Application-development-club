@@ -63,7 +63,7 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
               </div>
               <div className="min-w-0">
                 <div className="font-extrabold text-white text-sm leading-tight truncate tracking-tight">
-                  AppDevHub
+                  AppDevClub
                 </div>
                 <div className="text-[10px] font-mono text-sky-400 font-bold truncate">
                   Admin Portal
@@ -236,7 +236,7 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
               </Link>
 
               <button
-                onClick={() => alert('AppDevHub Admin Settings v2.4.0')}
+                onClick={() => alert('AppDevClub Admin Settings v2.4.0')}
                 title={collapsed ? 'Settings' : undefined}
                 className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-all ${
                   collapsed ? 'justify-center px-2' : ''
@@ -316,7 +316,7 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
             </div>
           </button>
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-sm text-white">AppDevHub</span>
+            <span className="font-extrabold text-sm text-white">AppDevClub</span>
             <span className="bg-sky-500/20 text-sky-400 text-[10px] px-2 py-0.5 rounded font-mono font-bold uppercase">
               Admin
             </span>

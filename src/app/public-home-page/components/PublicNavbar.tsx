@@ -26,7 +26,7 @@ const NAV_LINKS = [
   { label: 'Gallery', href: '#images-gallery' },
   { label: 'Leaderboard', href: '#leaderboard' },
   { label: 'Certificates', href: '#certificates' },
-  { label: 'About', href: '#about-hub' },
+  { label: 'About', href: '#about' },
 ];
 
 const ANNOUNCEMENTS = [
@@ -206,7 +206,7 @@ export default function PublicNavbar({ onSwitchToWorkspace, onOpenStudentLogin, 
                   <Cpu size={18} />
                 </div>
                 <div>
-                  <span className="font-extrabold text-slate-900 dark:text-white text-sm block">AppDevHub</span>
+                  <span className="font-extrabold text-slate-900 dark:text-white text-sm block">AppDevClub</span>
                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase">College Platform</span>
                 </div>
               </div>

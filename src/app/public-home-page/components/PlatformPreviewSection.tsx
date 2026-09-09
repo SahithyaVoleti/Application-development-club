@@ -38,7 +38,7 @@ export default function PlatformPreviewSection({ onSwitchToWorkspace }: Props) {
                 <span className="w-3.5 h-3.5 rounded-full bg-amber-500" />
                 <span className="w-3.5 h-3.5 rounded-full bg-emerald-500" />
               </div>
-              <span className="text-xs font-mono text-slate-400 font-bold ml-2">appdevhub-workspace.v2.4</span>
+              <span className="text-xs font-mono text-slate-400 font-bold ml-2">appdevclub-workspace.v2.4</span>
             </div>
 
             {/* Dashboard Tabs */}
@@ -135,7 +135,7 @@ export default function PlatformPreviewSection({ onSwitchToWorkspace }: Props) {
                     <div className="flex items-center gap-3">
                       <span className="w-2.5 h-2.5 rounded-full bg-blue-400" />
                       <div>
-                        <div className="font-bold text-white">Sustainability Ideathon Hub</div>
+                        <div className="font-bold text-white">Sustainability Ideathon Club</div>
                         <div className="text-[10px] font-mono text-slate-400">React 19 · FastAPI · Docker</div>
                       </div>
                     </div>

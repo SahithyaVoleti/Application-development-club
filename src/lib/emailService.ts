@@ -561,7 +561,7 @@ export async function sendAdminAddedEmail(data: {
 
       <p style="color: #64748b; font-size: 12px; line-height: 1.5; margin-top: 24px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
         Regards,<br/>
-        <strong>AppDevHub</strong><br/>
+        <strong>AppDevClub</strong><br/>
         Admin Management Team
       </p>
     </div>

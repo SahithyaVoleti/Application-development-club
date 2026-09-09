@@ -67,7 +67,7 @@ export default function ApiResourcesPage() {
               API Resources & Endpoints
             </h1>
             <p className="text-emerald-100 text-base leading-relaxed font-normal">
-              Interactive documentation for AppDevHub REST endpoints. Test live backend endpoints, inspect parameters, payloads, and OpenAPI schemas directly.
+              Interactive documentation for AppDevClub REST endpoints. Test live backend endpoints, inspect parameters, payloads, and OpenAPI schemas directly.
             </p>
           </div>
         </div>

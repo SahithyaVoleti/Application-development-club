@@ -50,7 +50,7 @@ export default function BenefitsSection() {
             ● Student Growth Initiative
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight mb-3">
-            Why Participate in AppDevHub?
+            Why Participate in AppDevClub?
           </h2>
           <p className="text-stone-600 text-base leading-relaxed">
             Empowering Computer Science & Engineering students with the tools, mentorship, and opportunities to excel.

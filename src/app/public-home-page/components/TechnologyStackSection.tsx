@@ -82,7 +82,7 @@ export default function TechnologyStackSection() {
             Technology Stack
           </h2>
           <p className="text-slate-600 text-base leading-relaxed">
-            Curated, industry-standard languages, frameworks, databases, cloud services, and AI platforms used across the Application Development Hub.
+            Curated, industry-standard languages, frameworks, databases, cloud services, and AI platforms used across the Application Development Club.
           </p>
         </div>
 

@@ -86,7 +86,7 @@ export default function WhyHubSection() {
             ENTERPRISE VALUE PROPOSITION
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 text-white">
-            Why Build With Application Development Hub?
+            Why Build With Application Development Club?
           </h2>
           <p className="text-slate-400 text-base leading-relaxed">
             Designed to eliminate setup overhead, enforce architectural standards, and empower software teams to build production-grade applications faster.

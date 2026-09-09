@@ -25,8 +25,8 @@ export default function CodeWorkspaceModal({ isOpen, onClose }: Props) {
   const [files, setFiles] = useState(INITIAL_CODE_FILES);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [terminalOutput, setTerminalOutput] = useState<string[]>([
-    '$ appdevhub dev-server --port 4028',
-    '✓ AppDevHub OS runtime ready [Next.js 15.0]',
+    '$ appdevclub dev-server --port 4028',
+    '✓ AppDevClub OS runtime ready [Next.js 15.0]',
     '✓ FastAPI backend connected on http://localhost:8000',
     '✓ Live HMR active and watching files...',
   ]);
@@ -76,7 +76,7 @@ export default function CodeWorkspaceModal({ isOpen, onClose }: Props) {
   const handleDeploy = () => {
     setTerminalOutput(prev => [
       ...prev,
-      `$ appdevhub deploy --env production`,
+      `$ appdevclub deploy --env production`,
       `✓ Build #483 completed in 32s`,
       `✓ Deployed to https://ai-interview-hub.vignan.dev`,
     ]);
@@ -101,7 +101,7 @@ export default function CodeWorkspaceModal({ isOpen, onClose }: Props) {
             </div>
             <span className="text-xs font-bold text-slate-300 font-mono flex items-center gap-2">
               <FileCode size={14} className="text-sky-400" />
-              {activeFile.path} — Application Development Hub Code Workspace
+              {activeFile.path} — Application Development Club Code Workspace
             </span>
           </div>
 
@@ -194,7 +194,7 @@ export default function CodeWorkspaceModal({ isOpen, onClose }: Props) {
                   <Terminal size={12} className="text-emerald-400" /> Output Terminal
                 </span>
                 <button
-                  onClick={() => setTerminalOutput(['$ appdevhub dev-server --port 4028', 'Terminal cleared.'])}
+                  onClick={() => setTerminalOutput(['$ appdevclub dev-server --port 4028', 'Terminal cleared.'])}
                   className="text-[10px] text-slate-500 hover:text-slate-300"
                 >
                   Clear Terminal

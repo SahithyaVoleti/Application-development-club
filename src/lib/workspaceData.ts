@@ -418,7 +418,7 @@ export const INITIAL_CODE_FILES = [
 from pydantic import BaseModel
 import time
 
-app = FastAPI(title="Application Development Hub API", version="2.4.0")
+app = FastAPI(title="Application Development Club API", version="2.4.0")
 
 class DeployRequest(BaseModel):
     app_id: str
@@ -428,7 +428,7 @@ class DeployRequest(BaseModel):
 def read_root():
     return {
         "status": "online",
-        "service": "AppDevHub Core OS",
+        "service": "AppDevClub Core OS",
         "timestamp": time.time()
     }
 
@@ -453,7 +453,7 @@ export default function AppDevDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <header className="border-b border-slate-200 bg-white px-6 py-4">
-        <h1 className="text-lg font-extrabold text-slate-900">Application Development Hub</h1>
+        <h1 className="text-lg font-extrabold text-slate-900">Application Development Club</h1>
       </header>
       <main className="max-w-7xl mx-auto p-6">
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
@@ -469,7 +469,7 @@ export default function AppDevDashboard() {
     name: 'package.json',
     language: 'json',
     code: `{
-  "name": "appdevhub-core",
+  "name": "appdevclub-core",
   "version": "2.4.0",
   "private": true,
   "scripts": {

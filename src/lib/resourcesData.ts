@@ -86,7 +86,7 @@ export const RESOURCE_CATEGORIES: ResourceCategory[] = [
   {
     id: 'documentation',
     title: 'Documentation',
-    description: 'Comprehensive API specifications, framework guidelines, and component references for Application Development Hub.',
+    description: 'Comprehensive API specifications, framework guidelines, and component references for Application Development Club.',
     iconName: 'BookOpen',
     href: '/resources/documentation',
     itemCount: 9,
@@ -141,8 +141,8 @@ export const DOCUMENTATION_ITEMS: ResourceDocItem[] = [
     slug: 'introduction',
     category: 'Getting Started',
     title: 'Introduction',
-    description: 'Welcome to Application Development Hub documentation.',
-    content: `Welcome to the Application Development Hub documentation! This hub provides developer workflows, architecture blueprints, API references, and pre-configured workspace templates to design, build, test, and release production-grade software applications.`,
+    description: 'Welcome to Application Development Club documentation.',
+    content: `Welcome to the Application Development Club documentation! This platform provides developer workflows, architecture blueprints, API references, and pre-configured workspace templates to design, build, test, and release production-grade software applications.`,
     prevSlug: undefined,
     nextSlug: 'getting-started',
   },
@@ -151,7 +151,7 @@ export const DOCUMENTATION_ITEMS: ResourceDocItem[] = [
     category: 'Getting Started',
     title: 'Getting Started',
     description: 'Quick setup guide to initialize your workspace environment.',
-    content: `To get started with the Application Development Hub:
+    content: `To get started with the Application Development Club:
 1. Access the Developer Workspace from the top navigation bar or via shortcut.
 2. Initialize your local Node.js environment with \`npm install\`.
 3. Configure environment variables in your \`.env\` file.
@@ -164,7 +164,7 @@ export const DOCUMENTATION_ITEMS: ResourceDocItem[] = [
     category: 'Application Development',
     title: 'Creating Your First Application',
     description: 'Step-by-step guide to generating a new web or mobile app.',
-    content: `Creating a new application in AppDevHub takes under 2 minutes:
+    content: `Creating a new application in AppDevClub takes under 2 minutes:
 - Open the Developer Workspace ('/') or click **Create New Application**.
 - Select a starter template (e.g. Next.js 15 App Router, React 19, or FastAPI).
 - Enter project details, repository name, and target database.
@@ -177,10 +177,10 @@ export const DOCUMENTATION_ITEMS: ResourceDocItem[] = [
     category: 'Application Development',
     title: 'Project Structure',
     description: 'Understanding directory layout and module architecture.',
-    content: `The default AppDevHub Next.js project structure follows Next.js App Router conventions:
+    content: `The default AppDevClub Next.js project structure follows Next.js App Router conventions:
 
 \`\`\`
-appdevhub/
+appdevclub/
 ├── src/
 │   ├── app/                    # Next.js App Router routes & layouts
 │   ├── components/             # Reusable UI component library
@@ -213,7 +213,7 @@ appdevhub/
     category: 'Frontend',
     title: 'Using the Code Editor',
     description: 'Using the built-in browser IDE and live preview window.',
-    content: `AppDevHub includes a lightweight browser IDE for inspecting files, testing React components, and editing TypeScript code directly. Click **Open Code Editor** or press \`Ctrl + K\` to trigger the editor overlay.`,
+    content: `AppDevClub includes a lightweight browser IDE for inspecting files, testing React components, and editing TypeScript code directly. Click **Open Code Editor** or press \`Ctrl + K\` to trigger the editor overlay.`,
     prevSlug: 'working-with-apps',
     nextSlug: 'connecting-apis',
   },
@@ -234,8 +234,8 @@ appdevhub/
     category: 'Database',
     title: 'Database Configuration',
     description: 'Setting up PostgreSQL, Prisma ORM schemas, and migrations.',
-    content: `AppDevHub uses Prisma ORM with PostgreSQL database instances:
-- Set your connection string in \`.env\`: \`DATABASE_URL="postgresql://user:pass@localhost:5432/appdevhub"\`
+    content: `AppDevClub uses Prisma ORM with PostgreSQL database instances:
+- Set your connection string in \`.env\`: \`DATABASE_URL="postgresql://user:pass@localhost:5432/appdevclub"\`
 - Run \`npx prisma db push\` to apply schema changes to your database.
 - Run \`npx prisma generate\` to update TypeScript Prisma Client types.`,
     prevSlug: 'connecting-apis',
@@ -271,12 +271,12 @@ export const TUTORIAL_ITEMS: TutorialItem[] = [
     steps: [
       {
         title: 'Step 1: Open Developer Workspace',
-        content: 'Navigate to the AppDevHub workspace homepage and click "Create New Application". Select the Web Application template.',
+        content: 'Navigate to the AppDevClub workspace homepage and click "Create New Application". Select the Web Application template.',
       },
       {
         title: 'Step 2: Configure Application Metadata',
         content: 'Name your project "my-first-app", set the primary technology to React 19 + TypeScript, and click Generate.',
-        code: `npm create appdevhub-app my-first-app --template react-ts\ncd my-first-app\nnpm install`,
+        code: `npm create appdevclub-app my-first-app --template react-ts\ncd my-first-app\nnpm install`,
       },
       {
         title: 'Step 3: Run Development Server',
@@ -304,7 +304,7 @@ export const TUTORIAL_ITEMS: TutorialItem[] = [
       {
         title: 'Step 1: Create Component Files',
         content: 'Create a new React component file under `src/components/Header.tsx`.',
-        code: `export default function Header() {\n  return (\n    <header className="p-4 bg-slate-900 text-white font-bold">\n      AppDevHub Component\n    </header>\n  );\n}`,
+        code: `export default function Header() {\n  return (\n    <header className="p-4 bg-slate-900 text-white font-bold">\n      AppDevClub Component\n    </header>\n  );\n}`,
       },
       {
         title: 'Step 2: Import into Page Layout',
@@ -332,7 +332,7 @@ export const TUTORIAL_ITEMS: TutorialItem[] = [
       {
         title: 'Step 2: Create Main API Script',
         content: 'Write asynchronous route handlers in `main.py`.',
-        code: `from fastapi import FastAPI\n\napp = FastAPI(title="AppDevHub API")\n\n@app.get("/api/v1/health")\nasync def health():\n    return {"status": "operational", "latency": "14ms"}`,
+        code: `from fastapi import FastAPI\n\napp = FastAPI(title="AppDevClub API")\n\n@app.get("/api/v1/health")\nasync def health():\n    return {"status": "operational", "latency": "14ms"}`,
       },
       {
         title: 'Step 3: Launch ASGI Server',
@@ -402,7 +402,7 @@ export const TUTORIAL_ITEMS: TutorialItem[] = [
         code: `FROM node:18-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nRUN npm run build\nCMD ["npm", "start"]`,
       },
     ],
-    testing: 'Test local container: `docker run -p 4028:4028 appdevhub-app`.',
+    testing: 'Test local container: `docker run -p 4028:4028 appdevclub-app`.',
     deployment: 'Push container image to Amazon ECR or Docker Hub.',
   },
   {
@@ -613,7 +613,7 @@ export const API_RESOURCE_ITEMS: ApiEndpointItem[] = [
     method: 'GET',
     endpoint: '/api/events',
     title: 'Get All Events',
-    description: 'Fetch list of all upcoming, ongoing, and completed technical events in the Application Development Hub.',
+    description: 'Fetch list of all upcoming, ongoing, and completed technical events in the Application Development Club.',
     parameters: [
       { name: 'category', type: 'string', required: false, description: 'Filter events by category (e.g. Hackathon, Workshop)' },
       { name: 'status', type: 'string', required: false, description: 'Filter events by status (UPCOMING, ONGOING, COMPLETED)' },
@@ -757,7 +757,7 @@ export const ARCHITECTURE_ITEMS: ArchitectureGuideItem[] = [
     title: 'Application Architecture & System Design',
     description: 'High-level system design patterns for multi-tenant enterprise software platforms.',
     diagramType: 'layered',
-    overview: 'AppDevHub employs a 4-tier layered software architecture designed for high throughput, modular component isolation, and strict separation of concerns.',
+    overview: 'AppDevClub employs a 4-tier layered software architecture designed for high throughput, modular component isolation, and strict separation of concerns.',
     components: [
       { name: 'Presentation Layer', role: 'Next.js 15 App Router + React 19', details: 'Server-rendered pages and client side interactive components.' },
       { name: 'API Gateway & Routing', role: 'Edge API Routes + Middleware', details: 'Authentication token verification, rate limiting, and request routing.' },
@@ -817,11 +817,11 @@ export const DEPLOYMENT_ITEMS: DeploymentGuideItem[] = [
     prerequisites: ['Node.js 18+', 'Git', 'PostgreSQL or Docker Desktop'],
     buildCommands: ['npm install', 'npx prisma db push', 'npm run dev'],
     envVariables: [
-      { key: 'DATABASE_URL', description: 'PostgreSQL connection string', example: 'postgresql://postgres:postgres@localhost:5432/appdevhub' },
+      { key: 'DATABASE_URL', description: 'PostgreSQL connection string', example: 'postgresql://postgres:postgres@localhost:5432/appdevclub' },
       { key: 'PORT', description: 'Local server port', example: '4028' },
     ],
     steps: [
-      { title: 'Step 1: Clone Repository', instructions: 'Clone the codebase from GitHub.', code: 'git clone https://github.com/vignan/appdevhub.git\ncd appdevhub' },
+      { title: 'Step 1: Clone Repository', instructions: 'Clone the codebase from GitHub.', code: 'git clone https://github.com/vignan/appdevclub.git\ncd appdevclub' },
       { title: 'Step 2: Install Dependencies', instructions: 'Install npm packages.', code: 'npm install' },
       { title: 'Step 3: Run Local Server', instructions: 'Start Next.js dev server on port 4028.', code: 'npm run dev' },
     ],
@@ -838,16 +838,16 @@ export const DEPLOYMENT_ITEMS: DeploymentGuideItem[] = [
     prerequisites: ['Docker Desktop', 'Dockerfile'],
     dockerfile: `FROM node:18-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:18-alpine AS runner\nWORKDIR /app\nENV NODE_ENV=production\nCOPY --from=builder /app/public ./public\nCOPY --from=builder /app/.next/standalone ./\nCOPY --from=builder /app/.next/static ./.next/static\nEXPOSE 4028\nCMD ["node", "server.js"]`,
     buildCommands: [
-      'docker build -t appdevhub:v1.0 .',
-      'docker run -d -p 4028:4028 --name appdevhub-container appdevhub:v1.0',
+      'docker build -t appdevclub:v1.0 .',
+      'docker run -d -p 4028:4028 --name appdevclub-container appdevclub:v1.0',
     ],
     envVariables: [
       { key: 'NODE_ENV', description: 'Production environment flag', example: 'production' },
       { key: 'PORT', description: 'Exposed container port', example: '4028' },
     ],
     steps: [
-      { title: 'Step 1: Build Image', instructions: 'Execute multi-stage Docker build command.', code: 'docker build -t appdevhub:latest .' },
-      { title: 'Step 2: Test Container', instructions: 'Run container locally to verify health.', code: 'docker run -p 4028:4028 appdevhub:latest' },
+      { title: 'Step 1: Build Image', instructions: 'Execute multi-stage Docker build command.', code: 'docker build -t appdevclub:latest .' },
+      { title: 'Step 2: Test Container', instructions: 'Run container locally to verify health.', code: 'docker run -p 4028:4028 appdevclub:latest' },
     ],
     troubleshooting: ['Docker daemon not running: Open Docker Desktop application.'],
   },

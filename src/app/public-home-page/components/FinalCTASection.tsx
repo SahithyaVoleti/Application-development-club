@@ -34,7 +34,7 @@ export default function FinalCTASection({ onSwitchToWorkspace }: Props) {
           </h2>
 
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed mb-10 max-w-2xl mx-auto font-normal">
-            Bring your ideas, technologies and development workflow together in one powerful application development hub.
+            Bring your ideas, technologies and development workflow together in one powerful application development club.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">

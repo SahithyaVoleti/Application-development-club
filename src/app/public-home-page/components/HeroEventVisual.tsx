@@ -163,7 +163,7 @@ export default function HeroEventVisual() {
         style={{ animationDuration: '3s' }}
       >
         <Cpu size={12} className="text-cyan-400" />
-        <span>Vignan CSE Hub</span>
+        <span>Vignan CSE Club</span>
       </div>
     </div>
   );

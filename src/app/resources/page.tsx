@@ -122,7 +122,7 @@ export default function ResourcesIndexPage() {
         <div className="bg-gradient-to-b from-white to-slate-100/60 border-b border-slate-200/80 py-12 px-6 lg:px-10 mb-12">
           <div className="max-w-screen-xl mx-auto text-center">
             <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest block mb-3">
-              APPLICATION DEVELOPMENT HUB
+              APPLICATION DEVELOPMENT CLUB
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
               Developer Resources & Documentation

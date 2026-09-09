@@ -349,7 +349,7 @@ export default function PastEventModal({ event, onClose }: Props) {
             <div className="space-y-6">
               <div className="flex items-center justify-between pb-4 border-b border-slate-200">
                 <div>
-                  <h3 className="text-xl font-extrabold text-slate-900">Event Documentation Hub</h3>
+                  <h3 className="text-xl font-extrabold text-slate-900">Event Documentation Center</h3>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
                     Official reports, press releases, certificates of participation, and financial statements.
                   </p>

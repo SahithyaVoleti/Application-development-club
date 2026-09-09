@@ -45,7 +45,7 @@ export default function NewAppModal({ isOpen, mode = 'create', initialTemplate, 
     const newProject = {
       id: `proj-${Date.now()}`,
       name: appName,
-      description: description || 'New application workspace created in Application Development Hub.',
+      description: description || 'New application workspace created in Application Development Club.',
       techStack: selectedTech.length > 0 ? selectedTech : ['React', 'FastAPI'],
       status: selectedEnv === 'Production' ? 'Production' : 'Development',
       statusColor: selectedEnv === 'Production' ? 'emerald' : 'blue',

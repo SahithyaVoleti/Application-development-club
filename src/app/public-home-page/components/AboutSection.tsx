@@ -6,6 +6,7 @@ export default function AboutSection() {
   return (
     <section className="py-16 sm:py-24 bg-white dark:bg-slate-950 border-t border-slate-200/80 dark:border-slate-800 transition-colors duration-200 relative" id="about-hub">
       <div id="about" className="absolute -top-24 pointer-events-none" />
+      <div id="about-club" className="absolute -top-24 pointer-events-none" />
       <div className="max-w-screen-2xl mx-auto px-6 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column: Narrative Content */}
@@ -18,11 +19,11 @@ export default function AboutSection() {
             </h2>
 
             <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed mb-5">
-              The Application Development Hub (ADHub) is a premier technical initiative of the Department of Computer Science and Engineering at Vignan University. We host intensive hackathons, coding competitions, workshops, seminars, and developer sessions designed to turn academic concepts into real-world software solutions.
+              The Application Development Club (ADClub) is a premier technical initiative of the Department of Computer Science and Engineering at Vignan University. We host intensive hackathons, coding competitions, workshops, seminars, and developer sessions designed to turn academic concepts into real-world software solutions.
             </p>
 
             <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed mb-8">
-              Since inception, ADHub has engaged over 2,500+ students across 25+ events, instilling a culture of innovation, teamwork, and continuous engineering excellence within the university ecosystem.
+              Since inception, ADClub has engaged over 2,500+ students across 25+ events, instilling a culture of innovation, teamwork, and continuous engineering excellence within the university ecosystem.
             </p>
 
             {/* Quick Stat Highlights */}
@@ -50,7 +51,7 @@ export default function AboutSection() {
               <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-4">
                 <Lightbulb size={24} className="text-white" />
               </div>
-              <h3 className="text-xl font-extrabold mb-2 tracking-tight">Department Innovation Hub</h3>
+              <h3 className="text-xl font-extrabold mb-2 tracking-tight">Department Innovation Club</h3>
               <p className="text-sky-100 text-sm leading-relaxed max-w-md">
                 Empowering students to solve real campus and societal challenges through Agentic AI, Full Stack Development, and MLOps workflows.
               </p>

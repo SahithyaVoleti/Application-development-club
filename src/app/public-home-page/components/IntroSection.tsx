@@ -36,7 +36,7 @@ export default function IntroSection() {
             <div className="relative w-full h-[400px] sm:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 group">
               <Image
                 src="/images/ui/campus_hackathon_hero.jpg"
-                alt="College Innovation Hub Hackathon Lab"
+                alt="College Innovation Club Hackathon Lab"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />

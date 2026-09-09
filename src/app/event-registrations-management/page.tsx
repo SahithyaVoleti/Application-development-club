@@ -39,7 +39,7 @@ export default function EventRegistrationsManagementPage() {
               </Link>
               <div className="flex items-center gap-2">
                 <AppLogo size={28} />
-                <span className="font-bold text-primary text-sm hidden sm:block">AppDevHub</span>
+                <span className="font-bold text-primary text-sm hidden sm:block">AppDevClub</span>
               </div>
               <span className="text-border">|</span>
               <span className="text-sm font-semibold text-foreground">Registrations Management</span>
