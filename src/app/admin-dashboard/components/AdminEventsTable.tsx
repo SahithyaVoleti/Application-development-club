@@ -48,12 +48,27 @@ export default function AdminEventsTable({ onNavigate, onEditEvent }: Props) {
   const fetchEvents = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch('/api/events');
-      const data = await res.json();
+      const [eventsRes, regRes] = await Promise.all([
+        fetch('/api/events'),
+        fetch('/api/registrations'),
+      ]);
+
+      const data = await eventsRes.json();
       if (data.success && Array.isArray(data.data)) {
         setEvents(data.data);
       } else {
         setEvents(MOCK_EVENTS);
+      }
+
+      const regData = await regRes.json();
+      if (regData.success && Array.isArray(regData.data)) {
+        const liveCounts: Record<string, number> = { ...REGISTERED_COUNTS };
+        regData.data.forEach((r: any) => {
+          if (r.eventId) {
+            liveCounts[r.eventId] = (liveCounts[r.eventId] || 0) + 1;
+          }
+        });
+        setCounts(liveCounts);
       }
     } catch (e) {
       setEvents(MOCK_EVENTS);

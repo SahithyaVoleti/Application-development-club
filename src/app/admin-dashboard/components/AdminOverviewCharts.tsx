@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -13,10 +13,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 
-const MONTHLY_DATA = [
+const DONUT_COLORS = ['#2563eb', '#7c3aed', '#059669', '#ea580c', '#db2777', '#0284c7'];
+
+const FALLBACK_MONTHLY_DATA = [
   { month: 'Jan', registrations: 42 },
   { month: 'Feb', registrations: 78 },
   { month: 'Mar', registrations: 95 },
@@ -27,7 +28,7 @@ const MONTHLY_DATA = [
   { month: 'Aug', registrations: 390 },
 ];
 
-const CATEGORY_DATA = [
+const FALLBACK_CATEGORY_DATA = [
   { name: 'AI/ML Workshops', value: 244 },
   { name: 'Hackathons', value: 187 },
   { name: 'Coding Contests', value: 180 },
@@ -35,40 +36,88 @@ const CATEGORY_DATA = [
   { name: 'Seminars', value: 145 },
 ];
 
-const DONUT_COLORS = ['#2563eb', '#7c3aed', '#059669', '#ea580c', '#db2777'];
-
-const REGISTRATIONS_PER_EVENT = [
+const FALLBACK_REGISTRATIONS_PER_EVENT = [
   { event: 'AI & ML Workshop', count: 124 },
   { event: 'CSE Hackathon', count: 87 },
   { event: 'Web Dev Bootcamp', count: 72 },
   { event: 'Cloud Seminar', count: 45 },
   { event: 'Cyber Security', count: 38 },
-  { event: 'LudusForge', count: 150 },
-  { event: 'Code Storm', count: 180 },
-  { event: 'QuBioDL 2K26', count: 210 },
 ];
 
 export default function AdminOverviewCharts() {
-  const totalCategoryRegistrations = CATEGORY_DATA.reduce((acc, item) => acc + item.value, 0);
+  const [monthlyData, setMonthlyData] = useState<any[]>(FALLBACK_MONTHLY_DATA);
+  const [categoryData, setCategoryData] = useState<any[]>(FALLBACK_CATEGORY_DATA);
+  const [eventData, setEventData] = useState<any[]>(FALLBACK_REGISTRATIONS_PER_EVENT);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    async function loadChartData() {
+      try {
+        const [eventsRes, regRes] = await Promise.all([
+          fetch('/api/events'),
+          fetch('/api/registrations'),
+        ]);
+
+        const eventsJson = await eventsRes.json();
+        const regJson = await regRes.json();
+
+        if (eventsJson.success && Array.isArray(eventsJson.data) && eventsJson.data.length > 0) {
+          const events = eventsJson.data;
+          const registrations = Array.isArray(regJson.data) ? regJson.data : [];
+
+          // Map registrations per event
+          const countMap: Record<string, number> = {};
+          registrations.forEach((r: any) => {
+            if (r.eventId) countMap[r.eventId] = (countMap[r.eventId] || 0) + 1;
+          });
+
+          const perEvent = events.slice(0, 8).map((e: any) => ({
+            event: e.title.length > 18 ? e.title.slice(0, 16) + '...' : e.title,
+            count: countMap[e.id] || 0,
+          }));
+          setEventData(perEvent);
+
+          // Map registrations by category
+          const catMap: Record<string, number> = {};
+          events.forEach((e: any) => {
+            const cat = e.category || 'General';
+            catMap[cat] = (catMap[cat] || 0) + (countMap[e.id] || 1);
+          });
+
+          const catList = Object.entries(catMap).map(([name, value]) => ({ name, value }));
+          if (catList.length > 0) setCategoryData(catList);
+        }
+      } catch (err) {
+        console.error('Error fetching dynamic chart data:', err);
+      }
+    }
+
+    loadChartData();
+  }, []);
+
+  const totalCategoryRegistrations = categoryData.reduce((acc, item) => acc + (item.value || 0), 0);
+
+  if (!isMounted) return null;
 
   return (
-    <div className="space-y-6">
-      {/* 2-Column Analytics: Monthly Trend (65%) + Category Donut (35%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Left 65%: Monthly Registrations Trend Area Chart */}
-        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs flex flex-col justify-between">
-          <div className="mb-4">
-            <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+    <div className="space-y-4">
+      {/* 2-Column Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        {/* Left 65%: Monthly Registrations Trend */}
+        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
+          <div className="mb-2">
+            <h3 className="text-sm font-black text-slate-900 tracking-tight">
               Monthly Registrations Trend
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
-              Registration activity over the last 8 months
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+              Registration activity overview across recent months
             </p>
           </div>
 
-          <div className="h-[240px] w-full">
-            <ResponsiveContainer width="100%" height={240} minHeight={180}>
-              <AreaChart data={MONTHLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <div className="h-[200px] w-full">
+            <ResponsiveContainer width="100%" height={200} minHeight={160}>
+              <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="blueAreaGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#2563eb" stopOpacity={0.25} />
@@ -78,12 +127,12 @@ export default function AdminOverviewCharts() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis
                   dataKey="month"
-                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+                  tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={{ stroke: '#e2e8f0' }}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+                  tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -91,11 +140,10 @@ export default function AdminOverviewCharts() {
                   contentStyle={{
                     backgroundColor: '#0f172a',
                     borderColor: '#1e293b',
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     color: '#fff',
-                    fontSize: '12px',
+                    fontSize: '11px',
                     fontWeight: 'bold',
-                    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                   }}
                   itemStyle={{ color: '#60a5fa' }}
                 />
@@ -103,7 +151,7 @@ export default function AdminOverviewCharts() {
                   type="monotone"
                   dataKey="registrations"
                   stroke="#2563eb"
-                  strokeWidth={2.5}
+                  strokeWidth={2}
                   fill="url(#blueAreaGrad)"
                   name="Registrations"
                 />
@@ -112,30 +160,30 @@ export default function AdminOverviewCharts() {
           </div>
         </div>
 
-        {/* Right 35%: Registrations by Category Donut Chart */}
-        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs flex flex-col justify-between">
+        {/* Right 35%: Registrations by Category */}
+        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
           <div className="mb-2">
-            <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+            <h3 className="text-sm font-black text-slate-900 tracking-tight">
               Registrations by Category
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
-              Distribution across event formats
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+              Distribution across event categories
             </p>
           </div>
 
-          <div className="relative h-[200px] w-full flex items-center justify-center">
-            <ResponsiveContainer width="100%" height={200} minHeight={180}>
+          <div className="relative h-[170px] w-full flex items-center justify-center">
+            <ResponsiveContainer width="100%" height={170} minHeight={150}>
               <PieChart>
                 <Pie
-                  data={CATEGORY_DATA}
+                  data={categoryData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={55}
-                  outerRadius={75}
+                  innerRadius={45}
+                  outerRadius={65}
                   paddingAngle={3}
                   dataKey="value"
                 >
-                  {CATEGORY_DATA.map((entry, index) => (
+                  {categoryData.map((entry, index) => (
                     <Cell key={`cat-donut-${index}`} fill={DONUT_COLORS[index % DONUT_COLORS.length]} />
                   ))}
                 </Pie>
@@ -154,57 +202,57 @@ export default function AdminOverviewCharts() {
 
             {/* Donut Center Label */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-xl font-extrabold text-slate-900 leading-none">
+              <span className="text-lg font-extrabold text-slate-900 leading-none">
                 {totalCategoryRegistrations}
               </span>
-              <span className="text-[10px] font-mono text-slate-600 font-bold uppercase mt-1">
+              <span className="text-[9px] font-mono text-slate-500 font-bold uppercase mt-0.5">
                 Total Regs
               </span>
             </div>
           </div>
 
-          {/* Category Custom Legend */}
-          <div className="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 text-xs font-semibold">
-            {CATEGORY_DATA.map((item, idx) => (
-              <div key={`legend-${idx}`} className="flex items-center gap-2">
+          {/* Custom Legend */}
+          <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-100 text-xs font-semibold">
+            {categoryData.slice(0, 4).map((item, idx) => (
+              <div key={`legend-${idx}`} className="flex items-center gap-1.5 min-w-0">
                 <span
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ backgroundColor: DONUT_COLORS[idx % DONUT_COLORS.length] }}
                 />
-                <span className="text-slate-600 truncate text-[11px]">{item.name}</span>
-                <span className="text-slate-900 font-bold text-[11px] ml-auto">{item.value}</span>
+                <span className="text-slate-600 truncate text-[10px]">{item.name}</span>
+                <span className="text-slate-900 font-bold text-[10px] ml-auto">{item.value}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Full Width Bar Chart: Registrations Per Event */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs">
-        <div className="mb-4">
-          <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+      {/* Bar Chart: Registrations Per Event */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs">
+        <div className="mb-2">
+          <h3 className="text-sm font-black text-slate-900 tracking-tight">
             Registrations Per Event
           </h3>
-          <p className="text-xs text-slate-500 font-medium mt-0.5">
+          <p className="text-[11px] text-slate-500 font-medium mt-0.5">
             Compare registration volume across active events
           </p>
         </div>
 
-        <div className="h-[220px] w-full">
-          <ResponsiveContainer width="100%" height={220} minHeight={180}>
-            <BarChart data={REGISTRATIONS_PER_EVENT} barSize={28} margin={{ top: 10, right: 10, left: -15, bottom: 40 }}>
+        <div className="h-[180px] w-full">
+          <ResponsiveContainer width="100%" height={180} minHeight={150}>
+            <BarChart data={eventData} barSize={24} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
               <XAxis
                 dataKey="event"
-                tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
+                tick={{ fontSize: 9, fill: '#64748b', fontWeight: 600 }}
                 interval={0}
-                angle={-20}
+                angle={-15}
                 textAnchor="end"
                 axisLine={{ stroke: '#e2e8f0' }}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+                tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -214,11 +262,11 @@ export default function AdminOverviewCharts() {
                   borderColor: '#1e293b',
                   borderRadius: '10px',
                   color: '#fff',
-                  fontSize: '12px',
+                  fontSize: '11px',
                   fontWeight: 'bold',
                 }}
               />
-              <Bar dataKey="count" fill="#2563eb" radius={[6, 6, 0, 0]} name="Registrations" />
+              <Bar dataKey="count" fill="#2563eb" radius={[4, 4, 0, 0]} name="Registrations" />
             </BarChart>
           </ResponsiveContainer>
         </div>
