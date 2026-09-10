@@ -135,31 +135,31 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
                 {!collapsed && <span>Analytics</span>}
               </button>
 
-              {/* Admin Access Approvals button for Super Admin / Admin */}
-              <button
-                onClick={() => handleNavClick('approvals')}
-                title={collapsed ? 'Admin Approvals' : undefined}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                  activeView === 'approvals'
-                    ? 'bg-indigo-600/20 text-indigo-400 font-extrabold border border-indigo-500/40 shadow-xs'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-                } ${collapsed ? 'justify-center px-2' : ''}`}
-              >
-                {activeView === 'approvals' && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-indigo-500 rounded-r-md" />
-                )}
-                <UserCheck size={17} className={activeView === 'approvals' ? 'text-indigo-400' : 'text-indigo-400/80'} />
-                {!collapsed && (
-                  <div className="flex items-center justify-between w-full">
-                    <span>Admin Approvals</span>
-                    {user?.role === 'SUPER_ADMIN' && (
+              {/* Admin Access Approvals button EXCLUSIVELY for Super Admin */}
+              {user?.role === 'SUPER_ADMIN' && (
+                <button
+                  onClick={() => handleNavClick('approvals')}
+                  title={collapsed ? 'Manage Admins' : undefined}
+                  className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                    activeView === 'approvals'
+                      ? 'bg-indigo-600/20 text-indigo-400 font-extrabold border border-indigo-500/40 shadow-xs'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  } ${collapsed ? 'justify-center px-2' : ''}`}
+                >
+                  {activeView === 'approvals' && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-indigo-500 rounded-r-md" />
+                  )}
+                  <UserCheck size={17} className={activeView === 'approvals' ? 'text-indigo-400' : 'text-indigo-400/80'} />
+                  {!collapsed && (
+                    <div className="flex items-center justify-between w-full">
+                      <span>Manage Admins</span>
                       <span className="bg-indigo-500/30 text-indigo-300 text-[9px] px-1.5 py-0.5 rounded font-mono font-bold">
                         SUPER
                       </span>
-                    )}
-                  </div>
-                )}
-              </button>
+                    </div>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 

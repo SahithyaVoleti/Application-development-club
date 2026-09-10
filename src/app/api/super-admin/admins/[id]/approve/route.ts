@@ -11,12 +11,19 @@ export async function PATCH(
     const authHeader = request.headers.get('authorization');
     const superAdmin = verifySuperAdmin(authHeader);
 
+    if (!superAdmin) {
+      return NextResponse.json(
+        { success: false, error: 'You do not have permission to manage administrators.', message: 'You do not have permission to manage administrators.' },
+        { status: 403 }
+      );
+    }
+
     const { id } = await context.params;
     if (!id) {
       return NextResponse.json({ success: false, message: 'Admin ID is required.' }, { status: 400 });
     }
 
-    const performerName = superAdmin?.name || 'Super Admin';
+    const performerName = superAdmin.name;
     const result = await approveAdminRequest(id, performerName);
 
     if (result.alreadyProcessed) {

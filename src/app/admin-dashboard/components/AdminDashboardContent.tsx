@@ -222,7 +222,23 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
     }
   };
 
-  // 6 Dynamic KPI Cards Requirement
+  const [userRole, setUserRole] = useState<string>('ADMIN');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('adhub_admin_user');
+      if (userStr) {
+        try {
+          const u = JSON.parse(userStr);
+          if (u?.role) setUserRole(u.role);
+        } catch (e) {}
+      }
+    }
+  }, []);
+
+  // Dynamic KPI Cards
+  const isSuperAdmin = userRole === 'SUPER_ADMIN';
+
   const KPI_CARDS = [
     {
       id: 'kpi-total-events',
@@ -264,26 +280,41 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
       borderColor: 'border-amber-200/80',
       sub: 'Across all events',
     },
-    {
-      id: 'kpi-total-admins',
-      label: 'Total Admins',
-      val: dbStats.totalAdmins,
-      icon: ShieldCheck,
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-      borderColor: 'border-indigo-200/80',
-      sub: `${dbStats.activeAdmins} Approved Admins`,
-    },
-    {
-      id: 'kpi-pending-admins',
-      label: 'Pending Approvals',
-      val: dbStats.pendingAdmins,
-      icon: Clock,
-      color: 'text-rose-600',
-      bgColor: 'bg-rose-50',
-      borderColor: 'border-rose-200/80',
-      sub: dbStats.pendingAdmins > 0 ? 'Action required' : 'All clear',
-    },
+    ...(isSuperAdmin
+      ? [
+          {
+            id: 'kpi-total-admins',
+            label: 'Total Admins',
+            val: dbStats.totalAdmins,
+            icon: ShieldCheck,
+            color: 'text-indigo-600',
+            bgColor: 'bg-indigo-50',
+            borderColor: 'border-indigo-200/80',
+            sub: `${dbStats.activeAdmins} Approved Admins`,
+          },
+          {
+            id: 'kpi-pending-admins',
+            label: 'Pending Approvals',
+            val: dbStats.pendingAdmins,
+            icon: Clock,
+            color: 'text-rose-600',
+            bgColor: 'bg-rose-50',
+            borderColor: 'border-rose-200/80',
+            sub: dbStats.pendingAdmins > 0 ? 'Action required' : 'All clear',
+          },
+        ]
+      : [
+          {
+            id: 'kpi-attended',
+            label: 'Students Participated',
+            val: dbStats.totalAttended,
+            icon: ShieldCheck,
+            color: 'text-indigo-600',
+            bgColor: 'bg-indigo-50',
+            borderColor: 'border-indigo-200/80',
+            sub: 'Verified attendance',
+          },
+        ]),
   ];
 
   if (hasError) {
@@ -321,13 +352,15 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => onNavigate('approvals')}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-extrabold transition-all cursor-pointer border border-indigo-200/80"
-          >
-            <UserCheck size={14} />
-            <span>Admin Approvals ({dbStats.pendingAdmins})</span>
-          </button>
+          {isSuperAdmin && (
+            <button
+              onClick={() => onNavigate('approvals')}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-extrabold transition-all cursor-pointer border border-indigo-200/80"
+            >
+              <UserCheck size={14} />
+              <span>Manage Admins ({dbStats.pendingAdmins})</span>
+            </button>
+          )}
 
           <button
             onClick={() => onNavigate('create-event')}

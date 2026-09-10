@@ -33,6 +33,7 @@ export default function AdminDashboardPage() {
   const [pendingView, setPendingView] = useState<AdminView | null>(null);
   const [actionName, setActionName] = useState<string>('Administrative Action');
 
+  const [userRole, setUserRole] = useState<string>('ADMIN');
   const [adminUserEmail, setAdminUserEmail] = useState<string>('');
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export default function AdminDashboardPage() {
         try {
           const u = JSON.parse(userStr);
           if (u?.email) setAdminUserEmail(u.email);
+          if (u?.role) setUserRole(u.role);
         } catch (e) {}
       }
     }
@@ -61,6 +63,11 @@ export default function AdminDashboardPage() {
   };
 
   const handleNavigate = (targetView: AdminView) => {
+    if (targetView === 'approvals' && userRole !== 'SUPER_ADMIN') {
+      toast.error('Access Denied', { description: 'Only Super Admins have permission to manage administrators.' });
+      return;
+    }
+
     // If navigating to protected view (Add Event, View/Download Reports) and not verified yet
     if (PROTECTED_VIEWS.includes(targetView) && !isOtpVerified) {
       let desc = 'Access Protected View';

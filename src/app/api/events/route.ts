@@ -88,6 +88,8 @@ export async function POST(request: Request) {
       title: body.title || body.name || 'Untitled Event',
       clubId: targetClubId,
       clubName: targetClubName,
+      createdById: userPayload?.id || userPayload?.email || 'system-admin',
+      createdBy: userPayload?.name || 'Admin',
       category: body.category || 'AI/ML Workshop',
       description: body.description || 'Comprehensive event overview and learning objectives.',
       date: body.date || new Date().toISOString().slice(0, 10),

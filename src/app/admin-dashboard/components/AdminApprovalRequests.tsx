@@ -92,6 +92,20 @@ const DEFAULT_SUPER_ADMINS: AdminUserRequest[] = [
 ];
 
 export default function AdminApprovalRequests() {
+  const [currentUserRole, setCurrentUserRole] = useState<string>('ADMIN');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('adhub_admin_user');
+      if (userStr) {
+        try {
+          const u = JSON.parse(userStr);
+          if (u?.role) setCurrentUserRole(u.role);
+        } catch (e) {}
+      }
+    }
+  }, []);
+
   const [topTab, setTopTab] = useState<'APPROVALS' | 'CLUB_ASSIGNMENTS' | 'NOTIFICATION_HISTORY'>('APPROVALS');
   const [requests, setRequests] = useState<AdminUserRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -432,6 +446,22 @@ export default function AdminApprovalRequests() {
   const pendingCount = normalAdminsList.filter(r => r.status === 'PENDING' || r.status === 'PENDING_APPROVAL' || r.status === 'PENDING_OTP').length;
   const approvedCount = normalAdminsList.filter(r => r.status === 'APPROVED' || r.status === 'TRUSTED_ADMIN' || r.status === 'ACTIVE').length;
   const rejectedCount = normalAdminsList.filter(r => r.status === 'REJECTED').length;
+
+  if (currentUserRole !== 'SUPER_ADMIN') {
+    return (
+      <div className="p-8 max-w-xl mx-auto my-12 bg-white rounded-3xl border border-rose-200 shadow-xl text-center space-y-4 font-sans">
+        <div className="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+          <ShieldAlert size={30} />
+        </div>
+        <div>
+          <h2 className="text-xl font-black text-slate-900">403 Forbidden</h2>
+          <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">
+            You do not have permission to manage administrators. This section is restricted exclusively to Super Admins.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
