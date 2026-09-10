@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   KeyRound,
   ShieldAlert,
+  ShieldCheck,
   Sparkles,
 } from 'lucide-react';
 import { toast } from 'sonner';

@@ -1,7 +1,42 @@
 import { NextResponse } from 'next/server';
-import { rejectAdminRequest } from '@/lib/userStore';
+import { rejectAdminRequest, findUserById, findUserByEmail, isTokenUsed, markTokenAsUsed } from '@/lib/userStore';
 import { sendAdminStatusUpdateEmail } from '@/lib/emailService';
 import { verifyApprovalActionToken } from '@/lib/auth';
+
+function renderAlreadyProcessedResponse(adminName?: string, adminEmail?: string, currentStatus?: string) {
+  const isApproved = currentStatus === 'APPROVED' || currentStatus === 'ACTIVE' || currentStatus === 'TRUSTED_ADMIN';
+  return new NextResponse(
+    `
+    <html>
+      <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #f8fafc; padding: 50px; text-align: center;">
+        <div style="max-width: 500px; margin: 0 auto; background: white; padding: 32px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+          <h2 style="color: ${isApproved ? '#0284c7' : '#d97706'}; margin-top: 0;">
+            ${isApproved ? 'Admin Already Approved' : 'Request Already Processed'}
+          </h2>
+          <p style="color: #475569; font-size: 15px; line-height: 1.6;">
+            ${
+              isApproved
+                ? 'This admin account has already been approved. No further action is required.'
+                : 'This approval/rejection request has already been processed by a Super Admin.'
+            }
+          </p>
+          ${
+            adminEmail || adminName
+              ? `<div style="margin-top: 16px; padding: 12px; background-color: #f1f5f9; border-radius: 10px; font-size: 14px; color: #334155;">
+                  ${adminName ? `<strong>${adminName}</strong> ` : ''}${adminEmail ? `(${adminEmail})` : ''}
+                </div>`
+              : ''
+          }
+          <div style="margin-top: 24px;">
+            <a href="/admin-dashboard" style="background: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 14px;">Open Super Admin Portal</a>
+          </div>
+        </div>
+      </body>
+    </html>
+    `,
+    { status: 200, headers: { 'content-type': 'text/html' } }
+  );
+}
 
 export async function GET(request: Request) {
   try {
@@ -13,10 +48,27 @@ export async function GET(request: Request) {
 
     let targetId = adminIdParam || emailParam || '';
     let performedBy = 'Super Admin (Email Link)';
+    let tokenPayload: any = null;
 
     if (tokenParam) {
-      const payload = verifyApprovalActionToken(tokenParam);
-      if (!payload) {
+      tokenPayload = verifyApprovalActionToken(tokenParam);
+
+      if (isTokenUsed(tokenParam)) {
+        const payloadEmail = tokenPayload?.adminEmail || emailParam;
+        const payloadId = tokenPayload?.adminId || adminIdParam;
+        let existingUser = null;
+        if (payloadId) existingUser = await findUserById(payloadId);
+        if (!existingUser && payloadEmail) existingUser = await findUserByEmail(payloadEmail);
+        return renderAlreadyProcessedResponse(existingUser?.name || payloadEmail, existingUser?.email || payloadEmail, existingUser?.status);
+      }
+
+      if (!tokenPayload) {
+        if (targetId) {
+          let u = (await findUserById(targetId)) || (await findUserByEmail(targetId));
+          if (u && (u.status === 'APPROVED' || u.status === 'REJECTED' || u.status === 'ACTIVE' || u.status === 'TRUSTED_ADMIN')) {
+            return renderAlreadyProcessedResponse(u.name, u.email, u.status);
+          }
+        }
         return new NextResponse(
           `
           <html>
@@ -37,7 +89,18 @@ export async function GET(request: Request) {
         );
       }
 
-      if ((payload as any).isExpired) {
+      if (tokenPayload.isExpired) {
+        if (targetId || tokenPayload.adminId || tokenPayload.adminEmail) {
+          const checkId = tokenPayload.adminId || targetId;
+          const checkEmail = tokenPayload.adminEmail || emailParam;
+          let u = null;
+          if (checkId) u = await findUserById(checkId);
+          if (!u && checkEmail) u = await findUserByEmail(checkEmail);
+          if (u && (u.status === 'APPROVED' || u.status === 'REJECTED' || u.status === 'ACTIVE' || u.status === 'TRUSTED_ADMIN')) {
+            markTokenAsUsed(tokenParam);
+            return renderAlreadyProcessedResponse(u.name, u.email, u.status);
+          }
+        }
         return new NextResponse(
           `
           <html>
@@ -58,8 +121,8 @@ export async function GET(request: Request) {
         );
       }
 
-      targetId = payload.adminId || payload.adminEmail;
-      performedBy = payload.superAdminEmail ? `Super Admin (${payload.superAdminEmail})` : 'Super Admin (Email Link)';
+      targetId = tokenPayload.adminId || tokenPayload.adminEmail || targetId;
+      performedBy = tokenPayload.superAdminEmail ? `Super Admin (${tokenPayload.superAdminEmail})` : 'Super Admin (Email Link)';
     }
 
     if (!targetId) {
@@ -69,34 +132,36 @@ export async function GET(request: Request) {
       );
     }
 
+    let existingUser = (await findUserById(targetId)) || (await findUserByEmail(targetId));
+    if (existingUser && (existingUser.status === 'APPROVED' || existingUser.status === 'REJECTED' || existingUser.status === 'ACTIVE' || existingUser.status === 'TRUSTED_ADMIN')) {
+      if (tokenParam) markTokenAsUsed(tokenParam);
+      return renderAlreadyProcessedResponse(existingUser.name, existingUser.email, existingUser.status);
+    }
+
     const result = await rejectAdminRequest(targetId, performedBy, reason);
 
     if (result.alreadyProcessed) {
-      return new NextResponse(
-        `
-        <html>
-          <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #f8fafc; padding: 50px; text-align: center;">
-            <div style="max-width: 500px; margin: 0 auto; background: white; padding: 32px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-              <h2 style="color: #d97706; margin-top: 0;">Notice: Request Already Processed</h2>
-              <p style="color: #475569; font-size: 15px; line-height: 1.6;">
-                This approval request has already been processed by a Super Admin.
-              </p>
-              <div style="margin-top: 24px;">
-                <a href="/admin-dashboard" style="background: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 14px;">Open Super Admin Portal</a>
-              </div>
-            </div>
-          </body>
-        </html>
-        `,
-        { status: 409, headers: { 'content-type': 'text/html' } }
-      );
+      if (tokenParam) markTokenAsUsed(tokenParam);
+      return renderAlreadyProcessedResponse(result.user?.name, result.user?.email, result.user?.status);
     }
 
     if (!result.user) {
+      const altEmail = tokenPayload?.adminEmail || emailParam;
+      if (altEmail) {
+        const altUser = await findUserByEmail(altEmail);
+        if (altUser && (altUser.status === 'APPROVED' || altUser.status === 'REJECTED' || altUser.status === 'ACTIVE' || altUser.status === 'TRUSTED_ADMIN')) {
+          if (tokenParam) markTokenAsUsed(tokenParam);
+          return renderAlreadyProcessedResponse(altUser.name, altUser.email, altUser.status);
+        }
+      }
       return new NextResponse(
         `<html><body style="font-family: sans-serif; padding: 40px; text-align: center;"><h2>Admin Account Not Found</h2></body></html>`,
         { status: 404, headers: { 'content-type': 'text/html' } }
       );
+    }
+
+    if (tokenParam) {
+      markTokenAsUsed(tokenParam);
     }
 
     // Send Rejection Email to Applicant
@@ -137,10 +202,21 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { adminId, rejectedBy, reason } = body;
+    const { adminId, rejectedBy, reason, token } = body;
 
     if (!adminId) {
       return NextResponse.json({ success: false, error: 'Admin ID is required' }, { status: 400 });
+    }
+
+    const existingUser = (await findUserById(adminId)) || (await findUserByEmail(adminId));
+    if (existingUser && (existingUser.status === 'APPROVED' || existingUser.status === 'REJECTED' || existingUser.status === 'ACTIVE' || existingUser.status === 'TRUSTED_ADMIN')) {
+      if (token) markTokenAsUsed(token);
+      return NextResponse.json({
+        success: true,
+        alreadyProcessed: true,
+        message: 'This approval request has already been processed.',
+        user: existingUser,
+      });
     }
 
     const result = await rejectAdminRequest(
@@ -148,6 +224,10 @@ export async function POST(request: Request) {
       rejectedBy || 'Super Admin',
       reason || 'Verification details did not match CSE Faculty records.'
     );
+
+    if (token) {
+      markTokenAsUsed(token);
+    }
 
     if (result.alreadyProcessed) {
       return NextResponse.json({

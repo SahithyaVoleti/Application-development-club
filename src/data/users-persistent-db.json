@@ -99,6 +99,22 @@
       "approvedAt": "2026-09-08T03:26:54.573Z",
       "approvedBy": "Sahithya Voleti (Super Admin)",
       "rejectionReason": null
+    },
+    {
+      "name": "Test Faculty Admin",
+      "email": "testadmin_1789038136868@vignan.ac.in",
+      "passwordHash": "dummyhash",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "phone": "9999999999",
+      "staffId": "FAC-6868",
+      "department": "CSE",
+      "otpVerified": true,
+      "id": "user-1789038136868-v3r1q",
+      "createdAt": "2026-09-10T11:02:16.868Z",
+      "approvedAt": "2026-09-10T11:02:16.870Z",
+      "approvedBy": "Super Admin",
+      "rejectionReason": null
     }
   ],
   "auditLogs": [
@@ -132,7 +148,19 @@
       },
       "id": "audit-1788838014579-0iom",
       "performedAt": "2026-09-08T03:26:54.579Z"
+    },
+    {
+      "adminId": "user-1789038136868-v3r1q",
+      "adminName": "Test Faculty Admin",
+      "adminEmail": "testadmin_1789038136868@vignan.ac.in",
+      "action": "APPROVED",
+      "performedBy": "Super Admin",
+      "id": "audit-1789038136870-jw37",
+      "performedAt": "2026-09-10T11:02:16.870Z"
     }
   ],
-  "updatedAt": "2026-09-08T03:26:54.579Z"
+  "usedTokens": [
+    "eyJhZG1pbklkIjoidXNlci0xNzg5MDM4MTM2ODY4LXYzcjFxIiwiYWRtaW5FbWFpbCI6InRlc3RhZG1pbl8xNzg5MDM4MTM2ODY4QHZpZ25hbi5hYy5pbiIsImFjdGlvbiI6ImFwcHJvdmUiLCJzdXBlckFkbWluRW1haWwiOiJzYWhpdGh5YWxha3NobWl2b2xldGlAZ21haWwuY29tIiwiZXhwIjoxNzg5NjQyOTM2ODY5fS42NDEzNzBmZTAyM2NmMGFiNTEzMjE1ZWRlZTM1MWE5ZDIxYjdhMTYzYTQ0OTYxM2E2NDE3NzdkZjMzZWU1MGRl"
+  ],
+  "updatedAt": "2026-09-10T11:02:16.872Z"
 }

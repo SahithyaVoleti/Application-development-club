@@ -150,7 +150,7 @@ const INITIAL_SEED_USERS: UserRecord[] = [
   },
 ];
 
-function loadUsersFromStorage(): { users: UserRecord[]; auditLogs: AuditLogRecord[] } {
+function loadUsersFromStorage(): { users: UserRecord[]; auditLogs: AuditLogRecord[]; usedTokens: string[] } {
   try {
     if (fs.existsSync(DB_FILE_PATH)) {
       const raw = fs.readFileSync(DB_FILE_PATH, 'utf-8');
@@ -182,18 +182,19 @@ function loadUsersFromStorage(): { users: UserRecord[]; auditLogs: AuditLogRecor
         return {
           users: mergedUsers,
           auditLogs: Array.isArray(parsed.auditLogs) ? parsed.auditLogs : [],
+          usedTokens: Array.isArray(parsed.usedTokens) ? parsed.usedTokens : [],
         };
       }
     }
   } catch (err) {
     console.error('Error reading user DB file:', err);
   }
-  const initialData = { users: INITIAL_SEED_USERS, auditLogs: [] };
-  saveUsersToStorage(initialData.users, initialData.auditLogs);
+  const initialData = { users: INITIAL_SEED_USERS, auditLogs: [], usedTokens: [] };
+  saveUsersToStorage(initialData.users, initialData.auditLogs, initialData.usedTokens);
   return initialData;
 }
 
-function saveUsersToStorage(users: UserRecord[], auditLogs: AuditLogRecord[]) {
+function saveUsersToStorage(users: UserRecord[], auditLogs: AuditLogRecord[], usedTokens: string[] = []) {
   try {
     const dir = path.dirname(DB_FILE_PATH);
     if (!fs.existsSync(dir)) {
@@ -201,7 +202,7 @@ function saveUsersToStorage(users: UserRecord[], auditLogs: AuditLogRecord[]) {
     }
     fs.writeFileSync(
       DB_FILE_PATH,
-      JSON.stringify({ users, auditLogs, updatedAt: new Date().toISOString() }, null, 2),
+      JSON.stringify({ users, auditLogs, usedTokens, updatedAt: new Date().toISOString() }, null, 2),
       'utf-8'
     );
   } catch (err) {
@@ -233,22 +234,40 @@ export function ensureSuperAdminsExist() {
 const globalForUserStore = globalThis as unknown as {
   globalUsers: UserRecord[] | undefined;
   globalAuditLogs: AuditLogRecord[] | undefined;
+  globalUsedTokens: string[] | undefined;
 };
 
 if (!globalForUserStore.globalUsers) {
   const loaded = loadUsersFromStorage();
   globalForUserStore.globalUsers = loaded.users;
   globalForUserStore.globalAuditLogs = loaded.auditLogs;
+  globalForUserStore.globalUsedTokens = loaded.usedTokens;
 }
 
 let globalUsers = globalForUserStore.globalUsers!;
 let globalAuditLogs = globalForUserStore.globalAuditLogs!;
+let globalUsedTokens = globalForUserStore.globalUsedTokens || [];
 ensureSuperAdminsExist();
 
 function syncStore() {
   globalForUserStore.globalUsers = globalUsers;
   globalForUserStore.globalAuditLogs = globalAuditLogs;
-  saveUsersToStorage(globalUsers, globalAuditLogs);
+  globalForUserStore.globalUsedTokens = globalUsedTokens;
+  saveUsersToStorage(globalUsers, globalAuditLogs, globalUsedTokens);
+}
+
+export function isTokenUsed(token: string): boolean {
+  if (!token) return false;
+  return globalUsedTokens.includes(token.trim());
+}
+
+export function markTokenAsUsed(token: string): void {
+  if (!token) return;
+  const cleanToken = token.trim();
+  if (!globalUsedTokens.includes(cleanToken)) {
+    globalUsedTokens.push(cleanToken);
+    syncStore();
+  }
 }
 
 export async function findUserByEmail(email: string): Promise<UserRecord | null> {
