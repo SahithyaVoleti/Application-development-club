@@ -6,7 +6,26 @@ export interface PersistentEvent extends Event {
   isPublished?: boolean;
 }
 
-const DB_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'events-persistent-db.json');
+function getDbFilePath(filename: string): string {
+  try {
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      return path.join('/tmp', filename);
+    }
+    const localDir = path.join(process.cwd(), 'src', 'data');
+    if (!fs.existsSync(localDir)) {
+      try {
+        fs.mkdirSync(localDir, { recursive: true });
+      } catch {
+        return path.join('/tmp', filename);
+      }
+    }
+    return path.join(localDir, filename);
+  } catch {
+    return path.join('/tmp', filename);
+  }
+}
+
+const DB_FILE_PATH = getDbFilePath('events-persistent-db.json');
 
 declare global {
   var __EVENT_DB_CACHE__: PersistentEvent[] | undefined;

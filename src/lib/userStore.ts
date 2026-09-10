@@ -42,7 +42,26 @@ export interface AuditLogRecord {
   metadata?: Record<string, any>;
 }
 
-const DB_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'users-persistent-db.json');
+function getDbFilePath(filename: string): string {
+  try {
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      return path.join('/tmp', filename);
+    }
+    const localDir = path.join(process.cwd(), 'src', 'data');
+    if (!fs.existsSync(localDir)) {
+      try {
+        fs.mkdirSync(localDir, { recursive: true });
+      } catch {
+        return path.join('/tmp', filename);
+      }
+    }
+    return path.join(localDir, filename);
+  } catch {
+    return path.join('/tmp', filename);
+  }
+}
+
+const DB_FILE_PATH = getDbFilePath('users-persistent-db.json');
 
 const INITIAL_SEED_USERS: UserRecord[] = [
   // 1. Sahithya Voleti (Super Admin)

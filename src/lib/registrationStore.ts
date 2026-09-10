@@ -3,7 +3,26 @@ import path from 'path';
 import { Registration, MOCK_REGISTRATIONS, REGISTERED_COUNTS } from './mockData';
 import { PersistentEventStore } from './eventStore';
 
-const DB_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'registrations-persistent-db.json');
+function getDbFilePath(filename: string): string {
+  try {
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      return path.join('/tmp', filename);
+    }
+    const localDir = path.join(process.cwd(), 'src', 'data');
+    if (!fs.existsSync(localDir)) {
+      try {
+        fs.mkdirSync(localDir, { recursive: true });
+      } catch {
+        return path.join('/tmp', filename);
+      }
+    }
+    return path.join(localDir, filename);
+  } catch {
+    return path.join('/tmp', filename);
+  }
+}
+
+const DB_FILE_PATH = getDbFilePath('registrations-persistent-db.json');
 
 declare global {
   var __REGISTRATION_DB_CACHE__: Registration[] | undefined;

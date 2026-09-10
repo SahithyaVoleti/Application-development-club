@@ -99,43 +99,70 @@ export default function AdminDashboardContent({ onNavigate }: Props) {
       setErrorMessage('');
 
       // 1. Fetch Events
-      const eventsRes = await fetch('/api/events');
-      const eventsData = await eventsRes.json();
       let fetchedEvents: Event[] = [];
-      if (eventsData.success && Array.isArray(eventsData.data)) {
-        fetchedEvents = eventsData.data;
+      try {
+        const eventsRes = await fetch('/api/events');
+        if (eventsRes.ok && eventsRes.headers.get('content-type')?.includes('application/json')) {
+          const eventsData = await eventsRes.json();
+          if (eventsData.success && Array.isArray(eventsData.data)) {
+            fetchedEvents = eventsData.data;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch events:', e);
       }
       setEventsList(fetchedEvents);
 
       // 2. Fetch Admin Stats & Metrics
-      const statsRes = await fetch('/api/admin/stats');
-      const statsData = await statsRes.json();
-      if (statsData.success && statsData.stats) {
-        setDbStats(statsData.stats);
-        if (Array.isArray(statsData.recentActivity)) {
-          setRecentActivity(statsData.recentActivity);
+      try {
+        const statsRes = await fetch('/api/admin/stats');
+        if (statsRes.ok && statsRes.headers.get('content-type')?.includes('application/json')) {
+          const statsData = await statsRes.json();
+          if (statsData.success && statsData.stats) {
+            setDbStats(statsData.stats);
+            if (Array.isArray(statsData.recentActivity)) {
+              setRecentActivity(statsData.recentActivity);
+            }
+            if (Array.isArray(statsData.recentRegistrations)) {
+              setRecentRegistrations(statsData.recentRegistrations);
+            }
+          }
+        } else {
+          // Fallback stats calculation from fetched events list
+          const total = fetchedEvents.length;
+          const upcoming = fetchedEvents.filter((e) => e.status === 'UPCOMING' || e.status === 'ONGOING').length;
+          const past = fetchedEvents.filter((e) => e.status === 'COMPLETED').length;
+          setDbStats((prev) => ({
+            ...prev,
+            totalEvents: total,
+            upcomingEvents: upcoming,
+            pastEvents: past,
+          }));
         }
-        if (Array.isArray(statsData.recentRegistrations)) {
-          setRecentRegistrations(statsData.recentRegistrations);
-        }
+      } catch (e) {
+        console.error('Failed to fetch admin stats:', e);
       }
 
       // 3. Fetch All Registrations to compute dynamic per-event counts
-      const regRes = await fetch('/api/registrations');
-      const regData = await regRes.json();
-      if (regData.success && Array.isArray(regData.data)) {
-        const map: Record<string, number> = {};
-        regData.data.forEach((r: Registration) => {
-          if (r.eventId) {
-            map[r.eventId] = (map[r.eventId] || 0) + 1;
+      try {
+        const regRes = await fetch('/api/registrations');
+        if (regRes.ok && regRes.headers.get('content-type')?.includes('application/json')) {
+          const regData = await regRes.json();
+          if (regData.success && Array.isArray(regData.data)) {
+            const map: Record<string, number> = {};
+            regData.data.forEach((r: Registration) => {
+              if (r.eventId) {
+                map[r.eventId] = (map[r.eventId] || 0) + 1;
+              }
+            });
+            setRegistrationsMap(map);
           }
-        });
-        setRegistrationsMap(map);
+        }
+      } catch (e) {
+        console.error('Failed to fetch registrations:', e);
       }
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
-      setHasError(true);
-      setErrorMessage(err?.message || 'Failed to load live database data.');
     } finally {
       setIsLoading(false);
     }

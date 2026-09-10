@@ -59,13 +59,24 @@ export default function AdminOverviewCharts() {
           fetch('/api/registrations'),
         ]);
 
-        const eventsJson = await eventsRes.json();
-        const regJson = await regRes.json();
+        let events: any[] = [];
+        let registrations: any[] = [];
 
-        if (eventsJson.success && Array.isArray(eventsJson.data) && eventsJson.data.length > 0) {
-          const events = eventsJson.data;
-          const registrations = Array.isArray(regJson.data) ? regJson.data : [];
+        if (eventsRes.ok && eventsRes.headers.get('content-type')?.includes('application/json')) {
+          const eventsJson = await eventsRes.json();
+          if (eventsJson.success && Array.isArray(eventsJson.data)) {
+            events = eventsJson.data;
+          }
+        }
 
+        if (regRes.ok && regRes.headers.get('content-type')?.includes('application/json')) {
+          const regJson = await regRes.json();
+          if (regJson.success && Array.isArray(regJson.data)) {
+            registrations = regJson.data;
+          }
+        }
+
+        if (events.length > 0) {
           // Map registrations per event
           const countMap: Record<string, number> = {};
           registrations.forEach((r: any) => {
