@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { findUserByEmail, updateUser } from '@/lib/userStore';
+import { findUserByEmail, updateUser, isSuperAdminEmail } from '@/lib/userStore';
 import { verifyLoginOtp } from '@/lib/otpStore';
-import { generateToken } from '@/lib/auth';
+import { generateToken, isSuperAdmin } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -36,15 +36,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // OTP Verified! Update user status & generate authenticated token
-    await updateUser(user.id, { otpVerified: true });
+    // OTP Verified! Check Super Admin status & generate authenticated token
+    const isSuper = isSuperAdminEmail(cleanEmail) || user.role === 'SUPER_ADMIN';
+    const effectiveRole = isSuper ? 'SUPER_ADMIN' : user.role;
+    const effectiveStatus = isSuper ? 'APPROVED' : user.status;
+
+    await updateUser(user.id, {
+      otpVerified: true,
+      ...(isSuper && { role: 'SUPER_ADMIN', status: 'APPROVED' }),
+    });
 
     const token = generateToken({
       id: user.id,
       email: user.email,
-      role: user.role,
+      role: effectiveRole,
       name: user.name,
-      status: user.status,
+      status: effectiveStatus,
       staffId: user.staffId,
       department: user.department,
     });
@@ -55,8 +62,8 @@ export async function POST(request: Request) {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
-        status: user.status,
+        role: effectiveRole,
+        status: effectiveStatus,
         staffId: user.staffId,
         studentId: user.studentId,
         department: user.department,

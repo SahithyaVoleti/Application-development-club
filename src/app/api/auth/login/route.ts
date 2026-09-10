@@ -75,20 +75,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5. Role & Option Verification — Never trust frontend selection alone
-    if (loginAs === 'SUPER_ADMIN' && user.role !== 'SUPER_ADMIN' && !isSuperAdminEmail(cleanEmail)) {
-      return NextResponse.json(
-        {
-          success: false,
-          code: 'NOT_SUPER_ADMIN',
-          error: 'Access denied. This account does not have Super Admin privileges.',
-          message: 'Access denied. This account does not have Super Admin privileges.',
-        },
-        { status: 403 }
-      );
+    // 5. Upgrade Super Admin role if matching configured emails
+    if (isSuperAdminEmail(cleanEmail)) {
+      user.role = 'SUPER_ADMIN';
+      user.status = 'APPROVED';
     }
 
-    if (user.role === 'STUDENT') {
+    if (user.role === 'STUDENT' && !isSuperAdminEmail(cleanEmail)) {
       return NextResponse.json(
         {
           success: false,

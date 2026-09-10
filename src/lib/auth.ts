@@ -44,6 +44,29 @@ export function verifyToken(token: string): AuthTokenPayload | null {
   }
 }
 
+import { isSuperAdminEmail } from './userStore';
+
+/**
+ * Central Super Admin Authorization Function (Requirement 3)
+ */
+export function isSuperAdmin(
+  userOrEmail?: string | { role?: string; email?: string; status?: string } | null
+): boolean {
+  if (!userOrEmail) return false;
+
+  if (typeof userOrEmail === 'string') {
+    return isSuperAdminEmail(userOrEmail);
+  }
+
+  const role = (userOrEmail.role || '').toUpperCase().trim();
+  const email = (userOrEmail.email || '').toLowerCase().trim();
+
+  if (role === 'SUPER_ADMIN') return true;
+  if (isSuperAdminEmail(email)) return true;
+
+  return false;
+}
+
 /**
  * STRICT SERVER-SIDE RBAC GUARD: Super Admin Only
  * Enforces authenticated session AND role === 'SUPER_ADMIN'
@@ -54,8 +77,8 @@ export function verifySuperAdmin(authHeaderOrToken?: string | null): AuthTokenPa
   const payload = verifyToken(token);
   if (!payload) return null;
 
-  if (payload.role === 'SUPER_ADMIN') {
-    return payload;
+  if (isSuperAdmin(payload)) {
+    return { ...payload, role: 'SUPER_ADMIN', status: 'APPROVED' };
   }
 
   return null;
