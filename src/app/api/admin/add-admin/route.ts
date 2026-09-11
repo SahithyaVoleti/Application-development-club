@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createDirectAdmin, getAllAdminRequests } from '@/lib/userStore';
-import { verifyTrustedAdmin, hashPassword } from '@/lib/auth';
+import { verifySuperAdmin, hashPassword } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get('authorization');
-    const superAdmin = verifyTrustedAdmin(authHeader);
+    const superAdmin = verifySuperAdmin(authHeader);
 
     // Require Super Admin permissions to directly add new Admin accounts
-    if (!superAdmin || superAdmin.role !== 'SUPER_ADMIN') {
+    if (!superAdmin) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized. Super Admin privileges required to add admins.' },
         { status: 403 }

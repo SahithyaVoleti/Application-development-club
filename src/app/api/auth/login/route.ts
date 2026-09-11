@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { findUserByEmail, isSuperAdminEmail } from '@/lib/userStore';
+import { findUserByEmail } from '@/lib/userStore';
+import { isSuperAdminEmail } from '@/lib/constants';
 import { hashPassword } from '@/lib/auth';
 import { createLoginOtp } from '@/lib/otpStore';
 import { sendOtpEmail } from '@/lib/emailService';
@@ -75,10 +76,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5. Upgrade Super Admin role if matching configured emails
+    // 5. Upgrade Super Admin role ONLY if matching configured emails; demote others
     if (isSuperAdminEmail(cleanEmail)) {
       user.role = 'SUPER_ADMIN';
       user.status = 'APPROVED';
+    } else if (user.role === 'SUPER_ADMIN') {
+      user.role = user.status === 'APPROVED' ? 'ADMIN' : 'STUDENT';
     }
 
     if (user.role === 'STUDENT' && !isSuperAdminEmail(cleanEmail)) {

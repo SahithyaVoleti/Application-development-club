@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import AdminLoginModal from '@/app/admin-dashboard/components/AdminLoginModal';
+import { isSuperAdminEmail } from '@/lib/constants';
 
 interface Props {
   children: React.ReactNode;
@@ -20,9 +21,24 @@ export default function AdminAuthGuard({ children }: Props) {
 
     try {
       const user = JSON.parse(userStr);
+      const isSuper = isSuperAdminEmail(user?.email);
+
+      // Sanitize stored role if claims SUPER_ADMIN without matching email
+      if (!isSuper && (user.role === 'SUPER_ADMIN' || user.role === 'super_admin')) {
+        user.role = 'ADMIN';
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('adhub_admin_user', JSON.stringify(user));
+        }
+      } else if (isSuper) {
+        user.role = 'SUPER_ADMIN';
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('adhub_admin_user', JSON.stringify(user));
+        }
+      }
+
       // STRICT ROLE & STATUS CHECK: Only SUPER_ADMIN or TRUSTED_ADMIN can enter Admin Panel
       const isAuthorizedAdmin =
-        user.role === 'SUPER_ADMIN' ||
+        isSuper ||
         (user.role === 'ADMIN' && (user.status === 'APPROVED' || user.status === 'TRUSTED_ADMIN'));
 
       if (!isAuthorizedAdmin) {

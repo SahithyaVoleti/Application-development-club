@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { approveAdminRequest, rejectAdminRequest, getAllAdminRequests, getPendingAdminRequests } from '@/lib/userStore';
-import { verifyTrustedAdmin } from '@/lib/auth';
+import { verifySuperAdmin } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get('authorization');
-    const superAdmin = verifyTrustedAdmin(authHeader);
+    const superAdmin = verifySuperAdmin(authHeader);
 
     // Require Super Admin permissions to accept or reject Admin requests
-    if (!superAdmin || superAdmin.role !== 'SUPER_ADMIN') {
+    if (!superAdmin) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized. Super Admin permissions required to approve or reject admins.' },
         { status: 403 }

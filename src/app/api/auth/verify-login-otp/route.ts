@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { findUserByEmail, updateUser, isSuperAdminEmail } from '@/lib/userStore';
+import { findUserByEmail, updateUser } from '@/lib/userStore';
+import { isSuperAdminEmail } from '@/lib/constants';
 import { verifyLoginOtp } from '@/lib/otpStore';
-import { generateToken, isSuperAdmin } from '@/lib/auth';
+import { generateToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -37,8 +38,8 @@ export async function POST(request: Request) {
     }
 
     // OTP Verified! Check Super Admin status & generate authenticated token
-    const isSuper = isSuperAdminEmail(cleanEmail) || user.role === 'SUPER_ADMIN';
-    const effectiveRole = isSuper ? 'SUPER_ADMIN' : user.role;
+    const isSuper = isSuperAdminEmail(cleanEmail);
+    const effectiveRole = isSuper ? 'SUPER_ADMIN' : (user.role === 'SUPER_ADMIN' ? 'ADMIN' : user.role);
     const effectiveStatus = isSuper ? 'APPROVED' : user.status;
 
     await updateUser(user.id, {

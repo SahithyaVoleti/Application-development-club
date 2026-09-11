@@ -44,10 +44,12 @@ export function verifyToken(token: string): AuthTokenPayload | null {
   }
 }
 
-import { isSuperAdminEmail } from './userStore';
+import { isSuperAdminEmail } from '@/lib/constants';
 
 /**
- * Central Super Admin Authorization Function (Requirement 3)
+ * Central Super Admin Authorization Function (Requirement 1, 5, 6)
+ * Validates strictly that the authenticated user's email is in SUPER_ADMIN_EMAILS.
+ * Role alone or frontend state is NEVER trusted without email verification.
  */
 export function isSuperAdmin(
   userOrEmail?: string | { role?: string; email?: string; status?: string } | null
@@ -58,18 +60,13 @@ export function isSuperAdmin(
     return isSuperAdminEmail(userOrEmail);
   }
 
-  const role = (userOrEmail.role || '').toUpperCase().trim();
-  const email = (userOrEmail.email || '').toLowerCase().trim();
-
-  if (role === 'SUPER_ADMIN') return true;
-  if (isSuperAdminEmail(email)) return true;
-
-  return false;
+  const email = userOrEmail.email;
+  return isSuperAdminEmail(email);
 }
 
 /**
  * STRICT SERVER-SIDE RBAC GUARD: Super Admin Only
- * Enforces authenticated session AND role === 'SUPER_ADMIN'
+ * Enforces authenticated session AND authenticated email in SUPER_ADMIN_EMAILS
  */
 export function verifySuperAdmin(authHeaderOrToken?: string | null): AuthTokenPayload | null {
   if (!authHeaderOrToken) return null;

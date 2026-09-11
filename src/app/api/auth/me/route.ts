@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
 import { findUserById, findUserByEmail } from '@/lib/userStore';
+import { isSuperAdminEmail } from '@/lib/constants';
 
 export async function GET(request: Request) {
   try {
@@ -64,6 +65,13 @@ export async function GET(request: Request) {
 
     if (!user) {
       return NextResponse.json({ success: false, authenticated: false }, { status: 404 });
+    }
+
+    // Enforce strict Super Admin email verification on resolved user profile
+    if (isSuperAdminEmail(user.email)) {
+      user.role = 'SUPER_ADMIN';
+    } else if (user.role === 'SUPER_ADMIN') {
+      user.role = 'ADMIN';
     }
 
     return NextResponse.json({

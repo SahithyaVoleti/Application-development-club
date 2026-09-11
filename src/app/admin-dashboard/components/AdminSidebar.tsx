@@ -21,6 +21,7 @@ import {
   KeyRound,
   X,
 } from 'lucide-react';
+import { isSuperAdminEmail } from '@/lib/constants';
 import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 
 interface Props {
@@ -45,6 +46,8 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
       }
     }
   }, []);
+
+  const isSuper = isSuperAdminEmail(user?.email) || user?.role === 'SUPER_ADMIN';
 
   const handleNavClick = (view: AdminView) => {
     setMobileOpen(false);
@@ -136,7 +139,7 @@ export default function AdminSidebar({ activeView, onNavigate, onLogout }: Props
               </button>
 
               {/* Admin Access Approvals button EXCLUSIVELY for Super Admin */}
-              {user?.role === 'SUPER_ADMIN' && (
+              {isSuper && (
                 <button
                   onClick={() => handleNavClick('approvals')}
                   title={collapsed ? 'Manage Admins' : undefined}

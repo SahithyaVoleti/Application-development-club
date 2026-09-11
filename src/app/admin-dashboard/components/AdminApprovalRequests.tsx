@@ -32,6 +32,8 @@ import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 import ClubAdminManagement from './ClubAdminManagement';
 import NotificationHistoryTable from './NotificationHistoryTable';
 
+import { SUPER_ADMIN_EMAILS, isSuperAdminEmail } from '@/lib/constants';
+
 interface AdminUserRequest {
   id: string;
   name: string;
@@ -66,7 +68,7 @@ const DEFAULT_SUPER_ADMINS: AdminUserRequest[] = [
   {
     id: 'user-super-admin-002',
     name: 'E. Deepak Chowdary (Super Admin)',
-    email: 'edaradeepakchowdary@gmail.com',
+    email: 'deepakchowdaryedara@gmail.com',
     phone: '+91 9876543211',
     staffId: 'SA-002',
     department: 'Computer Science & Engineering',
@@ -92,6 +94,7 @@ const DEFAULT_SUPER_ADMINS: AdminUserRequest[] = [
 ];
 
 export default function AdminApprovalRequests() {
+  const [currentUserEmail, setCurrentUserEmail] = useState<string>('');
   const [currentUserRole, setCurrentUserRole] = useState<string>('ADMIN');
 
   useEffect(() => {
@@ -100,7 +103,12 @@ export default function AdminApprovalRequests() {
       if (userStr) {
         try {
           const u = JSON.parse(userStr);
-          if (u?.role) setCurrentUserRole(u.role);
+          if (u?.email) setCurrentUserEmail(u.email);
+          if (isSuperAdminEmail(u?.email)) {
+            setCurrentUserRole('SUPER_ADMIN');
+          } else {
+            setCurrentUserRole('ADMIN');
+          }
         } catch (e) {}
       }
     }
@@ -141,12 +149,6 @@ export default function AdminApprovalRequests() {
   const [editDepartment, setEditDepartment] = useState('CSE');
   const [editDesignation, setEditDesignation] = useState('Faculty Coordinator');
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
-
-  const superAdminEmails = [
-    'sahithyalakshmivoleti@gmail.com',
-    'edaradeepakchowdary@gmail.com',
-    'uvr_cse@vignan.ac.in',
-  ];
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -410,13 +412,13 @@ export default function AdminApprovalRequests() {
   };
 
   const fetchedSuperAdmins = requests.filter(
-    r => r.role === 'SUPER_ADMIN' || superAdminEmails.includes((r.email || '').toLowerCase())
+    r => isSuperAdminEmail(r.email)
   );
 
   const superAdminsList = fetchedSuperAdmins.length > 0 ? fetchedSuperAdmins : DEFAULT_SUPER_ADMINS;
 
   const normalAdminsList = requests.filter(
-    r => r.role !== 'SUPER_ADMIN' && !superAdminEmails.includes((r.email || '').toLowerCase())
+    r => !isSuperAdminEmail(r.email)
   );
 
   const targetList = portalTab === 'SUPER_ADMIN' || filter === 'SUPER_ADMIN' ? superAdminsList : normalAdminsList;
@@ -447,7 +449,7 @@ export default function AdminApprovalRequests() {
   const approvedCount = normalAdminsList.filter(r => r.status === 'APPROVED' || r.status === 'TRUSTED_ADMIN' || r.status === 'ACTIVE').length;
   const rejectedCount = normalAdminsList.filter(r => r.status === 'REJECTED').length;
 
-  if (currentUserRole !== 'SUPER_ADMIN') {
+  if (!isSuperAdminEmail(currentUserEmail) && currentUserRole !== 'SUPER_ADMIN') {
     return (
       <div className="p-8 max-w-xl mx-auto my-12 bg-white rounded-3xl border border-rose-200 shadow-xl text-center space-y-4 font-sans">
         <div className="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">

@@ -12,6 +12,7 @@ import AdminApprovalRequests from './components/AdminApprovalRequests';
 import AdminOtpModal from './components/AdminOtpModal';
 import { MOCK_EVENTS, Event } from '@/lib/mockData';
 import { toast } from 'sonner';
+import { isSuperAdminEmail } from '@/lib/constants';
 
 export type AdminView = 'dashboard' | 'events' | 'analytics' | 'create-event' | 'registrations' | 'approvals';
 
@@ -46,8 +47,30 @@ export default function AdminDashboardPage() {
       if (userStr) {
         try {
           const u = JSON.parse(userStr);
-          if (u?.email) setAdminUserEmail(u.email);
-          if (u?.role) setUserRole(u.role);
+          const userEmail = u?.email || '';
+          const isSuper = isSuperAdminEmail(userEmail);
+
+          if (userEmail) setAdminUserEmail(userEmail);
+
+          if (isSuper) {
+            setUserRole('SUPER_ADMIN');
+            // If Super Admin, default to Super Admin Approvals Panel unless a stored view exists
+            const storedView = sessionStorage.getItem('adhub_admin_active_view') as AdminView | null;
+            if (storedView) {
+              setActiveView(storedView);
+            } else {
+              setActiveView('approvals');
+              sessionStorage.setItem('adhub_admin_active_view', 'approvals');
+            }
+          } else {
+            setUserRole(u?.role || 'ADMIN');
+            const storedView = sessionStorage.getItem('adhub_admin_active_view') as AdminView | null;
+            if (storedView && storedView !== 'approvals') {
+              setActiveView(storedView);
+            } else {
+              setActiveView('dashboard');
+            }
+          }
         } catch (e) {}
       }
     }
@@ -58,12 +81,15 @@ export default function AdminDashboardPage() {
       localStorage.removeItem('adhub_admin_token');
       localStorage.removeItem('adhub_admin_user');
       sessionStorage.removeItem('adhub_admin_otp_verified');
+      sessionStorage.removeItem('adhub_admin_active_view');
       window.location.reload();
     }
   };
 
   const handleNavigate = (targetView: AdminView) => {
-    if (targetView === 'approvals' && userRole !== 'SUPER_ADMIN') {
+    const isSuper = isSuperAdminEmail(adminUserEmail) || userRole === 'SUPER_ADMIN';
+
+    if (targetView === 'approvals' && !isSuper) {
       toast.error('Access Denied', { description: 'Only Super Admins have permission to manage administrators.' });
       return;
     }
@@ -81,6 +107,9 @@ export default function AdminDashboardPage() {
     }
 
     setActiveView(targetView);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('adhub_admin_active_view', targetView);
+    }
   };
 
   const handleOtpVerified = () => {

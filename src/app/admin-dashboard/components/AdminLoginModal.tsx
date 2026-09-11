@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import AppLogo from '@/components/ui/AppLogo';
+import { isSuperAdminEmail } from '@/lib/constants';
 import {
   Eye,
   EyeOff,
@@ -147,9 +148,18 @@ export default function AdminLoginModal({ onSuccess }: Props) {
       if (typeof window !== 'undefined') {
         localStorage.setItem('adhub_admin_token', token);
         localStorage.setItem('adhub_admin_user', JSON.stringify(user));
+        if (isSuperAdminEmail(user?.email) || user?.role === 'SUPER_ADMIN') {
+          sessionStorage.setItem('adhub_admin_active_view', 'approvals');
+        } else {
+          sessionStorage.setItem('adhub_admin_active_view', 'dashboard');
+        }
       }
 
-      toast.success(user.role === 'SUPER_ADMIN' ? 'Welcome Super Admin!' : 'Admin Sign In Successful!');
+      toast.success(
+        isSuperAdminEmail(user?.email) || user?.role === 'SUPER_ADMIN'
+          ? 'Welcome Super Admin!'
+          : 'Admin Sign In Successful!'
+      );
       onSuccess(user);
     } catch (err: any) {
       setAuthError('Connection error. Please try again.');
@@ -235,10 +245,17 @@ export default function AdminLoginModal({ onSuccess }: Props) {
         localStorage.setItem('adhub_admin_token', json.token);
         localStorage.setItem('adhub_admin_user', JSON.stringify(json.user));
         sessionStorage.setItem('adhub_admin_otp_verified', 'true');
+        if (isSuperAdminEmail(json.user?.email) || json.user?.role === 'SUPER_ADMIN') {
+          sessionStorage.setItem('adhub_admin_active_view', 'approvals');
+        } else {
+          sessionStorage.setItem('adhub_admin_active_view', 'dashboard');
+        }
       }
 
       toast.success(
-        json.user.role === 'SUPER_ADMIN' ? 'Welcome Super Admin!' : 'Admin Sign In Successful!'
+        isSuperAdminEmail(json.user?.email) || json.user?.role === 'SUPER_ADMIN'
+          ? 'Welcome Super Admin!'
+          : 'Admin Sign In Successful!'
       );
       onSuccess(json.user);
     } catch (err: any) {

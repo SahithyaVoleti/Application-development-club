@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { hashPassword } from '@/lib/auth';
+import { SUPER_ADMIN_EMAILS, isSuperAdminEmail } from '@/lib/constants';
+
+export { isSuperAdminEmail };
 
 export type Role = 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN';
 export type AdminStatus = 'PENDING' | 'PENDING_OTP' | 'PENDING_APPROVAL' | 'APPROVED' | 'TRUSTED_ADMIN' | 'REJECTED' | 'ACTIVE';
@@ -88,7 +91,7 @@ const INITIAL_SEED_USERS: UserRecord[] = [
   {
     id: 'user-super-admin-002',
     name: 'E. Deepak Chowdary (Super Admin)',
-    email: 'edaradeepakchowdary@gmail.com',
+    email: 'deepakchowdaryedara@gmail.com',
     phone: '+91 9876543211',
     staffId: 'SA-002',
     department: 'Computer Science & Engineering',
@@ -241,6 +244,7 @@ export function ensureSuperAdminsExist() {
       } else {
         globalUsers[idx] = {
           ...globalUsers[idx],
+          email: seed.email,
           role: 'SUPER_ADMIN',
           status: 'APPROVED',
           otpVerified: true,
@@ -249,12 +253,16 @@ export function ensureSuperAdminsExist() {
     }
   }
 
-  // 2. Scan all stored users and upgrade any account matching Super Admin email logic
+  // 2. Scan all stored users: upgrade authorized emails & demote unauthorized super_admins
   for (let i = 0; i < globalUsers.length; i++) {
-    if (globalUsers[i].email && isSuperAdminEmail(globalUsers[i].email)) {
+    const userEmail = globalUsers[i].email;
+    if (userEmail && isSuperAdminEmail(userEmail)) {
       globalUsers[i].role = 'SUPER_ADMIN';
       globalUsers[i].status = 'APPROVED';
       globalUsers[i].otpVerified = true;
+    } else if (globalUsers[i].role === 'SUPER_ADMIN') {
+      // Demote unauthorized user claiming SUPER_ADMIN
+      globalUsers[i].role = globalUsers[i].status === 'APPROVED' ? 'ADMIN' : 'STUDENT';
     }
   }
 }
@@ -428,35 +436,7 @@ export function getSuperAdminEmails(): string[] {
       .map(e => e.trim().toLowerCase())
       .filter(Boolean);
   }
-  return [
-    'sahithyalakshmivoleti@gmail.com',
-    'sahithyavoleti14@gmail.com',
-    'edaradeepakchowdary@gmail.com',
-    'deepakchowdarydara@gmail.com',
-    'uvr_cse@vignan.ac.in',
-  ];
-}
-
-export function isSuperAdminEmail(email: string): boolean {
-  if (!email) return false;
-  const clean = email.trim().toLowerCase();
-  
-  const allowedExact = getSuperAdminEmails();
-  if (allowedExact.includes(clean)) return true;
-
-  const localPart = clean.split('@')[0].trim();
-  if (
-    localPart.includes('sahithyalakshmivoleti') ||
-    localPart.includes('sahithyavoleti') ||
-    localPart.includes('deepakchowdarydara') ||
-    localPart.includes('edaradeepakchowdary') ||
-    localPart.includes('deepakchowdary') ||
-    localPart.includes('uvr_cse')
-  ) {
-    return true;
-  }
-
-  return false;
+  return [...SUPER_ADMIN_EMAILS];
 }
 
 export async function getAuditLogs(): Promise<AuditLogRecord[]> {
